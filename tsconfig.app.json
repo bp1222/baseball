@@ -16,8 +16,11 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+
+    // TODO: figure out how to clean output of generated code
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"]

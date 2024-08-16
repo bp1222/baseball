@@ -1,4 +1,4 @@
-import { amber, blue, blueGrey, brown, deepPurple, grey, lightGreen, purple, red } from "@mui/material/colors"
+import { amber, blue, brown, grey, lightGreen, purple, red } from "@mui/material/colors"
 import { Game, GameDate, GameTeam, Schedule, Team, Venue } from "../services/client-api"
 import { Color } from "@mui/material"
 
@@ -84,7 +84,7 @@ function GenerateSeries(schedule: Schedule, team: Team): Series[] {
     }
   }
 
-  let retval: Series[] = []
+  const retval: Series[] = []
   let currentSeries: Series = newSeries()
 
   let wins = 0
@@ -138,7 +138,11 @@ function GenerateSeries(schedule: Schedule, team: Team): Series[] {
       const won = isHome() && game.teams?.home?.isWinner ? true : (!isHome() && game.teams?.away?.isWinner ? true : false)
 
       if (game.status?.codedGameState == GameStatusState.Final) {
-        won ? wins++ : losses++
+        if (won) {
+          wins++;
+        } else {
+          losses++
+        }
       }
 
       // Store this game into the series.

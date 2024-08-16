@@ -28,11 +28,11 @@ function App() {
 
     dispatch({
       type: AppStateAction.Seasons,
-      seasons: seasons.seasons?.reverse()!
+      seasons: seasons.seasons?.reverse() ?? []
     })
     dispatch({
       type: AppStateAction.Teams,
-      teams: teams.teams?.sort((a, b) => a.name!.localeCompare(b.name!))!
+      teams: teams.teams?.sort((a, b) => a.name!.localeCompare(b.name!)) ?? []
     })
   }, [])
 

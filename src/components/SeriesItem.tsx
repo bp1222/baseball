@@ -1,4 +1,4 @@
-import { Box, Color, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { Series, SeriesHomeAway, ResultColor, Result } from "../models/Series";
 import { useContext } from "react";
 import { AppStateContext } from "../AppContext";
