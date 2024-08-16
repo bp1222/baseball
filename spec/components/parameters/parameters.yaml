@@ -1,0 +1,11 @@
+# ./query
+EndDate:
+  $ref: "./query/endDate.yaml"
+Season:
+  $ref: "./query/season.yaml"
+SportId:
+  $ref: "./query/sportId.yaml"
+StartDate:
+  $ref: "./query/startDate.yaml"
+TeamId:
+  $ref: "./query/teamId.yaml"

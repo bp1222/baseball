@@ -1,0 +1,53 @@
+title: Team
+description: >
+  MLB Team
+type: object
+properties:
+  id:
+    type: number
+  name:
+    type: string
+  link:
+    type: string
+  allStarStatus:
+    type: string
+  season:
+    type: number
+  venue:
+    type: object
+    $ref: ./schemas.yaml#/Venue
+  springVenue:
+    type: object
+    $ref: ./schemas.yaml#/Venue
+  teamCode:
+    type: string
+  fileCode:
+    type: string
+  abbreviation:
+    type: string
+  teamName:
+    type: string
+  locationName:
+    type: string
+  firstYearOfPlay:
+    type: string
+  league:
+    type: object
+    $ref: ./schemas.yaml#/League
+  springLeague:
+    type: object
+    $ref: ./schemas.yaml#/League
+  division:
+    type: object
+    $ref: ./schemas.yaml#/Division
+  sport:
+    type: object
+    $ref: ./schemas.yaml#/Sport
+  shortName:
+    type: string
+  franchiseName:
+    type: string
+  clubName:
+    type: string
+  active:
+    type: boolean

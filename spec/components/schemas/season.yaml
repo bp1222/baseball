@@ -1,0 +1,45 @@
+title: Seasons
+description: >
+  MLB Season
+type: object
+properties:
+  seasonId:
+    type: string
+  hasWildcard:
+    type: boolean
+  preSeasonStartDate:
+    type: string
+  preSeasonEndDate:
+    type: string
+  seasonStartDate:
+    type: string
+  springStartDate:
+    type: string
+  springEndDate:
+    type: string
+  regularSeasonStartDate:
+    type: string
+  lastDate1stHalf:
+    type: string
+  allStartDate:
+    type: string
+  firstDate2ndHalf:
+    type: string
+  regularSeasonEndDate:
+    type: string
+  postSeasonStartDate:
+    type: string
+  postSeasonEndDate:
+    type: string
+  offSeasonStartDate:
+    type: string
+  offSeasonEndDate:
+    type: string
+  seasonLevelGamedayType:
+    type: string
+  gameLevelGamedayType:
+    type: string
+  qualifierPlateAppearances:
+    type: number
+  qualifierOutsPitched:
+    type: number

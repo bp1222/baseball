@@ -1,0 +1,26 @@
+Division:
+  $ref: ./division.yaml
+Game:
+  $ref: ./game.yaml
+GameDate:
+  $ref: ./gameDate.yaml
+GameTeam:
+  $ref: ./gameTeam.yaml
+League:
+  $ref: ./league.yaml
+Season:
+  $ref: ./season.yaml
+Seasons:
+  $ref: ./seasons.yaml
+Schedule:
+  $ref: ./schedule.yaml
+Sport:
+  $ref: ./sport.yaml
+Status:
+  $ref: ./status.yaml
+Team:
+  $ref: ./team.yaml
+Teams:
+  $ref: ./teams.yaml
+Venue:
+  $ref: ./venue.yaml

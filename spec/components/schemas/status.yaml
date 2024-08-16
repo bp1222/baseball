@@ -1,0 +1,17 @@
+title: Status
+description: >
+  MLB Status
+type: object
+properties:
+  abstractGameState:
+    type: string
+  codedGameState:
+    type: string 
+  detailedState:
+    type: string
+  statusCode:
+    type: string
+  startTimeTBD:
+    type: boolean 
+  abstractGameCode:
+    type: string

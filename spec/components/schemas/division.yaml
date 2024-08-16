@@ -1,0 +1,7 @@
+title: Division
+description: >
+  MLB Division 
+type: object
+properties:
+  id:
+    type: number

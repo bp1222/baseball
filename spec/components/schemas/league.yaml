@@ -1,0 +1,7 @@
+title: League
+description: >
+  MLB League 
+type: object
+properties:
+  id:
+    type: number

@@ -1,0 +1,81 @@
+title: Game
+description: >
+  MLB Game
+type: object
+properties:
+  gamePk:
+    type: number
+  gameGuid:
+    type: string
+  link:
+    type: string
+  gameType:
+    type: string # This should be an enum, when we learn what they mean 
+  season:
+    type: number
+  gameDate:
+    type: string
+  officialDate:
+    type: string
+  rescheduledTo:
+    type: number
+  rescheduledToDate:
+    type: string
+  rescheduledFrom:
+    type: number
+  rescheduledFromDate:
+    type: string
+  status:
+    $ref: ./schemas.yaml#/Status
+  teams:
+    type: object
+    properties:
+      away:
+        $ref: ./schemas.yaml#/GameTeam
+      home:
+        $ref: ./schemas.yaml#/GameTeam
+  venue:
+    $ref: ./schemas.yaml#/Venue
+  content: # What is this!?
+    type: object 
+    properties:
+      link:
+        type: string
+  isTie:
+    type: boolean
+  gameNumber:
+    type: number
+  publicFacing:
+    type: boolean 
+  doubleHeader:
+    type: string # enum?
+  gamedayType:
+    type: string # enum?
+  tiebreaker:
+    type: string # enum?
+  calendarEventID:
+    type: string
+  seasonDisplay:
+    type: string
+  dayNight:
+    type: string # enum?
+  description:
+    type: string
+  scheduledInnings:
+    type: number 
+  reverseHomeAwayStatus:
+    type: boolean 
+  inningBreakLength:
+    type: number 
+  gamesInSeries:
+    type: number 
+  seriesGameNumber:
+    type: number
+  seriesDescription:
+    type: string
+  recordSource:
+    type: string # enum
+  ifNecessary:
+    type: string # enum
+  ifNecessaryDescription:
+    type: string

@@ -1,0 +1,17 @@
+title: Schedule
+description: >
+  MLB Schedule
+type: object
+properties:
+  totalItems:
+    type: number
+  totalEvents:
+    type: number
+  totalGames:
+    type: number
+  totalGamesInProgress:
+    type: number
+  dates:
+    type: array
+    items:
+      $ref: ./schemas.yaml#/GameDate

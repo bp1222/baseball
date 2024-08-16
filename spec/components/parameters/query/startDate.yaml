@@ -1,0 +1,5 @@
+in: query
+name: startDate
+required: false
+schema:
+  type: string 

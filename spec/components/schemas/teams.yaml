@@ -1,0 +1,9 @@
+title: Teams
+description: >
+  MLB Teams
+type: object
+properties:
+  teams:
+    type: array
+    items:
+      $ref: ./schemas.yaml#/Team

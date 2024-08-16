@@ -1,0 +1,7 @@
+title: Sport
+description: >
+  MLB Sport
+type: object
+properties:
+  id:
+    type: number

@@ -1,0 +1,24 @@
+title: GameTeam
+description: >
+  MLB Game Team
+type: object
+properties:
+  leagueRecord:
+    type: object
+    properties:
+      wins:
+        type: number
+      losses:
+        type: number
+      pct:
+        type: string
+  score:
+    type: number
+  team:
+    $ref: ./schemas.yaml#/Team
+  isWinner:
+    type: boolean
+  splitSquad:
+    type: boolean
+  seriesNumber:
+    type: number

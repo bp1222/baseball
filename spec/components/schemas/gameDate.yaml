@@ -1,0 +1,19 @@
+title: Date
+description: >
+  MLB Date
+type: object
+properties:
+  date:
+    type: string
+  totalItems:
+    type: number
+  totalEvents:
+    type: number
+  totalGames:
+    type: number
+  totalGamesInProgress:
+    type: number
+  games:
+    type: array
+    items:
+      $ref: ./schemas.yaml#/Game

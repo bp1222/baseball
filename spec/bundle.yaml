@@ -1,0 +1,439 @@
+openapi: 3.0.2
+info:
+  title: MLB StatAPI
+  description: |
+    An API for MLB Stat API
+  version: 0.0.1
+  contact:
+    name: dave@mudsite.com
+servers:
+  - url: 'https://statsapi.mlb.com/api'
+tags:
+  - name: mlb
+paths:
+  /v1/schedule:
+    get:
+      operationId: getSchedules
+      summary: Retrieves schedules
+      description: |
+        Returns Schedules
+      parameters:
+        - $ref: '#/components/parameters/SportId'
+        - $ref: '#/components/parameters/TeamId'
+        - $ref: '#/components/parameters/StartDate'
+        - $ref: '#/components/parameters/EndDate'
+      tags:
+        - mlb
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+  /v1/seasons:
+    get:
+      operationId: getSeason
+      summary: Retrieves season
+      description: |
+        Returns Season
+      parameters:
+        - $ref: '#/components/parameters/SportId'
+        - $ref: '#/components/parameters/Season'
+      tags:
+        - mlb
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+  /v1/seasons/all:
+    get:
+      operationId: getSeasons
+      summary: Retrieves All Seasons
+      description: |
+        Returns All Seasons
+      parameters:
+        - $ref: '#/components/parameters/SportId'
+      tags:
+        - mlb
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Seasons'
+  /v1/teams:
+    get:
+      operationId: getTeams
+      summary: Retrieves Teams
+      description: |
+        Returns Teams
+      parameters:
+        - $ref: '#/components/parameters/SportId'
+      tags:
+        - mlb
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Teams'
+components:
+  parameters:
+    EndDate:
+      in: query
+      name: endDate
+      required: false
+      schema:
+        type: string
+    Season:
+      in: query
+      name: season
+      required: true
+      explode: true
+      schema:
+        type: number
+    SportId:
+      in: query
+      name: sportId
+      required: true
+      schema:
+        type: number
+        default: 1
+    StartDate:
+      in: query
+      name: startDate
+      required: false
+      schema:
+        type: string
+    TeamId:
+      in: query
+      name: teamId
+      required: false
+      schema:
+        type: number
+  schemas:
+    Division:
+      title: Division
+      description: |
+        MLB Division 
+      type: object
+      properties:
+        id:
+          type: number
+    Game:
+      title: Game
+      description: |
+        MLB Game
+      type: object
+      properties:
+        gamePk:
+          type: number
+        gameGuid:
+          type: string
+        link:
+          type: string
+        gameType:
+          type: string
+        season:
+          type: number
+        gameDate:
+          type: string
+        officialDate:
+          type: string
+        rescheduledTo:
+          type: number
+        rescheduledToDate:
+          type: string
+        rescheduledFrom:
+          type: number
+        rescheduledFromDate:
+          type: string
+        status:
+          $ref: '#/components/schemas/Status'
+        teams:
+          type: object
+          properties:
+            away:
+              $ref: '#/components/schemas/GameTeam'
+            home:
+              $ref: '#/components/schemas/GameTeam'
+        venue:
+          $ref: '#/components/schemas/Venue'
+        content:
+          type: object
+          properties:
+            link:
+              type: string
+        isTie:
+          type: boolean
+        gameNumber:
+          type: number
+        publicFacing:
+          type: boolean
+        doubleHeader:
+          type: string
+        gamedayType:
+          type: string
+        tiebreaker:
+          type: string
+        calendarEventID:
+          type: string
+        seasonDisplay:
+          type: string
+        dayNight:
+          type: string
+        description:
+          type: string
+        scheduledInnings:
+          type: number
+        reverseHomeAwayStatus:
+          type: boolean
+        inningBreakLength:
+          type: number
+        gamesInSeries:
+          type: number
+        seriesGameNumber:
+          type: number
+        seriesDescription:
+          type: string
+        recordSource:
+          type: string
+        ifNecessary:
+          type: string
+        ifNecessaryDescription:
+          type: string
+    GameDate:
+      title: Date
+      description: |
+        MLB Date
+      type: object
+      properties:
+        date:
+          type: string
+        totalItems:
+          type: number
+        totalEvents:
+          type: number
+        totalGames:
+          type: number
+        totalGamesInProgress:
+          type: number
+        games:
+          type: array
+          items:
+            $ref: '#/components/schemas/Game'
+    GameTeam:
+      title: GameTeam
+      description: |
+        MLB Game Team
+      type: object
+      properties:
+        leagueRecord:
+          type: object
+          properties:
+            wins:
+              type: number
+            losses:
+              type: number
+            pct:
+              type: string
+        score:
+          type: number
+        team:
+          $ref: '#/components/schemas/Team'
+        isWinner:
+          type: boolean
+        splitSquad:
+          type: boolean
+        seriesNumber:
+          type: number
+    League:
+      title: League
+      description: |
+        MLB League 
+      type: object
+      properties:
+        id:
+          type: number
+    Season:
+      title: Seasons
+      description: |
+        MLB Season
+      type: object
+      properties:
+        seasonId:
+          type: string
+        hasWildcard:
+          type: boolean
+        preSeasonStartDate:
+          type: string
+        preSeasonEndDate:
+          type: string
+        seasonStartDate:
+          type: string
+        springStartDate:
+          type: string
+        springEndDate:
+          type: string
+        regularSeasonStartDate:
+          type: string
+        lastDate1stHalf:
+          type: string
+        allStartDate:
+          type: string
+        firstDate2ndHalf:
+          type: string
+        regularSeasonEndDate:
+          type: string
+        postSeasonStartDate:
+          type: string
+        postSeasonEndDate:
+          type: string
+        offSeasonStartDate:
+          type: string
+        offSeasonEndDate:
+          type: string
+        seasonLevelGamedayType:
+          type: string
+        gameLevelGamedayType:
+          type: string
+        qualifierPlateAppearances:
+          type: number
+        qualifierOutsPitched:
+          type: number
+    Seasons:
+      title: Seasons
+      description: |
+        MLB Seasons
+      type: object
+      properties:
+        seasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/Season'
+    Schedule:
+      title: Schedule
+      description: |
+        MLB Schedule
+      type: object
+      properties:
+        totalItems:
+          type: number
+        totalEvents:
+          type: number
+        totalGames:
+          type: number
+        totalGamesInProgress:
+          type: number
+        dates:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameDate'
+    Sport:
+      title: Sport
+      description: |
+        MLB Sport
+      type: object
+      properties:
+        id:
+          type: number
+    Status:
+      title: Status
+      description: |
+        MLB Status
+      type: object
+      properties:
+        abstractGameState:
+          type: string
+        codedGameState:
+          type: string
+        detailedState:
+          type: string
+        statusCode:
+          type: string
+        startTimeTBD:
+          type: boolean
+        abstractGameCode:
+          type: string
+    Team:
+      title: Team
+      description: |
+        MLB Team
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        link:
+          type: string
+        allStarStatus:
+          type: string
+        season:
+          type: number
+        venue:
+          type: object
+          $ref: '#/components/schemas/Venue'
+        springVenue:
+          type: object
+          $ref: '#/components/schemas/Venue'
+        teamCode:
+          type: string
+        fileCode:
+          type: string
+        abbreviation:
+          type: string
+        teamName:
+          type: string
+        locationName:
+          type: string
+        firstYearOfPlay:
+          type: string
+        league:
+          type: object
+          $ref: '#/components/schemas/League'
+        springLeague:
+          type: object
+          $ref: '#/components/schemas/League'
+        division:
+          type: object
+          $ref: '#/components/schemas/Division'
+        sport:
+          type: object
+          $ref: '#/components/schemas/Sport'
+        shortName:
+          type: string
+        franchiseName:
+          type: string
+        clubName:
+          type: string
+        active:
+          type: boolean
+    Teams:
+      title: Teams
+      description: |
+        MLB Teams
+      type: object
+      properties:
+        teams:
+          type: array
+          items:
+            $ref: '#/components/schemas/Team'
+    Venue:
+      title: Venue
+      description: |
+        MLB Venue
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        link:
+          type: string
