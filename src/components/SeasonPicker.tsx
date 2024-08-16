@@ -1,7 +1,7 @@
-import { Button, Menu, MenuItem, Typography } from "@mui/material"
-import { Season } from "../services/client-api"
-import { useContext, useState } from "react"
-import { AppStateAction, AppStateContext } from "../AppContext"
+import { Button, Menu, MenuItem, Typography } from "@mui/material";
+import { Season } from "../services/client-api";
+import { useContext, useState } from "react";
+import { AppStateAction, AppStateContext } from "../AppContext";
 
 function SeasonPicker() {
   const { state, dispatch } = useContext(AppStateContext);
@@ -11,24 +11,26 @@ function SeasonPicker() {
     dispatch({
       type: AppStateAction.Season,
       season: season,
-    })
-    setAnchorEl(null)
-  }
+    });
+    setAnchorEl(null);
+  };
 
   return (
     <>
       <Button
         id="season-button"
         onClick={(event) => setAnchorEl(event.currentTarget)}
-        color='inherit'
+        color="inherit"
         sx={{
-          float: 'right',
-          alignContent: 'center'
+          float: "right",
+          alignContent: "center",
         }}
         fullWidth
       >
         <Typography>
-          {state.season?.seasonId ? "Season: " + state.season?.seasonId : "Select Season"}
+          {state.season?.seasonId
+            ? "Season: " + state.season?.seasonId
+            : "Select Season"}
         </Typography>
       </Button>
       <Menu
@@ -37,10 +39,14 @@ function SeasonPicker() {
         anchorEl={anchorEl}
         onClose={() => setAnchorEl(null)}
       >
-        {state.seasons?.map((v) => <MenuItem onClick={() => handleSeasonSelect(v)} key={v.seasonId}>{v.seasonId}</MenuItem>)}
+        {state.seasons?.map((v) => (
+          <MenuItem onClick={() => handleSeasonSelect(v)} key={v.seasonId}>
+            {v.seasonId}
+          </MenuItem>
+        ))}
       </Menu>
     </>
-  )
+  );
 }
 
-export default SeasonPicker
+export default SeasonPicker;

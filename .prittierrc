@@ -1,0 +1,8 @@
+{
+    "plugins": [
+      "prettier-plugin-organize-imports"
+    ],
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+}

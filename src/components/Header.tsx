@@ -1,18 +1,18 @@
-import { AppBar, Grid, Toolbar, Typography } from "@mui/material"
-import SportsBaseball from "@mui/icons-material/SportsBaseball"
-import TeamPicker from "./TeamPicker"
-import SeasonPicker from "./SeasonPicker"
+import { AppBar, Grid, Toolbar, Typography } from "@mui/material";
+import SportsBaseball from "@mui/icons-material/SportsBaseball";
+import TeamPicker from "./TeamPicker";
+import SeasonPicker from "./SeasonPicker";
 
 function Header() {
   return (
     <Grid container>
-      <AppBar position='relative'>
+      <AppBar position="relative">
         <Toolbar>
           <Grid item xs={1} alignContent={"center"}>
             <SportsBaseball
               sx={{
                 mr: 2,
-                display: { md: 'grid', float: "right" },
+                display: { md: "grid", float: "right" },
               }}
             />
           </Grid>
@@ -21,11 +21,11 @@ function Header() {
               variant="h6"
               noWrap
               sx={{
-                display: { xs: 'grid', md: 'none', float: "left" },
+                display: { xs: "grid", md: "none", float: "left" },
                 fontWeight: 700,
-                letterSpacing: '.1rem',
-                textDecoration: 'none',
-                overflow: 'visible'
+                letterSpacing: ".1rem",
+                textDecoration: "none",
+                overflow: "visible",
               }}
             >
               BV
@@ -34,11 +34,11 @@ function Header() {
               variant="h6"
               noWrap
               sx={{
-                display: { xs: 'none', md: 'grid', float: "left" },
+                display: { xs: "none", md: "grid", float: "left" },
                 fontWeight: 700,
-                letterSpacing: '.1rem',
-                textDecoration: 'none',
-                overflow: 'visible'
+                letterSpacing: ".1rem",
+                textDecoration: "none",
+                overflow: "visible",
               }}
             >
               Baseball Visualizer
@@ -54,7 +54,7 @@ function Header() {
         </Toolbar>
       </AppBar>
     </Grid>
-  )
+  );
 }
 
-export default Header
+export default Header;

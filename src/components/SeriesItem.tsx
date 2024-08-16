@@ -6,101 +6,141 @@ import { Team } from "../services/client-api";
 import SeriesGame from "./SeriesGame";
 
 type SeriesItemProps = {
-  series: Series
-}
+  series: Series;
+};
 
 function SeriesItem({ series }: SeriesItemProps) {
-  const { state } = useContext(AppStateContext)
+  const { state } = useContext(AppStateContext);
 
   const findTeam = (id: number | undefined): Team | undefined => {
-    return state.teams.find((t) => t.id == id)
-  }
+    return state.teams.find((t) => t.id == id);
+  };
 
-  const againstImage = "https://www.mlbstatic.com/team-logos/team-cap-on-light/" + series.against?.team?.id + ".svg"
-  const againstTeam = findTeam(series.against?.team?.id)
-
+  const againstImage =
+    "https://www.mlbstatic.com/team-logos/team-cap-on-light/" +
+    series.against?.team?.id +
+    ".svg";
+  const againstTeam = findTeam(series.against?.team?.id);
 
   const resultBadge = () => {
-    let badge = ""
+    let badge = "";
     switch (series.result) {
       case Result.Win:
-        badge = "win"
-        break
+        badge = "win";
+        break;
       case Result.Loss:
-        badge = "loss"
-        break
+        badge = "loss";
+        break;
       case Result.Sweep:
-        badge = "sweep"
-        break
+        badge = "sweep";
+        break;
       case Result.Swept:
-        badge = "swept"
-        break
+        badge = "swept";
+        break;
       case Result.Tie:
-        badge = "tie"
-        break
+        badge = "tie";
+        break;
     }
 
     if (badge.length > 0) {
       return (
-        <Box sx={{
-          position: "absolute",
-          backgroundColor: ResultColor[series.result][300],
-          border: 2,
-          borderRadius: 2,
-          borderColor: ResultColor[series.result][500],
-          height: 11,
-          marginTop: -1.5,
-          marginLeft: -1,
-          minWidth: 45,
-        }}>
+        <Box
+          sx={{
+            position: "absolute",
+            backgroundColor: ResultColor[series.result][300],
+            border: 2,
+            borderRadius: 2,
+            borderColor: ResultColor[series.result][500],
+            height: 11,
+            minWidth: 45,
+            marginTop: -0.8,
+            marginLeft: -1,
+          }}
+        >
           <Typography
             color={"Background"}
             fontSize={"smaller"}
             lineHeight={1}
-            letterSpacing={-.5}
+            letterSpacing={-0.5}
             textAlign={"center"}
           >
             {badge.toUpperCase()}
           </Typography>
         </Box>
-      )
+      );
     }
-  }
+  };
+
+  const getClubName = (name: string | undefined): string | undefined => {
+    if (name == "Diamondbacks") {
+      return "D-Backs";
+    }
+    return name;
+  };
 
   return (
-    <Stack direction="row" sx={{
-      border: 1,
-      borderColor: ResultColor[series.result][300],
-      borderRadius: 1,
-      backgroundColor: ResultColor[series.result][50],
-      fontSize: "small",
-    }}>
-      <Box minWidth={"35%"} justifyItems={"left"} alignContent={"center"} alignItems={"left"}>
-        <Stack direction="row">
-          {resultBadge()}
-          <Box paddingLeft={.5} alignContent={"center"}>
+    <Stack
+      direction={{ xs: "column", md: "row" }}
+      sx={{
+        border: 1,
+        borderColor: ResultColor[series.result][300],
+        borderRadius: 1,
+        backgroundColor: ResultColor[series.result][50],
+        fontSize: "small",
+      }}
+    >
+      {resultBadge()}
+      <Box
+        minWidth={"35%"}
+        justifyItems={"left"}
+        alignContent={"center"}
+        alignItems={"left"}
+        flexWrap={"wrap"}
+      >
+        <Stack paddingLeft={{ xs: 4.5 }} direction="row">
+          <Box paddingLeft={0.5} alignContent={"center"}>
             <img src={againstImage} height={24} width={24} />
           </Box>
-          <Box paddingLeft={.3}>
-            <Typography fontSize={"smaller"} textOverflow={"ellipsis"}>
-              {series.homeaway == SeriesHomeAway.Home ? "vs" : (SeriesHomeAway.Away ? "@" : "against")} {againstTeam?.franchiseName}
+          <Box paddingLeft={0.3}>
+            <Typography fontSize={"smaller"} noWrap>
+              {series.homeaway == SeriesHomeAway.Home
+                ? "vs"
+                : SeriesHomeAway.Away
+                  ? "@"
+                  : "against"}{" "}
+              {againstTeam?.franchiseName}
             </Typography>
-            <Typography noWrap fontSize={"Larger"} fontStyle={"bold"} letterSpacing={0} textOverflow={"clip"}>
-              {againstTeam?.clubName?.toUpperCase()}
+            <Typography
+              noWrap
+              fontSize={"Larger"}
+              fontStyle={"bold"}
+              letterSpacing={0}
+              textOverflow={"clip"}
+            >
+              {getClubName(againstTeam?.clubName)?.toUpperCase()}
             </Typography>
           </Box>
         </Stack>
       </Box>
 
       <Box minWidth={"65%"}>
-        <Stack direction="row" justifyContent={"right"}>
-          {series.games.map((sg) =>
-            <SeriesGame sg={sg} home={findTeam(sg.game.teams?.home?.team?.id)} away={findTeam(sg.game.teams?.away?.team?.id)} />
-          )}
+        <Stack
+          direction="row"
+          flexWrap={{ xs: "wrap", md: "inherit" }}
+          paddingLeft={{ xs: 3 }}
+          justifyContent={{ md: "right" }}
+        >
+          {series.games.map((sg) => (
+            <SeriesGame
+              sg={sg}
+              home={findTeam(sg.game.teams?.home?.team?.id)}
+              away={findTeam(sg.game.teams?.away?.team?.id)}
+            />
+          ))}
         </Stack>
       </Box>
     </Stack>
-  )
+  );
 }
 
-export default SeriesItem
+export default SeriesItem;
