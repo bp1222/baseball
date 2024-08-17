@@ -43,9 +43,9 @@ function App() {
   return (
     <Routes>
       <Route
-        path="/baseball/"
+        path="/"
         element={
-          <Container fixed={true} maxWidth="md">
+          <Container maxWidth="md">
             <Header />
             <TeamSchedule />
           </Container>
