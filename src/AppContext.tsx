@@ -16,10 +16,8 @@ export type AppState = {
 export enum AppStateAction {
   Team = "team",
   Teams = "teams",
-
   Season = "season",
   Seasons = "seasons",
-
   Theme = "theme",
 }
 

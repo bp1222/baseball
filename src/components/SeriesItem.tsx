@@ -85,41 +85,34 @@ function SeriesItem({ series }: SeriesItemProps) {
 
   return (
     <Stack
-      direction={{ xs: "column", md: "row" }}
+      direction={"row"}
       sx={{
         border: 1,
-        borderColor: SeriesResultColor[series.result][300],
         borderRadius: 1,
+        borderColor: SeriesResultColor[series.result][300],
         backgroundColor: SeriesResultColor[series.result][50],
         fontSize: "small",
       }}
     >
       {resultBadge()}
-      <Box
-        minWidth={"35%"}
-        justifyItems={"left"}
-        alignContent={"center"}
-        alignItems={"left"}
-        flexWrap={"wrap"}
-      >
-        <Stack paddingLeft={{ xs: 4.5 }} direction="row">
-          <Box marginLeft={{ md: -2, xs: 0.5 }} alignContent={"center"}>
+      <Box alignContent={"center"} minWidth={"35%"}>
+        <Stack direction="row">
+          <Box paddingLeft={1} marginTop={0.5} alignContent={"center"}>
             <img src={againstImage} height={24} width={24} />
           </Box>
-          <Box paddingLeft={0.3}>
+          <Box paddingLeft={0}>
             <Typography fontSize={"smaller"} noWrap>
               {series.homeaway == SeriesHomeAway.Home
-                ? "vs"
+                ? "vs "
                 : SeriesHomeAway.Away
-                  ? "@"
-                  : "against"}{" "}
+                  ? "@ "
+                  : "against "}
               {againstTeam?.franchiseName}
             </Typography>
             <Typography
               noWrap
               fontSize={"Larger"}
               fontStyle={"bold"}
-              letterSpacing={0}
               textOverflow={"clip"}
             >
               {getClubName(againstTeam?.clubName)?.toUpperCase()}
@@ -128,13 +121,8 @@ function SeriesItem({ series }: SeriesItemProps) {
         </Stack>
       </Box>
 
-      <Box minWidth={"65%"}>
-        <Stack
-          direction="row"
-          flexWrap={{ xs: "wrap", md: "inherit" }}
-          paddingLeft={{ xs: 3 }}
-          justifyContent={{ md: "right" }}
-        >
+      <Box width={"fill-available"}>
+        <Stack direction="row" justifyContent={"right"} flexWrap={"wrap"}>
           {series.games.map((sg) => (
             <SeriesGame
               key={sg.game.gameGuid}

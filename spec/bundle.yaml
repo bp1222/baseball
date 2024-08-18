@@ -212,12 +212,14 @@ components:
                 - S
                 - I
                 - P
+                - O
               x-enum-varnames:
                 - Final
                 - Postponed
                 - Scheduled
                 - InProgress
                 - Pregame
+                - GameOver
               description: |
                 Coded Game State
                   * `F` - Final
@@ -225,6 +227,7 @@ components:
                   * `S` - Scheduled
                   * `I` - In Progress
                   * `P` - Pregame
+                  * `O` - Game Over
             detailedState:
               type: string
             statusCode:

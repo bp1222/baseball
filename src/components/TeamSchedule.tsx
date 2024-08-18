@@ -1,7 +1,7 @@
 import { Grid, Stack } from "@mui/material";
 import { MlbApi } from "../services/MlbApi";
 import { useEffect, useCallback, useContext, useState } from "react";
-import { AppStateContext } from "../AppContext";
+import { AppStateAction, AppStateContext } from "../AppContext";
 import GenerateSeries, { Series } from "../models/Series";
 import SeriesItem from "./SeriesItem";
 import { useParams } from "react-router-dom";
@@ -9,11 +9,20 @@ import { useParams } from "react-router-dom";
 const api = new MlbApi();
 
 function TeamSchedule() {
-  const { state } = useContext(AppStateContext);
+  const { state, dispatch } = useContext(AppStateContext);
   const [series, setSeries] = useState<Series[]>([]);
 
   const params = useParams() as { teamId: string };
   const teamId = parseInt(params.teamId);
+
+  // Init state if passed in
+  if (state.team?.id == undefined) {
+    const idx = state.teams.findIndex((t) => t.id == teamId);
+    dispatch({
+      type: AppStateAction.Team,
+      team: state.teams[idx],
+    });
+  }
 
   const getSchedule = useCallback(async () => {
     if (teamId == undefined) return;

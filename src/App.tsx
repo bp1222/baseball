@@ -47,6 +47,7 @@ function App() {
     });
   }, [seasons, teams, dispatch]);
 
+  // Update Theme
   useEffect(() => {
     if (state.team?.id == 143) {
       console.log("setting phillies theme");

@@ -32,6 +32,7 @@ export interface MLBGameStatus {
    *   * `S` - Scheduled
    *   * `I` - In Progress
    *   * `P` - Pregame
+   *   * `O` - Game Over
    *
    * @type {string}
    * @memberof MLBGameStatus
@@ -72,6 +73,7 @@ export const MLBGameStatusCodedGameStateEnum = {
   Scheduled: "S",
   InProgress: "I",
   Pregame: "P",
+  GameOver: "O",
 } as const;
 export type MLBGameStatusCodedGameStateEnum =
   (typeof MLBGameStatusCodedGameStateEnum)[keyof typeof MLBGameStatusCodedGameStateEnum];

@@ -60,6 +60,7 @@ export enum GameResult {
   Tie,
   Unplayed,
   InProgress,
+  GameOver,
 }
 
 export const GameResultColor: { [key in GameResult]: Color } = {
@@ -68,6 +69,7 @@ export const GameResultColor: { [key in GameResult]: Color } = {
   [GameResult.Tie]: blue,
   [GameResult.Unplayed]: grey,
   [GameResult.InProgress]: purple,
+  [GameResult.GameOver]: amber,
 };
 
 export type Game = {
@@ -123,8 +125,8 @@ function GenerateSeries(schedule: MLBSchedule, teamId: number): Series[] {
       if (game.seriesGameNumber == 1) {
         currentSeries.startDate = game.gameDate!;
         currentSeries.against = isHome()
-          ? game.teams?.away!
-          : game.teams?.home!;
+          ? (game.teams?.away ?? {})
+          : (game.teams?.home ?? {});
         currentSeries.venue = game.venue!;
       }
 
@@ -169,11 +171,18 @@ function GenerateSeries(schedule: MLBSchedule, teamId: number): Series[] {
       // Store this game into the series.
       currentSeries.games.push({
         result:
-          game.status?.codedGameState != MLBGameStatusCodedGameStateEnum.Final
-            ? GameResult.Unplayed
-            : won
-              ? GameResult.Win
-              : GameResult.Loss,
+          game.status?.codedGameState ==
+          MLBGameStatusCodedGameStateEnum.InProgress
+            ? GameResult.InProgress
+            : game.status?.codedGameState ==
+                MLBGameStatusCodedGameStateEnum.GameOver
+              ? GameResult.GameOver
+              : game.status?.codedGameState !=
+                  MLBGameStatusCodedGameStateEnum.Final
+                ? GameResult.Unplayed
+                : won
+                  ? GameResult.Win
+                  : GameResult.Loss,
         game: game,
       });
 

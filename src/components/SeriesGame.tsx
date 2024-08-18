@@ -10,9 +10,9 @@ type SeriesGameProps = {
 };
 
 function SeriesGame({ result, game, home, away }: SeriesGameProps) {
-  const getDay = (date: string | undefined): string => {
-    return new Date(date ?? "")
-      .toLocaleString("default", { month: "short", day: "numeric" })
+  const getDay = (): string => {
+    return new Date(game.officialDate ?? "")
+      .toLocaleString("us", { month: "short", day: "numeric", timeZone: "utc" })
       .toUpperCase();
   };
 
@@ -21,11 +21,10 @@ function SeriesGame({ result, game, home, away }: SeriesGameProps) {
       <Stack direction="row" sx={{ fontSize: "smaller", textAlign: "center" }}>
         <Box
           sx={{
-            borderRight: 0.2,
-            borderBottom: 0.2,
+            borderRight: 1,
+            borderBottom: 1,
             borderColor: GameResultColor[result][100],
             color: GameResultColor[result][700],
-            fontWeight: "bold",
             width: "70%",
             paddingTop: 0.1,
           }}
@@ -34,11 +33,10 @@ function SeriesGame({ result, game, home, away }: SeriesGameProps) {
         </Box>
         <Box
           sx={{
-            borderBottom: 0.2,
+            borderBottom: 1,
             borderColor: GameResultColor[result][100],
             width: "30%",
             color: GameResultColor[result][700],
-            fontWeight: "bold",
             paddingTop: 0.1,
           }}
         >
@@ -60,6 +58,7 @@ function SeriesGame({ result, game, home, away }: SeriesGameProps) {
         borderColor: GameResultColor[result][200],
         backgroundColor: GameResultColor[result][50],
         minWidth: "15%",
+        fontSize: "smaller",
       }}
     >
       <Box
@@ -73,7 +72,7 @@ function SeriesGame({ result, game, home, away }: SeriesGameProps) {
           textAlign: "center",
         }}
       >
-        {getDay(game.officialDate)}
+        {getDay()}
       </Box>
       {renderScore(away?.abbreviation, game.teams?.away?.score)}
       {renderScore(home?.abbreviation, game.teams?.home?.score)}
