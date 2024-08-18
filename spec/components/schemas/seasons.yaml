@@ -1,9 +1,0 @@
-title: Seasons
-description: >
-  MLB Seasons
-type: object
-properties:
-  seasons:
-    type: array
-    items:
-      $ref: ./schemas.yaml#/Season

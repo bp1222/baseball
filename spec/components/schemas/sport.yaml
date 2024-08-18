@@ -1,7 +1,19 @@
-title: Sport
+title: MLBSport
 description: >
-  MLB Sport
+  Sport
 type: object
 properties:
   id:
     type: number
+  code:
+    type: string
+  link:
+    type: string
+  name:
+    type: string
+  abbreviation:
+    type: string 
+  sortOrder:
+    type: number
+  activeStatus:
+    type: boolean

@@ -6,49 +6,51 @@ import SeasonPicker from "./SeasonPicker";
 function Header() {
   return (
     <Grid container>
-      <AppBar position="relative">
+      <AppBar
+        position="relative"
+        sx={{
+          marginTop: 2,
+          marginBottom: 2,
+        }}
+      >
         <Toolbar>
-          <Grid item xs={1} alignContent={"center"}>
-            <SportsBaseball
-              sx={{
-                mr: 2,
-                display: { md: "grid", float: "right" },
-              }}
-            />
-          </Grid>
-          <Grid item xs={1} md={4} alignContent={"center"}>
+          <SportsBaseball
+            sx={{
+              mr: 1,
+              display: { md: "block", float: "left" },
+            }}
+          />
+          <Grid item xs={2} md={2}>
             <Typography
               variant="h6"
               noWrap
               sx={{
-                display: { xs: "grid", md: "none", float: "left" },
+                display: { xs: "block", md: "none" },
                 fontWeight: 700,
-                letterSpacing: ".1rem",
                 textDecoration: "none",
                 overflow: "visible",
               }}
             >
-              BV
+              BS
             </Typography>
             <Typography
               variant="h6"
               noWrap
               sx={{
-                display: { xs: "none", md: "grid", float: "left" },
+                display: { xs: "none", md: "block" },
                 fontWeight: 700,
-                letterSpacing: ".1rem",
                 textDecoration: "none",
                 overflow: "visible",
               }}
             >
-              Baseball Visualizer
+              Baseball Series
             </Typography>
           </Grid>
-          <Grid item xs={2} md={2} />
-          <Grid item xs={4} md={4} alignContent={"center"}>
+          <Grid item xs={1} md={2} />
+          <Grid item xs={3} md={4} display={"flex"} justifyContent={"flex-end"}>
             <SeasonPicker />
           </Grid>
-          <Grid item xs={"auto"} md={"auto"} alignContent={"center"}>
+          <Grid item xs={6} md={4} display={"flex"} justifyContent={"flex-end"}>
             <TeamPicker />
           </Grid>
         </Toolbar>

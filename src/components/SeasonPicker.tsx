@@ -1,5 +1,5 @@
 import { Button, Menu, MenuItem, Typography } from "@mui/material";
-import { Season } from "../services/client-api";
+import { MLBSeason } from "../services/MlbApi";
 import { useContext, useState } from "react";
 import { AppStateAction, AppStateContext } from "../AppContext";
 
@@ -7,7 +7,7 @@ function SeasonPicker() {
   const { state, dispatch } = useContext(AppStateContext);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const handleSeasonSelect = (season: Season) => {
+  const handleSeasonSelect = (season: MLBSeason) => {
     dispatch({
       type: AppStateAction.Season,
       season: season,
@@ -16,16 +16,11 @@ function SeasonPicker() {
   };
 
   return (
-    <>
+    <div>
       <Button
         id="season-button"
         onClick={(event) => setAnchorEl(event.currentTarget)}
         color="inherit"
-        sx={{
-          float: "right",
-          alignContent: "center",
-        }}
-        fullWidth
       >
         <Typography>
           {state.season?.seasonId
@@ -35,8 +30,8 @@ function SeasonPicker() {
       </Button>
       <Menu
         id="season-menu"
-        open={anchorEl != null}
         anchorEl={anchorEl}
+        open={anchorEl != null}
         onClose={() => setAnchorEl(null)}
       >
         {state.seasons?.map((v) => (
@@ -45,7 +40,7 @@ function SeasonPicker() {
           </MenuItem>
         ))}
       </Menu>
-    </>
+    </div>
   );
 }
 

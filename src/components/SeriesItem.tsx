@@ -1,8 +1,13 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { Series, SeriesHomeAway, ResultColor, Result } from "../models/Series";
+import {
+  Series,
+  SeriesHomeAway,
+  SeriesResultColor,
+  SeriesResult,
+} from "../models/Series";
 import { useContext } from "react";
 import { AppStateContext } from "../AppContext";
-import { Team } from "../services/client-api";
+import { MLBTeam } from "../services/MlbApi/models";
 import SeriesGame from "./SeriesGame";
 
 type SeriesItemProps = {
@@ -12,7 +17,7 @@ type SeriesItemProps = {
 function SeriesItem({ series }: SeriesItemProps) {
   const { state } = useContext(AppStateContext);
 
-  const findTeam = (id: number | undefined): Team | undefined => {
+  const findTeam = (id: number | undefined): MLBTeam | undefined => {
     return state.teams.find((t) => t.id == id);
   };
 
@@ -25,19 +30,19 @@ function SeriesItem({ series }: SeriesItemProps) {
   const resultBadge = () => {
     let badge = "";
     switch (series.result) {
-      case Result.Win:
+      case SeriesResult.Win:
         badge = "win";
         break;
-      case Result.Loss:
+      case SeriesResult.Loss:
         badge = "loss";
         break;
-      case Result.Sweep:
+      case SeriesResult.Sweep:
         badge = "sweep";
         break;
-      case Result.Swept:
+      case SeriesResult.Swept:
         badge = "swept";
         break;
-      case Result.Tie:
+      case SeriesResult.Tie:
         badge = "tie";
         break;
     }
@@ -47,10 +52,10 @@ function SeriesItem({ series }: SeriesItemProps) {
         <Box
           sx={{
             position: "absolute",
-            backgroundColor: ResultColor[series.result][300],
+            backgroundColor: SeriesResultColor[series.result][300],
             border: 2,
             borderRadius: 2,
-            borderColor: ResultColor[series.result][500],
+            borderColor: SeriesResultColor[series.result][500],
             height: 11,
             minWidth: 45,
             marginTop: -0.8,
@@ -83,9 +88,9 @@ function SeriesItem({ series }: SeriesItemProps) {
       direction={{ xs: "column", md: "row" }}
       sx={{
         border: 1,
-        borderColor: ResultColor[series.result][300],
+        borderColor: SeriesResultColor[series.result][300],
         borderRadius: 1,
-        backgroundColor: ResultColor[series.result][50],
+        backgroundColor: SeriesResultColor[series.result][50],
         fontSize: "small",
       }}
     >
@@ -98,7 +103,7 @@ function SeriesItem({ series }: SeriesItemProps) {
         flexWrap={"wrap"}
       >
         <Stack paddingLeft={{ xs: 4.5 }} direction="row">
-          <Box paddingLeft={0.5} alignContent={"center"}>
+          <Box marginLeft={{ md: -2, xs: 0.5 }} alignContent={"center"}>
             <img src={againstImage} height={24} width={24} />
           </Box>
           <Box paddingLeft={0.3}>
@@ -132,9 +137,11 @@ function SeriesItem({ series }: SeriesItemProps) {
         >
           {series.games.map((sg) => (
             <SeriesGame
-              sg={sg}
-              home={findTeam(sg.game.teams?.home?.team?.id)}
-              away={findTeam(sg.game.teams?.away?.team?.id)}
+              key={sg.game.gameGuid}
+              result={sg.result}
+              game={sg.game}
+              home={findTeam(sg.game.teams?.home?.team?.id)!}
+              away={findTeam(sg.game.teams?.away?.team?.id)!}
             />
           ))}
         </Stack>

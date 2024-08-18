@@ -8,16 +8,17 @@ import {
   red,
 } from "@mui/material/colors";
 import {
-  Game,
-  GameDate,
-  GameTeam,
-  Schedule,
-  Team,
-  Venue,
-} from "../services/client-api";
+  MLBGame,
+  MLBGameGameTypeEnum,
+  MLBGameStatusCodedGameStateEnum,
+  MLBGameTeam,
+  MLBSchedule,
+  MLBScheduleDay,
+  MLBVenue,
+} from "../services/MlbApi";
 import { Color } from "@mui/material";
 
-export enum Result {
+export enum SeriesResult {
   Win,
   Loss,
   Tie,
@@ -27,14 +28,14 @@ export enum Result {
   InProgress,
 }
 
-export const ResultColor: { [key in Result]: Color } = {
-  [Result.Win]: lightGreen,
-  [Result.Loss]: red,
-  [Result.Tie]: blue,
-  [Result.Sweep]: amber,
-  [Result.Swept]: brown,
-  [Result.Unplayed]: grey,
-  [Result.InProgress]: purple,
+export const SeriesResultColor: { [key in SeriesResult]: Color } = {
+  [SeriesResult.Win]: lightGreen,
+  [SeriesResult.Loss]: red,
+  [SeriesResult.Tie]: blue,
+  [SeriesResult.Sweep]: amber,
+  [SeriesResult.Swept]: brown,
+  [SeriesResult.Unplayed]: grey,
+  [SeriesResult.InProgress]: purple,
 };
 
 export enum SeriesHomeAway {
@@ -43,41 +44,35 @@ export enum SeriesHomeAway {
   Split,
 }
 
-enum GameType {
-  SpringTraining = "S",
-  RegularSeason = "R",
-}
-
-enum GameStatusState {
-  Final = "F",
-  Postponed = "D",
-  Scheduled = "S",
-  InProgress = "I",
-  Pregame = "P",
-}
-
-const GameStatusStateMap = {
-  F: GameStatusState.Final,
-  D: GameStatusState.Postponed,
-  S: GameStatusState.Scheduled,
-  I: GameStatusState.InProgress,
-  P: GameStatusState.Pregame,
-};
-
-export type SeriesGame = {
-  result: Result;
-  status: GameStatusState;
-  game: Game;
-};
-
 export type Series = {
-  result: Result;
-  homeaway: SeriesHomeAway;
-  against: GameTeam | undefined;
-  startDate: string | undefined;
-  endDate: string | undefined;
-  venue: Venue | undefined;
-  games: SeriesGame[];
+  result: SeriesResult;
+  homeaway: SeriesHomeAway | undefined;
+  against: MLBGameTeam;
+  startDate: string;
+  endDate: string;
+  venue: MLBVenue;
+  games: Game[];
+};
+
+export enum GameResult {
+  Win,
+  Loss,
+  Tie,
+  Unplayed,
+  InProgress,
+}
+
+export const GameResultColor: { [key in GameResult]: Color } = {
+  [GameResult.Win]: lightGreen,
+  [GameResult.Loss]: red,
+  [GameResult.Tie]: blue,
+  [GameResult.Unplayed]: grey,
+  [GameResult.InProgress]: purple,
+};
+
+export type Game = {
+  result: GameResult;
+  game: MLBGame;
 };
 
 /**
@@ -86,11 +81,11 @@ export type Series = {
  * @param team team which we are discerning results for, either they won or lost
  * @returns
  */
-function GenerateSeries(schedule: Schedule, team: Team): Series[] {
+function GenerateSeries(schedule: MLBSchedule, teamId: number): Series[] {
   const newSeries = (): Series => {
     return {
-      result: Result.Unplayed,
-      homeaway: 0,
+      result: SeriesResult.Unplayed,
+      homeaway: undefined,
       against: {},
       startDate: "",
       endDate: "",
@@ -105,28 +100,32 @@ function GenerateSeries(schedule: Schedule, team: Team): Series[] {
   let wins = 0;
   let losses = 0;
 
-  schedule.dates?.forEach((day: GameDate) => {
-    day.games?.forEach((game: Game) => {
+  schedule.dates?.forEach((day: MLBScheduleDay) => {
+    day.games?.forEach((game: MLBGame) => {
       const isHome = (): boolean => {
-        return game.teams?.home?.team?.id == team.id;
+        return game.teams?.home?.team?.id == teamId;
       };
 
       // Do not track postponed games, they apply to a future series
-      if (game.status?.codedGameState == GameStatusState.Postponed) {
-        return;
+      if (
+        game.status?.codedGameState == MLBGameStatusCodedGameStateEnum.Postponed
+      ) {
+        return null;
       }
 
       // TODO: Maybe allow spring training/postseason things
       // Do not track non-regular season games
-      if (game.gameType != GameType.RegularSeason) {
-        return;
+      if (game.gameType != MLBGameGameTypeEnum.Regular) {
+        return null;
       }
 
       // If the first game of the series, set the series start date, and teams
       if (game.seriesGameNumber == 1) {
-        currentSeries!.startDate = game.gameDate;
-        currentSeries.against = isHome() ? game.teams?.away : game.teams?.home;
-        currentSeries.venue = game.venue;
+        currentSeries.startDate = game.gameDate!;
+        currentSeries.against = isHome()
+          ? game.teams?.away!
+          : game.teams?.home!;
+        currentSeries.venue = game.venue!;
       }
 
       // We need to decide if we're the home team, away team or a split series.
@@ -157,7 +156,9 @@ function GenerateSeries(schedule: Schedule, team: Team): Series[] {
             ? true
             : false;
 
-      if (game.status?.codedGameState == GameStatusState.Final) {
+      if (
+        game.status?.codedGameState == MLBGameStatusCodedGameStateEnum.Final
+      ) {
         if (won) {
           wins++;
         } else {
@@ -168,20 +169,18 @@ function GenerateSeries(schedule: Schedule, team: Team): Series[] {
       // Store this game into the series.
       currentSeries.games.push({
         result:
-          game.status?.codedGameState != GameStatusState.Final
-            ? Result.Unplayed
+          game.status?.codedGameState != MLBGameStatusCodedGameStateEnum.Final
+            ? GameResult.Unplayed
             : won
-              ? Result.Win
-              : Result.Loss,
-        status:
-          GameStatusStateMap[game.status!.codedGameState! as GameStatusState],
+              ? GameResult.Win
+              : GameResult.Loss,
         game: game,
       });
 
       // This is the last game of the series.  Note the date, decide disposition,
       // store this series as a return, setup for the next.
       if (game.gamesInSeries == game.seriesGameNumber) {
-        currentSeries.endDate = game.gameDate;
+        currentSeries.endDate = game.gameDate!;
 
         // Determine the series disposition:
         // Are both wins && losses 0? If so, we haven't played this series yet.
@@ -194,18 +193,18 @@ function GenerateSeries(schedule: Schedule, team: Team): Series[] {
         // Otherwise we lost
         if (losses != 0 || wins != 0) {
           if (wins + losses < (game.gamesInSeries as number)) {
-            currentSeries.result = Result.InProgress;
+            currentSeries.result = SeriesResult.InProgress;
           } else {
             currentSeries.result =
               losses == 0
-                ? Result.Sweep
+                ? SeriesResult.Sweep
                 : wins == 0
-                  ? Result.Swept
+                  ? SeriesResult.Swept
                   : wins > losses
-                    ? Result.Win
+                    ? SeriesResult.Win
                     : wins == losses
-                      ? Result.Tie
-                      : Result.Loss;
+                      ? SeriesResult.Tie
+                      : SeriesResult.Loss;
           }
         }
 

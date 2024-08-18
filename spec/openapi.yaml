@@ -2,7 +2,7 @@ openapi: 3.0.2
 info:
   title: MLB StatAPI
   description: >
-    An API for MLB Stat API
+    An spec API to consume the MLB Stat API
   version: 0.0.1
   contact:
     name: "dave@mudsite.com"
@@ -15,9 +15,9 @@ tags:
 
 paths:
   /v1/schedule:
-    $ref: ./paths/schedules.yaml
+    $ref: ./paths/schedule.yaml
   /v1/seasons:
-    $ref: ./paths/seasons.yaml
+    $ref: ./paths/season.yaml
   /v1/seasons/all:
     $ref: ./paths/allSeasons.yaml
   /v1/teams:

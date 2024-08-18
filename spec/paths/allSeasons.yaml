@@ -1,7 +1,7 @@
-# /v1/seasons/all
+# /v1/seasons/all?sportId={sportId}
 get:
-  operationId: getSeasons
-  summary: Retrieves All Seasons
+  operationId: getAllSeasons
+  summary: Retrieves All Seasons over time
   description: >
     Returns All Seasons
   parameters:
@@ -14,4 +14,10 @@ get:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/schemas.yaml#/Seasons
+            title: MLBSeasons
+            type: object
+            properties:
+              seasons:
+                type: array
+                items:
+                  $ref: ../components/schemas/schemas.yaml#/MLBSeason

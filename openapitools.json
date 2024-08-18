@@ -1,14 +1,14 @@
 {
-    "$schema": "node_modules/@openapitools/openapi-generator-cli/config.schema.json",
-    "spaces": 2,
-    "generator-cli": {
-        "version": "7.0.1",
-        "generators": {
-            "v0-client": {
-                "generatorName": "typescript-fetch",
-                "inputSpec": "spec/bundle.yaml",
-                "output": "src/services/client-api"
-            }
-        }
+  "$schema": "node_modules/@openapitools/openapi-generator-cli/config.schema.json",
+  "spaces": 2,
+  "generator-cli": {
+    "version": "7.7.0",
+    "generators": {
+      "v0-client": {
+        "generatorName": "typescript-fetch",
+        "inputSpec": "spec/bundle.yaml",
+        "output": "src/services/MlbApi"
+      }
     }
+  }
 }

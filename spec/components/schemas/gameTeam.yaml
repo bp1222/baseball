@@ -1,9 +1,10 @@
-title: GameTeam
+title: MLBGameTeam
 description: >
-  MLB Game Team
+  Game Team
 type: object
 properties:
   leagueRecord:
+    title: MLBTeamRecord
     type: object
     properties:
       wins:
@@ -15,7 +16,7 @@ properties:
   score:
     type: number
   team:
-    $ref: ./schemas.yaml#/Team
+    $ref: ./schemas.yaml#/MLBTeam
   isWinner:
     type: boolean
   splitSquad:

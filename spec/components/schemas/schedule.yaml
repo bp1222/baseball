@@ -1,6 +1,6 @@
-title: Schedule
+title: MLBSchedule
 description: >
-  MLB Schedule
+  Schedule
 type: object
 properties:
   totalItems:
@@ -14,4 +14,20 @@ properties:
   dates:
     type: array
     items:
-      $ref: ./schemas.yaml#/GameDate
+      title: MLBScheduleDay
+      type: object
+      properties:
+        date:
+          type: string
+        totalItems:
+          type: number
+        totalEvents:
+          type: number
+        totalGames:
+          type: number
+        totalGamesInProgress:
+          type: number
+        games:
+          type: array
+          items:
+            $ref: ./schemas.yaml#/MLBGame

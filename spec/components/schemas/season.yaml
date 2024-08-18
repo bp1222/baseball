@@ -1,6 +1,6 @@
-title: Seasons
+title: MLBSeason
 description: >
-  MLB Season
+  Season
 type: object
 properties:
   seasonId:

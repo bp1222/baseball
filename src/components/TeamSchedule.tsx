@@ -1,9 +1,10 @@
 import { Grid, Stack } from "@mui/material";
-import { MlbApi } from "../services/client-api";
+import { MlbApi } from "../services/MlbApi";
 import { useEffect, useCallback, useContext, useState } from "react";
 import { AppStateContext } from "../AppContext";
 import GenerateSeries, { Series } from "../models/Series";
 import SeriesItem from "./SeriesItem";
+import { useParams } from "react-router-dom";
 
 const api = new MlbApi();
 
@@ -11,21 +12,26 @@ function TeamSchedule() {
   const { state } = useContext(AppStateContext);
   const [series, setSeries] = useState<Series[]>([]);
 
+  const params = useParams() as { teamId: string };
+  const teamId = parseInt(params.teamId);
+
   const getSchedule = useCallback(async () => {
-    if (state.team.id == undefined) return;
+    if (teamId == undefined) return;
     if (state.season.seasonId == undefined) return;
-    const schedule = await api.getSchedules({
+
+    const schedule = await api.getSchedule({
       sportId: 1,
-      teamId: state.team.id,
+      teamId: teamId,
       startDate: state.season.regularSeasonStartDate,
       endDate: state.season.regularSeasonEndDate,
     });
-    setSeries(GenerateSeries(schedule, state.team));
-  }, [state.team, state.season]);
+
+    setSeries(GenerateSeries(schedule, teamId));
+  }, [state.season, teamId]);
 
   useEffect(() => {
     getSchedule();
-  }, [state.team, state.season]);
+  }, [getSchedule]);
 
   if (series?.length > 0) {
     const pivot = Math.ceil(series!.length / 2);

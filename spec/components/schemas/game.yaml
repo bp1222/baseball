@@ -1,6 +1,6 @@
-title: Game
+title: MLBGame
 description: >
-  MLB Game
+  Game
 type: object
 properties:
   gamePk:
@@ -10,7 +10,17 @@ properties:
   link:
     type: string
   gameType:
-    type: string # This should be an enum, when we learn what they mean 
+    type: string
+    enum:
+      - "R"
+      - "S"
+    x-enum-varnames:
+      - Regular
+      - SpringTraining
+    description: >
+      Game Type:
+        * `R` - Regular Season
+        * `S` - Spring Training
   season:
     type: number
   gameDate:
@@ -26,16 +36,49 @@ properties:
   rescheduledFromDate:
     type: string
   status:
-    $ref: ./schemas.yaml#/Status
+    title: MLBGameStatus
+    type: object
+    properties:
+      abstractGameState:
+        type: string
+      codedGameState:
+        type: string 
+        enum:
+          - "F"
+          - "D"
+          - "S"
+          - "I"
+          - "P"
+        x-enum-varnames:
+          - Final
+          - Postponed
+          - Scheduled
+          - InProgress
+          - Pregame
+        description: >
+          Coded Game State
+            * `F` - Final
+            * `D` - Delayed/Postponed
+            * `S` - Scheduled
+            * `I` - In Progress
+            * `P` - Pregame
+      detailedState:
+        type: string
+      statusCode:
+        type: string
+      startTimeTBD:
+        type: boolean 
+      abstractGameCode:
+        type: string
   teams:
     type: object
     properties:
       away:
-        $ref: ./schemas.yaml#/GameTeam
+        $ref: ./schemas.yaml#/MLBGameTeam
       home:
-        $ref: ./schemas.yaml#/GameTeam
+        $ref: ./schemas.yaml#/MLBGameTeam
   venue:
-    $ref: ./schemas.yaml#/Venue
+    $ref: ./schemas.yaml#/MLBVenue
   content: # What is this!?
     type: object 
     properties:

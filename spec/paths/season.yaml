@@ -15,4 +15,4 @@ get:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/schemas.yaml#/Season
+            $ref: ../components/schemas/schemas.yaml#/MLBSeason

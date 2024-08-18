@@ -1,18 +1,23 @@
 import { useContext, useState } from "react";
-import { Team } from "../services/client-api";
+import { MLBTeam } from "../services/MlbApi/models";
 import { MenuItem, Button, Menu, Typography } from "@mui/material";
 import { AppStateAction, AppStateContext } from "../AppContext";
+import { useNavigate } from "react-router-dom";
 
 function TeamPicker() {
   const { state, dispatch } = useContext(AppStateContext);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const handleTeamSelect = (team: Team) => {
+  const navigate = useNavigate();
+
+  const handleTeamSelect = (team: MLBTeam) => {
     dispatch({
       type: AppStateAction.Team,
       team: team,
     });
     setAnchorEl(null);
+
+    navigate("/schedule/" + team.id);
   };
 
   return (
@@ -23,7 +28,7 @@ function TeamPicker() {
         color="inherit"
       >
         <Typography>
-          {state.team.name ? state.team.name : "Select Team"}
+          {state.team?.name ? state.team?.name : "Select Team"}
         </Typography>
       </Button>
       <Menu

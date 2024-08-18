@@ -1,6 +1,6 @@
-title: Venue
+title: MLBVenue
 description: >
-  MLB Venue
+  Venue
 type: object
 properties:
   id:
@@ -8,4 +8,8 @@ properties:
   name:
     type: string
   link:
+    type: string
+  active:
+    type: boolean
+  season:
     type: string

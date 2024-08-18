@@ -22,4 +22,10 @@ get:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/schemas.yaml#/Teams
+            title: MLBTeams
+            type: object
+            properties:
+              teams:
+                type: array
+                items:
+                  $ref: ../components/schemas/schemas.yaml#/MLBTeam

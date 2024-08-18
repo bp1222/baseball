@@ -1,17 +1,17 @@
 import { Box, Stack } from "@mui/material";
-import { ResultColor, SeriesGame as SG } from "../models/Series";
-import { Team } from "../services/client-api";
+import { GameResultColor, GameResult } from "../models/Series";
+import { MLBGame, MLBTeam } from "../services/MlbApi";
 
 type SeriesGameProps = {
-  sg: SG;
-  home: Team | undefined;
-  away: Team | undefined;
+  result: GameResult;
+  game: MLBGame;
+  home: MLBTeam;
+  away: MLBTeam;
 };
 
-function SeriesGame({ sg, home, away }: SeriesGameProps) {
+function SeriesGame({ result, game, home, away }: SeriesGameProps) {
   const getDay = (date: string | undefined): string => {
-    const d = new Date(date ?? "");
-    return d
+    return new Date(date ?? "")
       .toLocaleString("default", { month: "short", day: "numeric" })
       .toUpperCase();
   };
@@ -23,8 +23,8 @@ function SeriesGame({ sg, home, away }: SeriesGameProps) {
           sx={{
             borderRight: 0.2,
             borderBottom: 0.2,
-            borderColor: ResultColor[sg.result][100],
-            color: ResultColor[sg.result][700],
+            borderColor: GameResultColor[result][100],
+            color: GameResultColor[result][700],
             fontWeight: "bold",
             width: "70%",
             paddingTop: 0.1,
@@ -35,9 +35,9 @@ function SeriesGame({ sg, home, away }: SeriesGameProps) {
         <Box
           sx={{
             borderBottom: 0.2,
-            borderColor: ResultColor[sg.result][100],
+            borderColor: GameResultColor[result][100],
             width: "30%",
-            color: ResultColor[sg.result][700],
+            color: GameResultColor[result][700],
             fontWeight: "bold",
             paddingTop: 0.1,
           }}
@@ -57,15 +57,15 @@ function SeriesGame({ sg, home, away }: SeriesGameProps) {
       sx={{
         border: 1,
         borderRadius: 0.5,
-        borderColor: ResultColor[sg.result][200],
-        backgroundColor: ResultColor[sg.result][50],
+        borderColor: GameResultColor[result][200],
+        backgroundColor: GameResultColor[result][50],
         minWidth: "15%",
       }}
     >
       <Box
         textAlign={"center"}
         sx={{
-          backgroundColor: ResultColor[sg.result][300],
+          backgroundColor: GameResultColor[result][300],
           color: "Background",
           paddingLeft: 0.2,
           paddingRight: 0.2,
@@ -73,10 +73,10 @@ function SeriesGame({ sg, home, away }: SeriesGameProps) {
           textAlign: "center",
         }}
       >
-        {getDay(sg.game.officialDate)}
+        {getDay(game.officialDate)}
       </Box>
-      {renderScore(away?.abbreviation, sg.game.teams?.away?.score)}
-      {renderScore(home?.abbreviation, sg.game.teams?.home?.score)}
+      {renderScore(away?.abbreviation, game.teams?.away?.score)}
+      {renderScore(home?.abbreviation, game.teams?.home?.score)}
     </Stack>
   );
 }

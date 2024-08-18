@@ -1,35 +1,43 @@
 import { createContext, Dispatch, useReducer, PropsWithChildren } from "react";
-import { Schedule, Season, Team } from "./services/client-api";
+import { MLBSeason, MLBTeam } from "./services/MlbApi";
+import { Theme } from "@mui/material";
+import { defaultTheme } from "./colors/phillies";
 
 export type AppState = {
-  team: Team;
-  teams: Team[];
-  season: Season;
-  seasons: Season[];
-  schedule: Schedule;
+  team: MLBTeam;
+  teams: MLBTeam[];
+
+  season: MLBSeason;
+  seasons: MLBSeason[];
+
+  theme: Theme;
 };
 
 export enum AppStateAction {
   Team = "team",
   Teams = "teams",
+
   Season = "season",
   Seasons = "seasons",
-  Schedule = "schedule",
+
+  Theme = "theme",
 }
 
 type AppStateActions =
-  | { type: AppStateAction.Team; team: Team }
-  | { type: AppStateAction.Teams; teams: Team[] }
-  | { type: AppStateAction.Season; season: Season }
-  | { type: AppStateAction.Seasons; seasons: Season[] }
-  | { type: AppStateAction.Schedule; schedule: Schedule };
+  | { type: AppStateAction.Team; team: MLBTeam }
+  | { type: AppStateAction.Teams; teams: MLBTeam[] }
+  | { type: AppStateAction.Season; season: MLBSeason }
+  | { type: AppStateAction.Seasons; seasons: MLBSeason[] }
+  | { type: AppStateAction.Theme; theme: Theme };
 
 const initState: AppState = {
   team: {},
   teams: [],
+
   season: {},
   seasons: [],
-  schedule: {},
+
+  theme: defaultTheme,
 };
 
 export const AppStateContext = createContext<{
@@ -62,10 +70,10 @@ function reducer(state: AppState, action: AppStateActions): AppState {
         ...state,
         seasons: action.seasons,
       };
-    case AppStateAction.Schedule:
+    case AppStateAction.Theme:
       return {
         ...state,
-        schedule: action.schedule,
+        theme: action.theme,
       };
     default:
       return {
