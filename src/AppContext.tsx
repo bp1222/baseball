@@ -1,7 +1,5 @@
 import { createContext, Dispatch, useReducer, PropsWithChildren } from "react";
 import { MLBSeason, MLBTeam } from "./services/MlbApi";
-import { Theme } from "@mui/material";
-import { defaultTheme } from "./colors/phillies";
 
 export type AppState = {
   team: MLBTeam;
@@ -9,8 +7,6 @@ export type AppState = {
 
   season: MLBSeason;
   seasons: MLBSeason[];
-
-  theme: Theme;
 };
 
 export enum AppStateAction {
@@ -18,15 +14,13 @@ export enum AppStateAction {
   Teams = "teams",
   Season = "season",
   Seasons = "seasons",
-  Theme = "theme",
 }
 
 type AppStateActions =
   | { type: AppStateAction.Team; team: MLBTeam }
   | { type: AppStateAction.Teams; teams: MLBTeam[] }
   | { type: AppStateAction.Season; season: MLBSeason }
-  | { type: AppStateAction.Seasons; seasons: MLBSeason[] }
-  | { type: AppStateAction.Theme; theme: Theme };
+  | { type: AppStateAction.Seasons; seasons: MLBSeason[] };
 
 const initState: AppState = {
   team: {},
@@ -34,8 +28,6 @@ const initState: AppState = {
 
   season: {},
   seasons: [],
-
-  theme: defaultTheme,
 };
 
 export const AppStateContext = createContext<{
@@ -67,11 +59,6 @@ function reducer(state: AppState, action: AppStateActions): AppState {
       return {
         ...state,
         seasons: action.seasons,
-      };
-    case AppStateAction.Theme:
-      return {
-        ...state,
-        theme: action.theme,
       };
     default:
       return {

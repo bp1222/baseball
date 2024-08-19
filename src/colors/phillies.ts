@@ -1,20 +1,6 @@
-// Philadelphia Phillies
-
 import { createTheme } from "@mui/material";
 
-export const defaultTheme = createTheme({
-  components: {
-    MuiCssBaseline: {
-      styleOverrides: {
-        "*, *::before, *::after": {
-          boxSizing: "initial",
-        },
-      },
-    },
-  },
-});
-
-export const phillies = createTheme({
+const phillies = createTheme({
   palette: {
     primary: {
       main: "#6f263d",
@@ -26,9 +12,6 @@ export const phillies = createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
-        "*, *::before, *::after": {
-          boxSizing: "initial",
-        },
         body: {
           backgroundImage: `linear-gradient(90deg, #e81828 3.57%, #ffffff 3.57%, #ffffff 50%, #e81828 50%, #e81828 53.57%, #ffffff 53.57%, #ffffff 100%)`,
           backgroundSize: `28px 28px`,
@@ -37,3 +20,5 @@ export const phillies = createTheme({
     },
   },
 });
+
+export default phillies;

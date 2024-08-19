@@ -5,7 +5,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 
 import { AppStateAction, AppStateContext } from "./AppContext";
 import Header from "./components/Header";
-import { defaultTheme, phillies } from "./colors/phillies";
+import GetTheme from "./colors";
 
 const api = new MlbApi();
 
@@ -47,24 +47,8 @@ function App() {
     });
   }, [seasons, teams, dispatch]);
 
-  // Update Theme
-  useEffect(() => {
-    if (state.team?.id == 143) {
-      console.log("setting phillies theme");
-      dispatch({
-        type: AppStateAction.Theme,
-        theme: phillies,
-      });
-    } else {
-      dispatch({
-        type: AppStateAction.Theme,
-        theme: defaultTheme,
-      });
-    }
-  }, [state.team, dispatch]);
-
   return (
-    <ThemeProvider theme={state.theme}>
+    <ThemeProvider theme={GetTheme(state.team?.id)}>
       <CssBaseline />
       <Header />
       <Outlet />
