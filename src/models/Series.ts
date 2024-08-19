@@ -119,7 +119,7 @@ function GenerateSeries(schedule: MLBSchedule, teamId: number): Series[] {
         return game.teams?.home?.team?.id == teamId;
       };
 
-      if (game.gameType == MLBGameGameTypeEnum.SpringTraining) {
+      if (game.gameType == MLBGameGameTypeEnum.SpringTraining || game.gameType == MLBGameGameTypeEnum.Exhibition) {
         return;
       }
 

@@ -12,6 +12,7 @@ properties:
   gameType:
     type: string
     enum:
+      - "E"
       - "S"
       - "R"
       - "F"
@@ -19,6 +20,7 @@ properties:
       - "L"
       - "W"
     x-enum-varnames:
+      - Exhibition
       - SpringTraining
       - Regular
       - WildCardSeries
@@ -27,6 +29,7 @@ properties:
       - WorldSeries
     description: >
       Game Type:
+        * `E` - Exhibition
         * `S` - Spring Training
         * `R` - Regular Season
         * `F` - Wild Card Series

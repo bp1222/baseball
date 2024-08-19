@@ -65,6 +65,7 @@ export interface MLBGame {
     link?: string;
     /**
      * Game Type:
+     *   * `E` - Exhibition
      *   * `S` - Spring Training
      *   * `R` - Regular Season
      *   * `F` - Wild Card Series
@@ -263,6 +264,7 @@ export interface MLBGame {
  * @export
  */
 export const MLBGameGameTypeEnum = {
+    Exhibition: 'E',
     SpringTraining: 'S',
     Regular: 'R',
     WildCardSeries: 'F',
