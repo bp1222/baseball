@@ -16,7 +16,7 @@ function SeasonPicker() {
   };
 
   return (
-    <div>
+    <>
       <Button
         id="season-button"
         onClick={(event) => setAnchorEl(event.currentTarget)}
@@ -40,7 +40,7 @@ function SeasonPicker() {
           </MenuItem>
         ))}
       </Menu>
-    </div>
+    </>
   );
 }
 

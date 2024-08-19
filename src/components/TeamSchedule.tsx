@@ -15,15 +15,6 @@ function TeamSchedule() {
   const params = useParams() as { teamId: string };
   const teamId = parseInt(params.teamId);
 
-  // Init state if passed in
-  if (state.team?.id == undefined) {
-    const idx = state.teams.findIndex((t) => t.id == teamId);
-    dispatch({
-      type: AppStateAction.Team,
-      team: state.teams[idx],
-    });
-  }
-
   const getSchedule = useCallback(async () => {
     if (teamId == undefined) return;
     if (state.season.seasonId == undefined) return;
@@ -39,6 +30,15 @@ function TeamSchedule() {
   }, [state.season, teamId]);
 
   useEffect(() => {
+    // Init state if passed in
+    if (state.team?.id == undefined) {
+      const idx = state.teams.findIndex((t) => t.id == teamId);
+      dispatch({
+        type: AppStateAction.Team,
+        team: state.teams[idx],
+      });
+    }
+
     getSchedule();
   }, [getSchedule]);
 
