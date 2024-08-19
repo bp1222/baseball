@@ -49,7 +49,7 @@ function TeamSchedule() {
       series?.slice(pivot, series?.length),
     ];
     return (
-      <Grid container paddingTop={1} columnSpacing={2}>
+      <Grid container paddingTop={1} columnSpacing={2} columns={{xs: 6, sm: 12}}>
         <Grid item xs={6}>
           <Stack direction={"column"} spacing={1}>
             {firstHalf?.map((s) => <SeriesItem key={s.startDate} series={s} />)}
