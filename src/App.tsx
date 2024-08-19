@@ -38,7 +38,7 @@ function App() {
 
     dispatch({
       type: AppStateAction.Seasons,
-      seasons: seasons.seasons?.reverse() ?? [],
+      seasons: seasons.seasons?.filter((s) => parseInt(s.seasonId!) > 1921).reverse() ?? [],
     });
 
     dispatch({

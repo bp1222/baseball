@@ -16,7 +16,9 @@ const router = createHashRouter(
   createRoutesFromElements(
     <Route element={<App />} loader={AppLoader}>
       <Route path="/">
-        <Route path="schedule/:teamId" element={<TeamSchedule />} />
+        <Route path=":teamId">
+          <Route path="schedule" element={<TeamSchedule />} />
+        </Route>
       </Route>
     </Route>,
   ),

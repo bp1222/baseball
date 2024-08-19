@@ -14,7 +14,6 @@ import {
   MLBGameTeam,
   MLBSchedule,
   MLBScheduleDay,
-  MLBVenue,
 } from "../services/MlbApi";
 import { Color } from "@mui/material";
 
@@ -44,13 +43,22 @@ export enum SeriesHomeAway {
   Split,
 }
 
+export enum SeriesType {
+  SpringTraining,
+  RegularSeason,
+  WildCard,
+  Division,
+  League,
+  World,
+}
+
 export type Series = {
   result: SeriesResult;
   homeaway: SeriesHomeAway | undefined;
+  type: SeriesType | undefined;
   against: MLBGameTeam;
   startDate: string;
   endDate: string;
-  venue: MLBVenue;
   games: Game[];
 };
 
@@ -88,10 +96,10 @@ function GenerateSeries(schedule: MLBSchedule, teamId: number): Series[] {
     return {
       result: SeriesResult.Unplayed,
       homeaway: undefined,
+      type: undefined,
       against: {},
       startDate: "",
       endDate: "",
-      venue: {},
       games: [],
     };
   };
@@ -102,32 +110,57 @@ function GenerateSeries(schedule: MLBSchedule, teamId: number): Series[] {
   let wins = 0;
   let losses = 0;
 
+  // Suspended games don't denote as such, and are duplicated
+  const seenGames: number[] = [];
+
   schedule.dates?.forEach((day: MLBScheduleDay) => {
     day.games?.forEach((game: MLBGame) => {
       const isHome = (): boolean => {
         return game.teams?.home?.team?.id == teamId;
       };
 
+      if (game.gameType == MLBGameGameTypeEnum.SpringTraining) {
+        return;
+      }
+
       // Do not track postponed games, they apply to a future series
       if (
         game.status?.codedGameState == MLBGameStatusCodedGameStateEnum.Postponed
       ) {
-        return null;
+        return;
       }
 
-      // TODO: Maybe allow spring training/postseason things
-      // Do not track non-regular season games
-      if (game.gameType != MLBGameGameTypeEnum.Regular) {
-        return null;
+      // The gamePk will be the same for makeup games which were postponed, and suspended games.
+      // Those games that get suspended on one day, and resume prior to the following days game,
+      // will record the actual "Final" state in recorded games on _each_ day where the game was
+      // played.  There is not a "Suspended" status like what Postponed games have, so we need to
+      // track seen games here.  If we've already recorded a game, do not parse a duplicate
+      if (game.gamePk) {
+        if (seenGames.indexOf(game.gamePk) > 0) {
+          return;
+        }
+        seenGames.push(game.gamePk);
       }
 
       // If the first game of the series, set the series start date, and teams
       if (game.seriesGameNumber == 1) {
         currentSeries.startDate = game.gameDate!;
+        currentSeries.type =
+          game.gameType == MLBGameGameTypeEnum.Regular
+            ? SeriesType.RegularSeason
+            : game.gameType == MLBGameGameTypeEnum.WildCardSeries
+              ? SeriesType.WildCard
+              : game.gameType == MLBGameGameTypeEnum.DivisionSeries
+                ? SeriesType.Division
+                : game.gameType == MLBGameGameTypeEnum.LeagueChampionshipSeries
+                  ? SeriesType.League
+                  : game.gameType == MLBGameGameTypeEnum.WorldSeries
+                    ? SeriesType.World
+                    : undefined;
+
         currentSeries.against = isHome()
           ? (game.teams?.away ?? {})
           : (game.teams?.home ?? {});
-        currentSeries.venue = game.venue!;
       }
 
       // We need to decide if we're the home team, away team or a split series.
@@ -186,9 +219,31 @@ function GenerateSeries(schedule: MLBSchedule, teamId: number): Series[] {
         game: game,
       });
 
-      // This is the last game of the series.  Note the date, decide disposition,
-      // store this series as a return, setup for the next.
-      if (game.gamesInSeries == game.seriesGameNumber) {
+      // Is this the end of the series?
+      // Simple answer is if the pre-determined games in series is this game number.
+      //   - This is handled in-season by postponed end games of a series decrementing
+      //     the series count for the last game in the series that wasn't postponed.
+      //   - This is handled different for postseason games, where it will always list
+      //     the series as the max length.  So if a WildCard Series is won in 2 games
+      //     there will only be the 2 games, both with a `3` listed for gamesInSeries
+      const endOfSeries = (): boolean => {
+          if (game.gamesInSeries == game.seriesGameNumber) {
+              return true
+          }
+
+          if (game.gameType == MLBGameGameTypeEnum.WildCardSeries && (wins == 2 || losses == 2)) {
+            return true
+          }
+          if (game.gameType == MLBGameGameTypeEnum.DivisionSeries && (wins == 3 || losses == 3)) {
+            return true
+          }
+          if ((game.gameType == MLBGameGameTypeEnum.LeagueChampionshipSeries || game.gameType == MLBGameGameTypeEnum.WorldSeries) && (wins == 4 || losses == 4)) {
+            return true
+          }
+          return false
+      }
+
+      if (endOfSeries()) {
         currentSeries.endDate = game.gameDate!;
 
         // Determine the series disposition:
@@ -201,7 +256,7 @@ function GenerateSeries(schedule: MLBSchedule, teamId: number): Series[] {
         // Did we equal losses? Tie
         // Otherwise we lost
         if (losses != 0 || wins != 0) {
-          if (wins + losses < (game.gamesInSeries as number)) {
+          if (wins + losses < (game.gamesInSeries as number) && game.gameType == MLBGameGameTypeEnum.Regular) {
             currentSeries.result = SeriesResult.InProgress;
           } else {
             currentSeries.result =

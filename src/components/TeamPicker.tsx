@@ -17,7 +17,7 @@ function TeamPicker() {
     });
     setAnchorEl(null);
 
-    navigate("/schedule/" + team.id);
+    navigate(team.id + "/schedule");
   };
 
   return (

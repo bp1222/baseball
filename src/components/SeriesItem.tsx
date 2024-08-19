@@ -4,11 +4,13 @@ import {
   SeriesHomeAway,
   SeriesResultColor,
   SeriesResult,
+  SeriesType,
 } from "../models/Series";
 import { useContext } from "react";
 import { AppStateContext } from "../AppContext";
 import { MLBTeam } from "../services/MlbApi/models";
 import SeriesGame from "./SeriesGame";
+import { amber, blueGrey, deepOrange, grey, indigo, orange, pink, yellow } from "@mui/material/colors";
 
 type SeriesItemProps = {
   series: Series;
@@ -47,19 +49,19 @@ function SeriesItem({ series }: SeriesItemProps) {
         break;
     }
 
+    const badgeBorderColor = series.type == SeriesType.World && series.result == SeriesResult.Win ? amber[700] : SeriesResultColor[series.result][500]
+    const badgeBackgroundColor = series.type == SeriesType.World && series.result == SeriesResult.Win ? amber[400] : SeriesResultColor[series.result][300]
+
     if (badge.length > 0) {
       return (
         <Box
+          minWidth={45}
           sx={{
-            position: "absolute",
-            backgroundColor: SeriesResultColor[series.result][300],
+            backgroundColor: badgeBackgroundColor,
+            height: 11,
             border: 2,
             borderRadius: 2,
-            borderColor: SeriesResultColor[series.result][500],
-            height: 11,
-            minWidth: 45,
-            marginTop: -0.8,
-            marginLeft: -1,
+            borderColor: badgeBorderColor
           }}
         >
           <Typography
@@ -76,6 +78,51 @@ function SeriesItem({ series }: SeriesItemProps) {
     }
   };
 
+  const specialBadge = () => {
+    let badge = "";
+    switch (series.type) {
+      case SeriesType.WildCard:
+        badge = "Wild Card";
+        break;
+      case SeriesType.Division:
+        badge = "Divisional";
+        break;
+      case SeriesType.League:
+        badge = "Championship";
+        break;
+      case SeriesType.World:
+        badge = "World Series";
+        break;
+    }
+
+    if (badge.length > 0) {
+      return (
+        <Box
+          minWidth={90}
+          sx={{
+            backgroundColor: blueGrey[300],
+            border: 2,
+            borderRadius: 2,
+            borderColor: blueGrey[500],
+            height: 11,
+            marginLeft: 1,
+          }}
+        >
+          <Typography
+            color={"Background"}
+            fontSize={"smaller"}
+            lineHeight={1}
+            letterSpacing={-0.5}
+            textAlign={"center"}
+            noWrap
+          >
+            {badge.toUpperCase()}
+          </Typography>
+        </Box>
+      );
+    }
+  };
+
   const getClubName = (name: string | undefined): string | undefined => {
     if (name == "Diamondbacks") {
       return "D-Backs";
@@ -83,19 +130,25 @@ function SeriesItem({ series }: SeriesItemProps) {
     return name;
   };
 
+  const seriesBorderColor = series.type == SeriesType.World && series.result == SeriesResult.Win ? amber[600] : SeriesResultColor[series.result][300]
+  const seriesBackgroundColor = series.type == SeriesType.World && series.result == SeriesResult.Win ? amber[300] : SeriesResultColor[series.result][50]
+
   return (
     <Stack
       direction={"row"}
       sx={{
         border: 1,
         borderRadius: 1,
-        borderColor: SeriesResultColor[series.result][300],
-        backgroundColor: SeriesResultColor[series.result][50],
+        borderColor: seriesBorderColor,
+        backgroundColor: seriesBackgroundColor,
         fontSize: "small",
       }}
     >
-      {resultBadge()}
-      <Box alignContent={"center"} minWidth={"35%"}>
+      <Stack position="absolute" direction="row" display={"flex"} mt={-.8} ml={-1.5} padding="10">
+        {resultBadge()}
+        {specialBadge()}
+      </Stack>
+      <Box alignContent={"center"} minWidth={{ xs: "40%", md: "35%" }}>
         <Stack direction="row">
           <Box paddingLeft={1} marginTop={0.5} alignContent={"center"}>
             <img src={againstImage} height={24} width={24} />
@@ -104,7 +157,7 @@ function SeriesItem({ series }: SeriesItemProps) {
             <Typography fontSize={"smaller"} noWrap>
               {series.homeaway == SeriesHomeAway.Home
                 ? "vs "
-                : SeriesHomeAway.Away
+                : series.homeaway == SeriesHomeAway.Away
                   ? "@ "
                   : "against "}
               {againstTeam?.franchiseName}

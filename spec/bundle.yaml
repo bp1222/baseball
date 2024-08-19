@@ -175,15 +175,27 @@ components:
         gameType:
           type: string
           enum:
-            - R
             - S
+            - R
+            - F
+            - D
+            - L
+            - W
           x-enum-varnames:
-            - Regular
             - SpringTraining
+            - Regular
+            - WildCardSeries
+            - DivisionSeries
+            - LeagueChampionshipSeries
+            - WorldSeries
           description: |
             Game Type:
-              * `R` - Regular Season
               * `S` - Spring Training
+              * `R` - Regular Season
+              * `F` - Wild Card Series
+              * `D` - Division Series
+              * `L` - League Championship Series
+              * `W` - World Series
         season:
           type: number
         gameDate:
