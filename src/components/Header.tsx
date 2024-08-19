@@ -15,6 +15,7 @@ function Header() {
       >
         <Toolbar>
           <SportsBaseball
+            color="secondary"
             sx={{
               mr: 1,
               display: { md: "block", float: "left" },

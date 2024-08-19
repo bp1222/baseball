@@ -9,6 +9,6 @@ const rangers = createTheme({
       main: "#C0111F",
     },
   },
-})
+});
 
 export default rangers;
