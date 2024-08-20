@@ -125,8 +125,6 @@ const GetTheme = (teamId: number | undefined): Theme => {
       break;
   }
 
-  console.log(t);
-
   return createTheme(
     {
       components: {

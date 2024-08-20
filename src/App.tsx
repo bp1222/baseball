@@ -3,12 +3,14 @@ import { MlbApi } from "./services/MlbApi";
 import { Outlet, useLoaderData } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 
-import { AppStateAction, AppStateContext } from "./AppContext";
+import { AppStateContext } from "./state/context";
 import Header from "./components/Header";
 import GetTheme from "./colors";
+import { AppStateAction } from "./state/actions";
 
 const api = new MlbApi();
 
+export type AppLoaderResponse = Awaited<ReturnType<typeof AppLoader>>;
 export const AppLoader = async () => {
   const seasons = await api.getAllSeasons({ sportId: 1 });
   const teams = await api.getTeams({ sportId: 1 });
@@ -19,9 +21,7 @@ export const AppLoader = async () => {
   };
 };
 
-export type AppLoaderResponse = Awaited<ReturnType<typeof AppLoader>>;
-
-function App() {
+const App = () => {
   const { state, dispatch } = useContext(AppStateContext);
   const { seasons, teams } = useLoaderData() as AppLoaderResponse;
 
@@ -38,7 +38,10 @@ function App() {
 
     dispatch({
       type: AppStateAction.Seasons,
-      seasons: seasons.seasons?.filter((s) => parseInt(s.seasonId!) > 1921).reverse() ?? [],
+      seasons:
+        seasons.seasons
+          ?.filter((s) => parseInt(s.seasonId!) > 1921)
+          .reverse() ?? [],
     });
 
     dispatch({
@@ -54,6 +57,6 @@ function App() {
       <Outlet />
     </ThemeProvider>
   );
-}
+};
 
 export default App;

@@ -1,9 +1,10 @@
 import { Button, Menu, MenuItem, Typography } from "@mui/material";
 import { MLBSeason } from "../services/MlbApi";
 import { useContext, useState } from "react";
-import { AppStateAction, AppStateContext } from "../AppContext";
+import { AppStateContext } from "../state/context";
+import { AppStateAction } from "../state/actions";
 
-function SeasonPicker() {
+const SeasonPicker = () => {
   const { state, dispatch } = useContext(AppStateContext);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -42,6 +43,6 @@ function SeasonPicker() {
       </Menu>
     </>
   );
-}
+};
 
 export default SeasonPicker;

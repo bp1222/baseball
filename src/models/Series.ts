@@ -119,7 +119,10 @@ function GenerateSeries(schedule: MLBSchedule, teamId: number): Series[] {
         return game.teams?.home?.team?.id == teamId;
       };
 
-      if (game.gameType == MLBGameGameTypeEnum.SpringTraining || game.gameType == MLBGameGameTypeEnum.Exhibition) {
+      if (
+        game.gameType == MLBGameGameTypeEnum.SpringTraining ||
+        game.gameType == MLBGameGameTypeEnum.Exhibition
+      ) {
         return;
       }
 
@@ -227,21 +230,31 @@ function GenerateSeries(schedule: MLBSchedule, teamId: number): Series[] {
       //     the series as the max length.  So if a WildCard Series is won in 2 games
       //     there will only be the 2 games, both with a `3` listed for gamesInSeries
       const endOfSeries = (): boolean => {
-          if (game.gamesInSeries == game.seriesGameNumber) {
-              return true
-          }
+        if (game.gamesInSeries == game.seriesGameNumber) {
+          return true;
+        }
 
-          if (game.gameType == MLBGameGameTypeEnum.WildCardSeries && (wins == 2 || losses == 2)) {
-            return true
-          }
-          if (game.gameType == MLBGameGameTypeEnum.DivisionSeries && (wins == 3 || losses == 3)) {
-            return true
-          }
-          if ((game.gameType == MLBGameGameTypeEnum.LeagueChampionshipSeries || game.gameType == MLBGameGameTypeEnum.WorldSeries) && (wins == 4 || losses == 4)) {
-            return true
-          }
-          return false
-      }
+        if (
+          game.gameType == MLBGameGameTypeEnum.WildCardSeries &&
+          (wins == 2 || losses == 2)
+        ) {
+          return true;
+        }
+        if (
+          game.gameType == MLBGameGameTypeEnum.DivisionSeries &&
+          (wins == 3 || losses == 3)
+        ) {
+          return true;
+        }
+        if (
+          (game.gameType == MLBGameGameTypeEnum.LeagueChampionshipSeries ||
+            game.gameType == MLBGameGameTypeEnum.WorldSeries) &&
+          (wins == 4 || losses == 4)
+        ) {
+          return true;
+        }
+        return false;
+      };
 
       if (endOfSeries()) {
         currentSeries.endDate = game.gameDate!;
@@ -256,7 +269,10 @@ function GenerateSeries(schedule: MLBSchedule, teamId: number): Series[] {
         // Did we equal losses? Tie
         // Otherwise we lost
         if (losses != 0 || wins != 0) {
-          if (wins + losses < (game.gamesInSeries as number) && game.gameType == MLBGameGameTypeEnum.Regular) {
+          if (
+            wins + losses < (game.gamesInSeries as number) &&
+            game.gameType == MLBGameGameTypeEnum.Regular
+          ) {
             currentSeries.result = SeriesResult.InProgress;
           } else {
             currentSeries.result =

@@ -3,7 +3,7 @@ import SportsBaseball from "@mui/icons-material/SportsBaseball";
 import TeamPicker from "./TeamPicker";
 import SeasonPicker from "./SeasonPicker";
 
-function Header() {
+const Header = () => {
   return (
     <Grid container>
       <AppBar
@@ -58,6 +58,6 @@ function Header() {
       </AppBar>
     </Grid>
   );
-}
+};
 
 export default Header;

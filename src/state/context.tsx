@@ -1,26 +1,6 @@
-import { createContext, Dispatch, useReducer, PropsWithChildren } from "react";
-import { MLBSeason, MLBTeam } from "./services/MlbApi";
-
-export type AppState = {
-  team: MLBTeam;
-  teams: MLBTeam[];
-
-  season: MLBSeason;
-  seasons: MLBSeason[];
-};
-
-export enum AppStateAction {
-  Team = "team",
-  Teams = "teams",
-  Season = "season",
-  Seasons = "seasons",
-}
-
-type AppStateActions =
-  | { type: AppStateAction.Team; team: MLBTeam }
-  | { type: AppStateAction.Teams; teams: MLBTeam[] }
-  | { type: AppStateAction.Season; season: MLBSeason }
-  | { type: AppStateAction.Seasons; seasons: MLBSeason[] };
+import { createContext, useReducer, PropsWithChildren } from "react";
+import { AppState } from "./state";
+import { AppStateAction, AppStateActions, AppStateDispatch } from "./actions";
 
 const initState: AppState = {
   team: {},
@@ -32,7 +12,7 @@ const initState: AppState = {
 
 export const AppStateContext = createContext<{
   state: AppState;
-  dispatch: Dispatch<AppStateActions>;
+  dispatch: AppStateDispatch;
 }>({
   state: initState,
   dispatch: () => null,

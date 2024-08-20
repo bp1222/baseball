@@ -1,5 +1,5 @@
 import { Box, Stack } from "@mui/material";
-import { GameResultColor, GameResult, SeriesType } from "../models/Series";
+import { GameResultColor, GameResult } from "../models/Series";
 import { MLBGame, MLBTeam } from "../services/MlbApi";
 
 type SeriesGameProps = {
@@ -9,7 +9,7 @@ type SeriesGameProps = {
   away: MLBTeam;
 };
 
-function SeriesGame({ result, game, home, away }: SeriesGameProps) {
+const SeriesGame = ({ result, game, home, away }: SeriesGameProps) => {
   const getDay = (): string => {
     return new Date(game.officialDate ?? "")
       .toLocaleString("us", { month: "short", day: "numeric", timeZone: "utc" })
@@ -78,6 +78,6 @@ function SeriesGame({ result, game, home, away }: SeriesGameProps) {
       {renderScore(home?.abbreviation, game.teams?.home?.score)}
     </Stack>
   );
-}
+};
 
 export default SeriesGame;

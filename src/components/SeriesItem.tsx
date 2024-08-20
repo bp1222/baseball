@@ -7,16 +7,16 @@ import {
   SeriesType,
 } from "../models/Series";
 import { useContext } from "react";
-import { AppStateContext } from "../AppContext";
+import { AppStateContext } from "../state/context";
 import { MLBTeam } from "../services/MlbApi/models";
 import SeriesGame from "./SeriesGame";
-import { amber, blueGrey, deepOrange, grey, indigo, orange, pink, yellow } from "@mui/material/colors";
+import { amber, blueGrey } from "@mui/material/colors";
 
 type SeriesItemProps = {
   series: Series;
 };
 
-function SeriesItem({ series }: SeriesItemProps) {
+const SeriesItem = ({ series }: SeriesItemProps) => {
   const { state } = useContext(AppStateContext);
 
   const findTeam = (id: number | undefined): MLBTeam | undefined => {
@@ -49,8 +49,14 @@ function SeriesItem({ series }: SeriesItemProps) {
         break;
     }
 
-    const badgeBorderColor = series.type == SeriesType.World && series.result == SeriesResult.Win ? amber[700] : SeriesResultColor[series.result][500]
-    const badgeBackgroundColor = series.type == SeriesType.World && series.result == SeriesResult.Win ? amber[400] : SeriesResultColor[series.result][300]
+    const badgeBorderColor =
+      series.type == SeriesType.World && series.result == SeriesResult.Win
+        ? amber[700]
+        : SeriesResultColor[series.result][500];
+    const badgeBackgroundColor =
+      series.type == SeriesType.World && series.result == SeriesResult.Win
+        ? amber[400]
+        : SeriesResultColor[series.result][300];
 
     if (badge.length > 0) {
       return (
@@ -61,7 +67,7 @@ function SeriesItem({ series }: SeriesItemProps) {
             height: 11,
             border: 2,
             borderRadius: 2,
-            borderColor: badgeBorderColor
+            borderColor: badgeBorderColor,
           }}
         >
           <Typography
@@ -130,8 +136,14 @@ function SeriesItem({ series }: SeriesItemProps) {
     return name;
   };
 
-  const seriesBorderColor = series.type == SeriesType.World && series.result == SeriesResult.Win ? amber[600] : SeriesResultColor[series.result][300]
-  const seriesBackgroundColor = series.type == SeriesType.World && series.result == SeriesResult.Win ? amber[300] : SeriesResultColor[series.result][50]
+  const seriesBorderColor =
+    series.type == SeriesType.World && series.result == SeriesResult.Win
+      ? amber[600]
+      : SeriesResultColor[series.result][300];
+  const seriesBackgroundColor =
+    series.type == SeriesType.World && series.result == SeriesResult.Win
+      ? amber[300]
+      : SeriesResultColor[series.result][50];
 
   return (
     <Stack
@@ -144,7 +156,14 @@ function SeriesItem({ series }: SeriesItemProps) {
         fontSize: "small",
       }}
     >
-      <Stack position="absolute" direction="row" display={"flex"} mt={-.8} ml={-1.5} padding="10">
+      <Stack
+        position="absolute"
+        direction="row"
+        display={"flex"}
+        mt={-0.8}
+        ml={-1.5}
+        padding="10"
+      >
         {resultBadge()}
         {specialBadge()}
       </Stack>
@@ -189,6 +208,6 @@ function SeriesItem({ series }: SeriesItemProps) {
       </Box>
     </Stack>
   );
-}
+};
 
 export default SeriesItem;

@@ -1,7 +1,7 @@
 import { CssBaseline, Grid, Stack, ThemeProvider } from "@mui/material";
 import { MlbApi } from "../services/MlbApi";
 import { useEffect, useCallback, useContext, useState } from "react";
-import { AppStateAction, AppStateContext } from "../AppContext";
+import { AppStateContext } from "../state/context";
 import GenerateSeries, { Series } from "../models/Series";
 import SeriesItem from "./SeriesItem";
 import { useParams } from "react-router-dom";
@@ -9,8 +9,8 @@ import GetTheme from "../colors";
 
 const api = new MlbApi();
 
-function TeamSchedule() {
-  const { state, dispatch } = useContext(AppStateContext);
+const TeamSchedule = () => {
+  const { state } = useContext(AppStateContext);
   const [series, setSeries] = useState<Series[]>([]);
 
   const params = useParams() as { teamId: string };
@@ -23,7 +23,8 @@ function TeamSchedule() {
     const schedule = await api.getSchedule({
       sportId: 1,
       teamId: teamId,
-      startDate: state.season.springStartDate ?? state.season.preSeasonStartDate,
+      startDate:
+        state.season.springStartDate ?? state.season.preSeasonStartDate,
       endDate: state.season.postSeasonEndDate,
     });
 
@@ -31,15 +32,6 @@ function TeamSchedule() {
   }, [state.season, teamId]);
 
   useEffect(() => {
-    // Init state if passed in
-    if (state.team?.id == undefined) {
-      const idx = state.teams.findIndex((t) => t.id == teamId);
-      dispatch({
-        type: AppStateAction.Team,
-        team: state.teams[idx],
-      });
-    }
-
     getSchedule();
   }, [getSchedule]);
 
@@ -76,7 +68,7 @@ function TeamSchedule() {
       </ThemeProvider>
     );
   }
-  return <></>;
-}
+  return <>{state.team?.name} did not play this season</>;
+};
 
 export default TeamSchedule;
