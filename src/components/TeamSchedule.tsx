@@ -23,7 +23,7 @@ function TeamSchedule() {
     const schedule = await api.getSchedule({
       sportId: 1,
       teamId: teamId,
-      startDate: state.season.springStartDate,
+      startDate: state.season.springStartDate ?? state.season.preSeasonStartDate,
       endDate: state.season.postSeasonEndDate,
     });
 
