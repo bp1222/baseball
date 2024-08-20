@@ -1,39 +1,28 @@
-import { useContext, useEffect } from "react";
-import { MlbApi } from "./services/MlbApi";
-import { Outlet, useLoaderData } from "react-router-dom";
+import { useCallback, useContext, useEffect } from "react";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 
 import { AppStateContext } from "./state/context";
 import Header from "./components/Header";
 import GetTheme from "./colors";
 import { AppStateAction } from "./state/actions";
+import { MlbApi } from "./services/MlbApi";
 
 const api = new MlbApi();
 
-export type AppLoaderResponse = Awaited<ReturnType<typeof AppLoader>>;
-export const AppLoader = async () => {
-  const seasons = await api.getAllSeasons({ sportId: 1 });
-  const teams = await api.getTeams({ sportId: 1 });
-
-  return {
-    seasons: seasons,
-    teams: teams,
-  };
-};
-
 const App = () => {
   const { state, dispatch } = useContext(AppStateContext);
-  const { seasons, teams } = useLoaderData() as AppLoaderResponse;
+  const { seasonId, teamId } = useParams();
+  const team = state.teams.find((t) => t.id == teamId);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const curSeason = seasons.seasons?.find((s) =>
-      s.seasonId == (new Date().getFullYear() as unknown as string) ? s : null,
-    );
-    if (curSeason) {
-      dispatch({
-        type: AppStateAction.Season,
-        season: curSeason,
-      });
+  const loadSeasonsState = useCallback(async () => {
+    if (state.seasons.length > 0) return;
+
+    const seasons = await api.getAllSeasons({ sportId: 1 });
+
+    if (seasonId == undefined) {
+      navigate("" + new Date().getFullYear());
     }
 
     dispatch({
@@ -43,15 +32,29 @@ const App = () => {
           ?.filter((s) => parseInt(s.seasonId!) > 1921)
           .reverse() ?? [],
     });
+  }, [dispatch, navigate, seasonId, state.seasons]);
+
+  const loadTeamsState = useCallback(async () => {
+    if (seasonId == undefined) return;
+    const teams = await api.getTeams({
+      sportId: 1,
+      leagueIds: [103, 104],
+      season: seasonId,
+    });
 
     dispatch({
       type: AppStateAction.Teams,
-      teams: teams.teams?.sort((a, b) => a.name!.localeCompare(b.name!)) ?? [],
+      teams: teams.teams!.sort((a, b) => a.name?.localeCompare(b.name!) ?? 0),
     });
-  }, [seasons, teams, dispatch]);
+  }, [dispatch, seasonId]);
+
+  useEffect(() => {
+    loadSeasonsState();
+    loadTeamsState();
+  }, [dispatch, loadSeasonsState, loadTeamsState]);
 
   return (
-    <ThemeProvider theme={GetTheme(state.team?.id)}>
+    <ThemeProvider theme={GetTheme(team?.id)}>
       <CssBaseline />
       <Header />
       <Outlet />

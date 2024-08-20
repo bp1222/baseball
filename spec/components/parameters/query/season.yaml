@@ -1,6 +1,5 @@
 in: query
 name: season 
 required: true
-explode: true
 schema:
-  type: number
+  type: string 

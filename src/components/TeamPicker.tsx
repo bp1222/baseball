@@ -2,23 +2,20 @@ import { useContext, useState } from "react";
 import { MLBTeam } from "../services/MlbApi/models";
 import { MenuItem, Button, Menu, Typography } from "@mui/material";
 import { AppStateContext } from "../state/context";
-import { useNavigate } from "react-router-dom";
-import { AppStateAction } from "../state/actions";
+import { useNavigate, useParams } from "react-router-dom";
 
 const TeamPicker = () => {
-  const { state, dispatch } = useContext(AppStateContext);
+  const { state } = useContext(AppStateContext);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
+  const { seasonId, teamId } = useParams();
   const navigate = useNavigate();
 
   const handleTeamSelect = (team: MLBTeam) => {
     setAnchorEl(null);
-    dispatch({
-      type: AppStateAction.Team,
-      team: team,
-    });
-    navigate(team.id + "/schedule");
+    navigate(seasonId + "/" + team.id + "/schedule");
   };
+
+  const team = state.teams.find((t) => t.id == parseInt(teamId ?? ""));
 
   return (
     <>
@@ -27,9 +24,7 @@ const TeamPicker = () => {
         onClick={(event) => setAnchorEl(event.currentTarget)}
         color="inherit"
       >
-        <Typography>
-          {state.team?.name ? state.team?.name : "Select Team"}
-        </Typography>
+        <Typography>{team?.name ? team.name : "Select Team"}</Typography>
       </Button>
       <Menu
         id="team-selection-menu"

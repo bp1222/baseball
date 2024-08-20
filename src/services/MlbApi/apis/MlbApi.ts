@@ -43,11 +43,13 @@ export interface GetScheduleRequest {
 
 export interface GetSeasonRequest {
   sportId: number;
-  season: number;
+  season: string;
 }
 
 export interface GetTeamsRequest {
   sportId: number;
+  season: string;
+  leagueIds?: Array<number>;
 }
 
 /**
@@ -248,10 +250,25 @@ export class MlbApi extends runtime.BaseAPI {
       );
     }
 
+    if (requestParameters["season"] == null) {
+      throw new runtime.RequiredError(
+        "season",
+        'Required parameter "season" was null or undefined when calling getTeams().',
+      );
+    }
+
     const queryParameters: any = {};
 
     if (requestParameters["sportId"] != null) {
       queryParameters["sportId"] = requestParameters["sportId"];
+    }
+
+    if (requestParameters["season"] != null) {
+      queryParameters["season"] = requestParameters["season"];
+    }
+
+    if (requestParameters["leagueIds"] != null) {
+      queryParameters["leagueIds"] = requestParameters["leagueIds"];
     }
 
     const headerParameters: runtime.HTTPHeaders = {};

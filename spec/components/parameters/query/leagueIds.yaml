@@ -1,0 +1,7 @@
+in: query
+name: leagueIds
+required: false
+schema:
+  type: array
+  items:
+    type: number

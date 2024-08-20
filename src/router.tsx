@@ -1,19 +1,19 @@
 import {
   createHashRouter,
   createRoutesFromElements,
+  Outlet,
   Route,
   RouterProvider,
 } from "react-router-dom";
-import App, { AppLoader } from "./App";
-import Team from "./components/Team";
+import App from "./App";
 import TeamSchedule from "./components/TeamSchedule";
 
 const AppRouter = () => {
   const router = createHashRouter(
     createRoutesFromElements(
-      <Route element={<App />} loader={AppLoader}>
-        <Route path="/">
-          <Route path=":teamId" element={<Team />}>
+      <Route path="/" element={<App />}>
+        <Route path=":seasonId" element={<Outlet />}>
+          <Route path=":teamId" element={<Outlet />}>
             <Route path="schedule" element={<TeamSchedule />} />
           </Route>
         </Route>

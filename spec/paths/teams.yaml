@@ -6,6 +6,8 @@ get:
     Returns Teams
   parameters:
     - $ref: ../components/parameters/parameters.yaml#/SportId
+    - $ref: ../components/parameters/parameters.yaml#/Season
+    - $ref: ../components/parameters/parameters.yaml#/LeagueIds
             #"season",
             #"activeStatus",
             #"leagueIds",

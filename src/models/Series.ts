@@ -14,6 +14,7 @@ import {
   MLBGameTeam,
   MLBSchedule,
   MLBScheduleDay,
+  MLBTeam,
 } from "../services/MlbApi";
 import { Color } from "@mui/material";
 
@@ -91,7 +92,7 @@ export type Game = {
  * @param team team which we are discerning results for, either they won or lost
  * @returns
  */
-function GenerateSeries(schedule: MLBSchedule, teamId: number): Series[] {
+function GenerateSeries(schedule: MLBSchedule, team: MLBTeam): Series[] {
   const newSeries = (): Series => {
     return {
       result: SeriesResult.Unplayed,
@@ -116,7 +117,7 @@ function GenerateSeries(schedule: MLBSchedule, teamId: number): Series[] {
   schedule.dates?.forEach((day: MLBScheduleDay) => {
     day.games?.forEach((game: MLBGame) => {
       const isHome = (): boolean => {
-        return game.teams?.home?.team?.id == teamId;
+        return game.teams?.home?.team?.id == team.id;
       };
 
       if (

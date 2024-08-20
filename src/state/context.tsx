@@ -3,10 +3,7 @@ import { AppState } from "./state";
 import { AppStateAction, AppStateActions, AppStateDispatch } from "./actions";
 
 const initState: AppState = {
-  team: {},
   teams: [],
-
-  season: {},
   seasons: [],
 };
 
@@ -20,20 +17,10 @@ export const AppStateContext = createContext<{
 
 function reducer(state: AppState, action: AppStateActions): AppState {
   switch (action.type) {
-    case AppStateAction.Team:
-      return {
-        ...state,
-        team: action.team,
-      };
     case AppStateAction.Teams:
       return {
         ...state,
         teams: action.teams,
-      };
-    case AppStateAction.Season:
-      return {
-        ...state,
-        season: action.season,
       };
     case AppStateAction.Seasons:
       return {

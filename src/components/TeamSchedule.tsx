@@ -12,24 +12,24 @@ const api = new MlbApi();
 const TeamSchedule = () => {
   const { state } = useContext(AppStateContext);
   const [series, setSeries] = useState<Series[]>([]);
+  const { seasonId, teamId } = useParams();
 
-  const params = useParams() as { teamId: string };
-  const teamId = parseInt(params.teamId);
+  const season = state.seasons.find((s) => s.seasonId == seasonId);
+  const team = state.teams.find((t) => t.id == parseInt(teamId ?? ""));
 
   const getSchedule = useCallback(async () => {
-    if (teamId == undefined) return;
-    if (state.season.seasonId == undefined) return;
+    if (team == undefined) return;
+    if (season == undefined) return;
 
     const schedule = await api.getSchedule({
       sportId: 1,
-      teamId: teamId,
-      startDate:
-        state.season.springStartDate ?? state.season.preSeasonStartDate,
-      endDate: state.season.postSeasonEndDate,
+      teamId: team.id,
+      startDate: season.springStartDate ?? season.preSeasonStartDate,
+      endDate: season.postSeasonEndDate,
     });
 
-    setSeries(GenerateSeries(schedule, teamId));
-  }, [state.season, teamId]);
+    setSeries(GenerateSeries(schedule, team));
+  }, [season, team]);
 
   useEffect(() => {
     getSchedule();
@@ -42,7 +42,7 @@ const TeamSchedule = () => {
       series?.slice(pivot, series?.length),
     ];
     return (
-      <ThemeProvider theme={GetTheme(state.team?.id)}>
+      <ThemeProvider theme={GetTheme(team?.id)}>
         <CssBaseline />
         <Grid
           container
@@ -68,7 +68,7 @@ const TeamSchedule = () => {
       </ThemeProvider>
     );
   }
-  return <>{state.team?.name} did not play this season</>;
+  return <>Loading</>;
 };
 
 export default TeamSchedule;

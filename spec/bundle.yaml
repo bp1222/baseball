@@ -80,6 +80,8 @@ paths:
         Returns Teams
       parameters:
         - $ref: '#/components/parameters/SportId'
+        - $ref: '#/components/parameters/Season'
+        - $ref: '#/components/parameters/LeagueIds'
       tags:
         - mlb
       responses:
@@ -103,13 +105,20 @@ components:
       required: false
       schema:
         type: string
+    LeagueIds:
+      in: query
+      name: leagueIds
+      required: false
+      schema:
+        type: array
+        items:
+          type: number
     Season:
       in: query
       name: season
       required: true
-      explode: true
       schema:
-        type: number
+        type: string
     SportId:
       in: query
       name: sportId
