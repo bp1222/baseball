@@ -1,4 +1,11 @@
-import { Box, CircularProgress, CssBaseline, Grid, Stack, ThemeProvider } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  CssBaseline,
+  Grid,
+  Stack,
+  ThemeProvider,
+} from "@mui/material";
 import { MlbApi } from "../services/MlbApi";
 import { useEffect, useCallback, useContext, useState } from "react";
 import { AppStateContext } from "../state/context";
@@ -71,7 +78,7 @@ const TeamSchedule = () => {
 
   return (
     <>
-      <Box sx={{ display: 'flex', justifyContent: 'center'}}>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
         <CircularProgress />
       </Box>
     </>

@@ -39,12 +39,14 @@ export const SeriesResultColor: { [key in SeriesResult]: Color } = {
 };
 
 export enum SeriesHomeAway {
+  Unknown,
   Home,
   Away,
   Split,
 }
 
 export enum SeriesType {
+  Unknown,
   SpringTraining,
   RegularSeason,
   WildCard,
@@ -55,8 +57,8 @@ export enum SeriesType {
 
 export type Series = {
   result: SeriesResult;
-  homeaway: SeriesHomeAway | undefined;
-  type: SeriesType | undefined;
+  homeaway: SeriesHomeAway;
+  type: SeriesType;
   against: MLBGameTeam;
   startDate: string;
   endDate: string;
@@ -96,8 +98,8 @@ function GenerateSeries(schedule: MLBSchedule, team: MLBTeam): Series[] {
   const newSeries = (): Series => {
     return {
       result: SeriesResult.Unplayed,
-      homeaway: undefined,
-      type: undefined,
+      homeaway: SeriesHomeAway.Unknown,
+      type: SeriesType.Unknown,
       against: {},
       startDate: "",
       endDate: "",
@@ -160,7 +162,7 @@ function GenerateSeries(schedule: MLBSchedule, team: MLBTeam): Series[] {
                   ? SeriesType.League
                   : game.gameType == MLBGameGameTypeEnum.WorldSeries
                     ? SeriesType.World
-                    : undefined;
+                    : SeriesType.Unknown;
 
         currentSeries.against = isHome()
           ? (game.teams?.away ?? {})
