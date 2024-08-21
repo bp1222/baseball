@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import GetTheme from "./colors";
 import { AppStateAction } from "./state/actions";
 import { MlbApi } from "./services/MlbApi";
+import Footer from "./components/Footer";
 
 const api = new MlbApi();
 
@@ -58,6 +59,7 @@ const App = () => {
       <CssBaseline />
       <Header />
       <Outlet />
+      <Footer />
     </ThemeProvider>
   );
 };
