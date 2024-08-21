@@ -12,6 +12,10 @@ MLBSchedule:
   $ref: ./schedule.yaml
 MLBSport:
   $ref: ./sport.yaml
+MLBStandings:
+  $ref: ./standings.yaml
+MLBRecord:
+  $ref: ./record.yaml
 MLBTeam:
   $ref: ./team.yaml
 MLBVenue:

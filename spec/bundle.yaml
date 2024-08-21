@@ -97,6 +97,30 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/MLBTeam'
+  /v1/standings:
+    get:
+      operationId: getStandings
+      summary: Retrieves Standings
+      description: |
+        Returns Standing
+      parameters:
+        - $ref: '#/components/parameters/LeagueId'
+        - $ref: '#/components/parameters/Season'
+      tags:
+        - mlb
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: MLBStandingsList
+                type: object
+                properties:
+                  records:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MLBStandings'
 components:
   parameters:
     EndDate:
@@ -105,6 +129,12 @@ components:
       required: false
       schema:
         type: string
+    LeagueId:
+      in: query
+      name: leagueId
+      required: true
+      schema:
+        type: number
     LeagueIds:
       in: query
       name: leagueIds
@@ -498,6 +528,120 @@ components:
           type: number
         activeStatus:
           type: boolean
+    MLBStandings:
+      title: MLBStandings
+      description: |
+        Standings
+      type: object
+      properties:
+        standingsType:
+          type: string
+        league:
+          $ref: '#/components/schemas/MLBLeague'
+        division:
+          $ref: '#/components/schemas/MLBDivision'
+        sport:
+          $ref: '#/components/schemas/MLBSport'
+        lastUpdated:
+          type: string
+        teamRecords:
+          type: array
+          items:
+            $ref: '#/components/schemas/MLBRecord'
+    MLBRecord:
+      title: MLBRecord
+      description: |
+        Record
+      type: object
+      properties:
+        team:
+          $ref: '#/components/schemas/MLBTeam'
+        season:
+          type: string
+        streak:
+          title: MLBStreak
+          type: object
+          properties:
+            streakType:
+              type: string
+              enum:
+                - losses
+                - wins
+              x-enum-varnames:
+                - Losing
+                - Winning
+              description: |
+                Streak Type:
+                  * Losing Streak
+                  * Winning Streak
+        divisionRank:
+          type: string
+        leagueRank:
+          type: string
+        sportRank:
+          type: string
+        gamesPlayed:
+          type: number
+        gamesBack:
+          type: string
+        wildCardGamesBack:
+          type: string
+        leagueGamesBack:
+          type: string
+        sportGamesBack:
+          type: string
+        divisionGamesBack:
+          type: string
+        conferenceGamesBack:
+          type: string
+        leagueRecord:
+          title: MLBTeamRecord
+          type: object
+          properties:
+            wins:
+              type: number
+            losses:
+              type: number
+            ties:
+              type: number
+            pct:
+              type: string
+        lastUpdated:
+          type: string
+        runsAllowed:
+          type: number
+        runsScored:
+          type: number
+        divisionChamp:
+          type: boolean
+        divisionLeader:
+          type: boolean
+        hasWildcard:
+          type: boolean
+        clinched:
+          type: boolean
+        eliminationNumber:
+          type: string
+        eliminationNumberSport:
+          type: string
+        eliminationNumberLeague:
+          type: string
+        eliminationNumberDivision:
+          type: string
+        eliminationNumberConference:
+          type: string
+        wildCardEliminationNumber:
+          type: string
+        magicNumber:
+          type: string
+        wins:
+          type: number
+        losses:
+          type: number
+        runDifferential:
+          type: number
+        winningPercentage:
+          type: string
     MLBTeam:
       title: MLBTeam
       description: |

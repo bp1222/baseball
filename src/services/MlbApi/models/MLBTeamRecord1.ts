@@ -16,41 +16,47 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface MLBTeamRecord
+ * @interface MLBTeamRecord1
  */
-export interface MLBTeamRecord {
+export interface MLBTeamRecord1 {
     /**
      * 
      * @type {number}
-     * @memberof MLBTeamRecord
+     * @memberof MLBTeamRecord1
      */
     wins?: number;
     /**
      * 
      * @type {number}
-     * @memberof MLBTeamRecord
+     * @memberof MLBTeamRecord1
      */
     losses?: number;
     /**
      * 
+     * @type {number}
+     * @memberof MLBTeamRecord1
+     */
+    ties?: number;
+    /**
+     * 
      * @type {string}
-     * @memberof MLBTeamRecord
+     * @memberof MLBTeamRecord1
      */
     pct?: string;
 }
 
 /**
- * Check if a given object implements the MLBTeamRecord interface.
+ * Check if a given object implements the MLBTeamRecord1 interface.
  */
-export function instanceOfMLBTeamRecord(value: object): value is MLBTeamRecord {
+export function instanceOfMLBTeamRecord1(value: object): value is MLBTeamRecord1 {
     return true;
 }
 
-export function MLBTeamRecordFromJSON(json: any): MLBTeamRecord {
-    return MLBTeamRecordFromJSONTyped(json, false);
+export function MLBTeamRecord1FromJSON(json: any): MLBTeamRecord1 {
+    return MLBTeamRecord1FromJSONTyped(json, false);
 }
 
-export function MLBTeamRecordFromJSONTyped(json: any, ignoreDiscriminator: boolean): MLBTeamRecord {
+export function MLBTeamRecord1FromJSONTyped(json: any, ignoreDiscriminator: boolean): MLBTeamRecord1 {
     if (json == null) {
         return json;
     }
@@ -58,11 +64,12 @@ export function MLBTeamRecordFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'wins': json['wins'] == null ? undefined : json['wins'],
         'losses': json['losses'] == null ? undefined : json['losses'],
+        'ties': json['ties'] == null ? undefined : json['ties'],
         'pct': json['pct'] == null ? undefined : json['pct'],
     };
 }
 
-export function MLBTeamRecordToJSON(value?: MLBTeamRecord | null): any {
+export function MLBTeamRecord1ToJSON(value?: MLBTeamRecord1 | null): any {
     if (value == null) {
         return value;
     }
@@ -70,6 +77,7 @@ export function MLBTeamRecordToJSON(value?: MLBTeamRecord | null): any {
         
         'wins': value['wins'],
         'losses': value['losses'],
+        'ties': value['ties'],
         'pct': value['pct'],
     };
 }

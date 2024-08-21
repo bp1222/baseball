@@ -1,0 +1,19 @@
+title: MLBStandings
+description: >
+  Standings
+type: object
+properties:
+  standingsType:
+    type: string
+  league:
+    $ref: ./schemas.yaml#/MLBLeague
+  division:
+    $ref: ./schemas.yaml#/MLBDivision
+  sport:
+    $ref: ./schemas.yaml#/MLBSport
+  lastUpdated:
+    type: string 
+  teamRecords:
+    type: array
+    items:
+      $ref: ./schemas.yaml#/MLBRecord

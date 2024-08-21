@@ -22,6 +22,8 @@ paths:
     $ref: ./paths/allSeasons.yaml
   /v1/teams:
     $ref: ./paths/teams.yaml
+  /v1/standings:
+    $ref: ./paths/standings.yaml
 
 components:
   parameters:

@@ -1,20 +1,23 @@
 import { Box, Stack, Typography } from "@mui/material";
+import { grey } from "@mui/material/colors";
+
+import img from "../assets/c.png"
 
 const Footer = () => {
   return (
-    <Box pt={4} display={"flex"} minWidth={"100%"} justifyContent={"center"}>
-      <Stack direction={"column"}>
-      <Box minWidth={"20%"}>
-        <Typography textAlign={"center"}>
-          © {new Date().getFullYear()} Dave Walker
-        </Typography>
+    <Box width={"100%"} display={"flex"} justifyContent={"center"}>
+      <Box padding={.5} border={.5} borderColor={grey[300]} borderRadius={2} bgcolor={grey[50]} mt={4} width={"fit-content"}>
+        <Stack direction={"column"}>
+          <Box minWidth={"20%"}>
+            <Typography textAlign={"center"}>
+              © {new Date().getFullYear()}
+            </Typography>
+            <Typography textAlign={"center"}>
+              Made in <img width={12} height={12} src={img}/>olorado
+            </Typography>
+          </Box >
+        </Stack>
       </Box >
-      <Box minWidth={"20%"}>
-        <Typography textAlign={"center"}>
-          Design inspired by <a href="http://reddit.com/u/utleyscorner">/r/utleyscorner</a>
-        </Typography>
-      </Box >
-      </Stack>
     </Box >
   );
 };

@@ -12,7 +12,7 @@ const TeamPicker = () => {
 
   const handleTeamSelect = (team: MLBTeam) => {
     setAnchorEl(null);
-    navigate(seasonId + "/" + team.id + "/schedule");
+    navigate(seasonId + "/" + team.id);
   };
 
   const team = state.teams.find((t) => t.id == parseInt(teamId ?? ""));

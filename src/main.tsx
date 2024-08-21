@@ -7,7 +7,7 @@ import AppRouter from "./router.tsx";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AppStateProvider>
-      <Container maxWidth="md">
+      <Container>
         <AppRouter />
       </Container>
     </AppStateProvider>

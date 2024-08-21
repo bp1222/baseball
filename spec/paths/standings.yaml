@@ -1,0 +1,24 @@
+# /v1/standings
+get:
+  operationId: getStandings 
+  summary: Retrieves Standings
+  description: >
+    Returns Standing
+  parameters:
+    - $ref: ../components/parameters/parameters.yaml#/LeagueId
+    - $ref: ../components/parameters/parameters.yaml#/Season
+  tags:
+    - mlb
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            title: MLBStandingsList
+            type: object
+            properties:
+              records:
+                type: array
+                items:
+                  $ref: ../components/schemas/schemas.yaml#/MLBStandings
