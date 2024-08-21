@@ -1,17 +1,28 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { AppStateContext } from "../state/context";
+import { AppStateContext } from "../state/Context";
 import { useParams } from "react-router-dom";
 import { MlbApi, MLBRecord, MLBStandings, MLBTeam } from "../services/MlbApi";
-import { Box, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 
-const api = new MlbApi()
+const api = new MlbApi();
 
 const Standings = () => {
   const { state } = useContext(AppStateContext);
   const [standings, setStandings] = useState<MLBStandings[]>([]);
   const { seasonId, teamId } = useParams();
 
-  const team: MLBTeam = state.teams.find((t) => t.id == parseInt(teamId ?? ""));
+  const team: MLBTeam = state.teams.find(
+    (t) => t.id == parseInt(teamId ?? ""),
+  )!;
 
   const getStandings = useCallback(async () => {
     if (team == undefined) return;
@@ -31,7 +42,7 @@ const Standings = () => {
     getStandings();
   }, [getStandings]);
 
-  console.log(standings)
+  console.log(standings);
 
   const teamStanding = (record: MLBRecord) => {
     return (
@@ -41,8 +52,8 @@ const Standings = () => {
         <TableCell align="right">{record.losses}</TableCell>
         <TableCell align="right">{record.winningPercentage}</TableCell>
       </TableRow>
-    )
-  }
+    );
+  };
 
   return (
     <Box>
@@ -57,7 +68,9 @@ const Standings = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {standings.find((s) => s.division?.id == team.division?.id)?.teamRecords?.map((t) => teamStanding(t))}
+            {standings
+              .find((s) => s.division?.id == team.division?.id)
+              ?.teamRecords?.map((t) => teamStanding(t))}
           </TableBody>
         </Table>
       </TableContainer>

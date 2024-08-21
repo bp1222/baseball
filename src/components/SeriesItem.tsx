@@ -6,7 +6,7 @@ import {
   SeriesType,
 } from "../models/Series";
 import { useContext } from "react";
-import { AppStateContext } from "../state/context";
+import { AppStateContext } from "../state/Context";
 import { MLBTeam } from "../services/MlbApi/models";
 import SeriesGame from "./SeriesGame";
 import { amber } from "@mui/material/colors";

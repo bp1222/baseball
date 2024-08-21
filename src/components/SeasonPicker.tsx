@@ -1,7 +1,7 @@
 import { Button, Menu, MenuItem, Typography } from "@mui/material";
 import { MLBSeason } from "../services/MlbApi";
 import { useContext, useState } from "react";
-import { AppStateContext } from "../state/context";
+import { AppStateContext } from "../state/Context";
 import { useNavigate, useParams } from "react-router-dom";
 
 const SeasonPicker = () => {

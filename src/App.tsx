@@ -2,10 +2,10 @@ import { useCallback, useContext, useEffect } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 
-import { AppStateContext } from "./state/context";
+import { AppStateContext } from "./state/Context";
 import Header from "./components/Header";
 import GetTheme from "./colors";
-import { AppStateAction } from "./state/actions";
+import { AppStateAction } from "./state/Actions";
 import { MlbApi } from "./services/MlbApi";
 import Footer from "./components/Footer";
 

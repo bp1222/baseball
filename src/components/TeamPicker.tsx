@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { MLBTeam } from "../services/MlbApi/models";
 import { MenuItem, Button, Menu, Typography } from "@mui/material";
-import { AppStateContext } from "../state/context";
+import { AppStateContext } from "../state/Context";
 import { useNavigate, useParams } from "react-router-dom";
 
 const TeamPicker = () => {

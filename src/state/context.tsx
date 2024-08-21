@@ -1,6 +1,6 @@
 import { createContext, useReducer, PropsWithChildren } from "react";
-import { AppState } from "./state";
-import { AppStateAction, AppStateActions, AppStateDispatch } from "./actions";
+import { AppState } from "./State";
+import { AppStateAction, AppStateActions, AppStateDispatch } from "./Actions";
 
 const initState: AppState = {
   teams: [],
