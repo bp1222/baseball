@@ -5,9 +5,11 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
+import React from "react";
+
 import App from "./App";
-import TeamSchedule from "./components/TeamSchedule";
 import Team from "./components/Team";
+import TeamSchedule from "./components/TeamSchedule";
 import TeamStats from "./components/TeamStats";
 
 const AppRouter = () => {

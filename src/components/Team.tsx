@@ -2,8 +2,9 @@ import { Box, Button, CssBaseline, Stack, ThemeProvider } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import GetTheme from "../colors";
-import { useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
+import { MlbApi, MLBSchedule } from "../services/MlbApi";
 
 enum Tab {
   Schedule,
@@ -15,13 +16,37 @@ const TabLocation = {
   [Tab.Stats]: "stats",
 };
 
-const Team = () => {
-  const [tab, setTab] = useState<Tab>(Tab.Schedule);
+const api = new MlbApi();
 
+const Team = () => {
   const { state } = useContext(AppStateContext);
-  const { teamId } = useParams();
+  const { teamId, seasonId } = useParams();
+
+  const [tab, setTab] = useState<Tab>(Tab.Schedule);
+  const [schedule, setSchedule] = useState<MLBSchedule>({});
+
   const team = state.teams.find((t) => t.id == parseInt(teamId ?? ""));
+  const season = state.seasons.find((s) => s.seasonId == seasonId);
+
   const navigate = useNavigate();
+
+  const getSchedule = useCallback(async () => {
+    if (team == undefined) return;
+    if (season == undefined) return;
+
+    const schedule = await api.getSchedule({
+      sportId: 1,
+      teamId: team.id,
+      startDate: season.springStartDate ?? season.preSeasonStartDate,
+      endDate: season.postSeasonEndDate,
+    });
+
+    setSchedule(schedule);
+  }, [season, team]);
+
+  useEffect(() => {
+    getSchedule();
+  }, [getSchedule]);
 
   const makeButton = (text: string, location: Tab) => {
     const selected = tab == location;
@@ -69,7 +94,7 @@ const Team = () => {
       </Box>
       <ThemeProvider theme={GetTheme(team?.id)}>
         <CssBaseline />
-        <Outlet />
+        <Outlet context={{ schedule, team }} />
       </ThemeProvider>
     </>
   );

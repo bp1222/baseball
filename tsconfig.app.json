@@ -17,7 +17,7 @@
     /* Linting */
     "strict": true,
 
-    // TODO: figure out how to clean output of generated code
+    // need to disable these for openapi-generated code, for now
     "noUnusedLocals": false,
     "noUnusedParameters": false,
 

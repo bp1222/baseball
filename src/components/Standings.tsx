@@ -46,7 +46,7 @@ const Standings = () => {
 
   const teamStanding = (record: MLBRecord) => {
     return (
-      <TableRow>
+      <TableRow key={record.team?.id}>
         <TableCell>{record.team?.name}</TableCell>
         <TableCell align="right">{record.wins}</TableCell>
         <TableCell align="right">{record.losses}</TableCell>

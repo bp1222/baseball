@@ -63,19 +63,22 @@ const SeriesItem = ({ series }: SeriesItemProps) => {
         />
       </Box>
 
-      <Box width={"fill-available"}>
-        <Stack direction="row" justifyContent={"right"} flexWrap={"wrap"}>
-          {series.games.map((sg) => (
-            <SeriesGame
-              key={sg.game.gameGuid}
-              result={sg.result}
-              game={sg.game}
-              home={findTeam(sg.game.teams?.home?.team?.id)!}
-              away={findTeam(sg.game.teams?.away?.team?.id)!}
-            />
-          ))}
-        </Stack>
-      </Box>
+      <Stack
+        direction="row"
+        width={"fill-available"}
+        justifyContent={"flex-end"}
+        flexWrap={"wrap"}
+      >
+        {series.games.map((sg) => (
+          <SeriesGame
+            key={sg.game.gameGuid}
+            result={sg.result}
+            game={sg.game}
+            home={findTeam(sg.game.teams?.home?.team?.id)!}
+            away={findTeam(sg.game.teams?.away?.team?.id)!}
+          />
+        ))}
+      </Stack>
     </Stack>
   );
 };

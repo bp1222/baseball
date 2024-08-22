@@ -57,7 +57,7 @@ const SeriesGame = ({ result, game, home, away }: SeriesGameProps) => {
         borderRadius: 0.5,
         borderColor: GameResultColor[result][200],
         backgroundColor: GameResultColor[result][50],
-        minWidth: "15%",
+        minWidth: 50,
         fontSize: "smaller",
       }}
     >
@@ -68,7 +68,6 @@ const SeriesGame = ({ result, game, home, away }: SeriesGameProps) => {
           color: "Background",
           paddingLeft: 0.2,
           paddingRight: 0.2,
-          width: 50,
           textAlign: "center",
         }}
       >

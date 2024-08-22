@@ -1,38 +1,22 @@
 import { Box, CircularProgress, Grid, Stack } from "@mui/material";
-import { MlbApi } from "../services/MlbApi";
-import { useEffect, useCallback, useContext, useState } from "react";
-import { AppStateContext } from "../state/Context";
+import { useEffect, useState } from "react";
 import GenerateSeries, { Series } from "../models/Series";
 import SeriesItem from "./SeriesItem";
-import { useParams } from "react-router-dom";
+import { MLBSchedule, MLBTeam } from "../services/MlbApi";
+import { useOutletContext } from "react-router-dom";
 
-const api = new MlbApi();
+type TeamScheduleProps = {
+  schedule: MLBSchedule;
+  team: MLBTeam;
+};
 
 const TeamSchedule = () => {
-  const { state } = useContext(AppStateContext);
   const [series, setSeries] = useState<Series[]>([]);
-  const { seasonId, teamId } = useParams();
-
-  const season = state.seasons.find((s) => s.seasonId == seasonId);
-  const team = state.teams.find((t) => t.id == parseInt(teamId ?? ""));
-
-  const getSchedule = useCallback(async () => {
-    if (team == undefined) return;
-    if (season == undefined) return;
-
-    const schedule = await api.getSchedule({
-      sportId: 1,
-      teamId: team.id,
-      startDate: season.springStartDate ?? season.preSeasonStartDate,
-      endDate: season.postSeasonEndDate,
-    });
-
-    setSeries(GenerateSeries(schedule, team));
-  }, [season, team]);
+  const { schedule, team } = useOutletContext<TeamScheduleProps>();
 
   useEffect(() => {
-    getSchedule();
-  }, [getSchedule]);
+    setSeries(GenerateSeries(schedule, team));
+  }, [schedule, team]);
 
   if (series?.length > 0) {
     const pivot = Math.ceil(series!.length / 2);
@@ -63,6 +47,7 @@ const TeamSchedule = () => {
     );
   }
 
+  console.log("HERE")
   return (
     <>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
