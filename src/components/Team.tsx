@@ -4,7 +4,7 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 import GetTheme from "../colors";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
-import { MlbApi, MLBSchedule, MLBScheduleFromJSON, MLBScheduleToJSON } from "../services/MlbApi";
+import { MlbApi, MLBSchedule } from "../services/MlbApi";
 
 enum Tab {
   Schedule,
