@@ -37,6 +37,7 @@ const SeriesItem = ({ series }: SeriesItemProps) => {
   return (
     <Stack
       direction={"row"}
+      height={1}
       sx={{
         border: 1,
         borderRadius: 1,

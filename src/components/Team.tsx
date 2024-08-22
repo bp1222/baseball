@@ -4,7 +4,7 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 import GetTheme from "../colors";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
-import { MlbApi, MLBSchedule } from "../services/MlbApi";
+import { MlbApi, MLBSchedule, MLBScheduleFromJSON, MLBScheduleToJSON } from "../services/MlbApi";
 
 enum Tab {
   Schedule,
@@ -30,16 +30,34 @@ const Team = () => {
 
   const navigate = useNavigate();
 
-  const getSchedule = useCallback(async () => {
-    if (team == undefined) return;
-    if (season == undefined) return;
 
-    const schedule = await api.getSchedule({
-      sportId: 1,
-      teamId: team.id,
-      startDate: season.springStartDate ?? season.preSeasonStartDate,
-      endDate: season.postSeasonEndDate,
-    });
+  const getSchedule = useCallback(async () => {
+    if (team?.id == undefined) return;
+    if (season?.seasonId == undefined) return;
+
+    let schedule: MLBSchedule|null = null
+
+    const seasonIdNum = parseInt(season.seasonId!)
+    const seasonStorageKey = "mlbSeason:" + seasonIdNum + ":" + team.id!
+    if (seasonIdNum < (new Date().getFullYear())) {
+      const scheduleStr = localStorage.getItem(seasonStorageKey)
+      if (scheduleStr != null) {
+        schedule = JSON.parse(scheduleStr)
+      }
+    }
+
+    if (schedule == null) {
+      schedule = await api.getSchedule({
+        sportId: 1,
+        teamId: team.id,
+        startDate: season.springStartDate ?? season.preSeasonStartDate,
+        endDate: season.postSeasonEndDate,
+      });
+    }
+
+    if (seasonIdNum < (new Date().getFullYear())) {
+      localStorage.setItem(seasonStorageKey, JSON.stringify(schedule))
+    }
 
     setSchedule(schedule);
   }, [season, team]);

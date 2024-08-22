@@ -52,6 +52,7 @@ const SeriesGame = ({ result, game, home, away }: SeriesGameProps) => {
       marginTop={0.5}
       marginBottom={0.5}
       marginRight={1}
+      height={"fit-content"}
       sx={{
         border: 1,
         borderRadius: 0.5,

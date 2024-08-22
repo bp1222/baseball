@@ -25,35 +25,15 @@ const TeamSchedule = () => {
       series?.slice(pivot, series?.length),
     ];
     return (
-      <Grid
-        container
-        paddingTop={1}
-        columnSpacing={2}
-        columns={{ xs: 6, sm: 12 }}
-      >
-        <Grid item xs={6}>
-          <Stack direction={"column"} spacing={1}>
-            {firstHalf?.map((s) => <SeriesItem key={s.startDate} series={s} />)}
-          </Stack>
-        </Grid>
-        <Grid item xs={6}>
-          <Stack direction={"column"} spacing={1}>
-            {secondHalf?.map((s) => (
-              <SeriesItem key={s.startDate} series={s} />
-            ))}
-          </Stack>
-        </Grid>
+      <Grid container display={"flex"} flexWrap={"wrap"} columns={2} columnSpacing={4} >
+          {series.map((s) => <Grid xs={1} padding={1} key={s.startDate} item><SeriesItem series={s} /></Grid>)}
       </Grid>
     );
   }
-
-  console.log("HERE")
   return (
-    <>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <CircularProgress />
-      </Box>
-    </>
+    <Box display={"flex"} justifyContent={"center"}>
+      <CircularProgress />
+    </Box>
   );
 };
 
