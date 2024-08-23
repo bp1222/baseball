@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
 import { useParams } from "react-router-dom";
-import { MlbApi, MLBRecord, MLBStandings, MLBTeam } from "../services/MlbApi";
+import { MlbApi, MLBRecord, MLBStandings, MLBStandingsList, MLBTeam } from "../services/MlbApi";
 import {
   Box,
   Paper,
@@ -12,6 +12,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import LoadCachedData from "../services/caching";
 
 const api = new MlbApi();
 
@@ -28,12 +29,15 @@ const Standings = () => {
     if (team == undefined) return;
     if (seasonId == undefined) return;
 
-    const standings = await api.getStandings({
+    const seasonIdNum = parseInt(seasonId)
+    const storageKey = "mlbStandings:" + seasonIdNum + ":" + team.id!
+
+    const standings = await LoadCachedData<MLBStandingsList>(storageKey, (parseInt(seasonId) < (new Date().getFullYear())), () => api.getStandings({
       leagueId: team.league!.id!,
       season: seasonId,
-    });
+    }))
 
-    if (standings.records != undefined) {
+    if (standings?.records != undefined) {
       setStandings(standings.records);
     }
   }, [team, seasonId]);
