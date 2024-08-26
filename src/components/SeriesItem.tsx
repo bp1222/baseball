@@ -68,6 +68,7 @@ const SeriesItem = ({ series }: SeriesItemProps) => {
         direction="row"
         width={"fill-available"}
         justifyContent={"flex-end"}
+        alignContent={"flex-start"}
         flexWrap={"wrap"}
       >
         {series.games.map((sg) => (

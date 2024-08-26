@@ -13,7 +13,7 @@ enum Tab {
 }
 
 const TabLocation = {
-  [Tab.Schedule]: "",
+  [Tab.Schedule]: "schedule",
   [Tab.Stats]: "stats",
 };
 
@@ -26,7 +26,6 @@ const Team = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [tab, setTab] = useState<Tab>(location.pathname.endsWith("stats") ? Tab.Stats : Tab.Schedule);
   const [schedule, setSchedule] = useState<MLBSchedule>();
 
   const team = state.teams.find((t) => t.id == parseInt(teamId ?? ""));
@@ -57,15 +56,13 @@ const Team = () => {
     getSchedule();
   }, [getSchedule]);
 
-  const makeButton = (text: string, location: Tab) => {
-    const selected = tab == location;
+  const makeButton = (text: string, loc: Tab, selected: boolean) => {
     const bgColor = selected ? "secondary.main" : grey[200];
 
     return (
       <Button
         onClick={() => {
-          setTab(location);
-          navigate(TabLocation[location]);
+          navigate(TabLocation[loc]);
         }}
         sx={{
           minWidth: "20%",
@@ -96,8 +93,8 @@ const Team = () => {
           spacing={2}
         >
           <>
-            {makeButton("schedule", Tab.Schedule)}
-            {makeButton("stats", Tab.Stats)}
+            {makeButton("schedule", Tab.Schedule, location.pathname.endsWith(TabLocation[Tab.Schedule]))}
+            {makeButton("stats", Tab.Stats, location.pathname.endsWith(TabLocation[Tab.Stats]))}
           </>
         </Stack>
       </Box>

@@ -21,12 +21,12 @@ const SeriesTeam = ({ against, homeaway }: SeriesTeamProps) => {
   };
 
   return (
-    <Stack direction="row">
+    <Stack direction={{xs: "column", sm: "row"}}>
       <Box paddingLeft={1} marginTop={0.5} alignContent={"center"}>
         <img src={againstImage} height={24} width={24} />
       </Box>
-      <Box paddingLeft={0}>
-        <Typography fontSize={"smaller"} noWrap>
+      <Box paddingLeft={{xs: 1, sm: 0}}>
+        <Typography fontSize={"smaller"} overflow={'visible'} noWrap>
           {homeaway == SeriesHomeAway.Home
             ? "vs "
             : homeaway == SeriesHomeAway.Away
@@ -36,7 +36,8 @@ const SeriesTeam = ({ against, homeaway }: SeriesTeamProps) => {
         </Typography>
         <Typography
           noWrap
-          fontSize={"Larger"}
+          overflow={'visible'}
+          fontSize={{xs: "smaller", sm: "larger"}}
           fontStyle={"bold"}
           textOverflow={"clip"}
         >

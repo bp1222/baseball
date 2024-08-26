@@ -18,7 +18,7 @@ const SeriesGame = ({ result, game, home, away }: SeriesGameProps) => {
 
   const renderScore = (name: string | undefined, score: number | undefined) => {
     return (
-      <Stack direction="row" sx={{ fontSize: "smaller", textAlign: "center" }}>
+      <Stack direction={"row"} sx={{ fontSize: "smaller", textAlign: "center" }}>
         <Box
           sx={{
             borderRight: 1,
@@ -48,7 +48,7 @@ const SeriesGame = ({ result, game, home, away }: SeriesGameProps) => {
 
   return (
     <Stack
-      direction="column"
+      direction={"column"}
       marginTop={0.5}
       marginBottom={0.5}
       marginRight={1}

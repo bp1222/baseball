@@ -56,6 +56,7 @@ const TeamRanking = () => {
 
           // Ignore days where no one in the division has played a game; looking at you Seoul Series.
           if (r.teamRecords.find((tr) => tr.wins != 0 || tr.losses != 0) == undefined) return
+          newSeasonDateRange.push(day)
 
           r.teamRecords.forEach((tr) => {
             if (newSeasonRankings[tr.team.name] == undefined) {
@@ -65,8 +66,6 @@ const TeamRanking = () => {
           })
         })
       }
-
-      newSeasonDateRange.push(day)
 
       const nextDay = new Date(day)
       nextDay.setDate(day.getDate() + 1)
@@ -90,7 +89,7 @@ const TeamRanking = () => {
         data: seasonRankings[k],
         label: k,
         showMark: false,
-        curve: "stepAfter",
+        curve: 'step',
       })
     }
 
@@ -107,21 +106,20 @@ const TeamRanking = () => {
 
   return (
     <TableContainer component={Paper}>
-      <Box border={2} height={500} borderColor={'secondary.light'}>
         <LineChart
           height={500}
           series={getSeries()}
           grid={{horizontal: true}}
           yAxis={[
             {
-              reverse: true,
               label: 'Games Back',
+              reverse: true,
             }
           ]}
           xAxis={[
               {
-                scaleType: 'band',
                 label: 'Day',
+                scaleType: 'band',
                 data: seasonDateRange,
                 tickInterval: (date, index) => date?.getDate() == 1 || index == 0,
                 tickLabelInterval: (date, index) => date?.getDate() == 1 || index == 0,
@@ -132,7 +130,6 @@ const TeamRanking = () => {
               }
             ]}
           />
-      </Box>
     </TableContainer>
   );
 };
