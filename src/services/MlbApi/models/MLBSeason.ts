@@ -25,7 +25,7 @@ export interface MLBSeason {
      * @type {string}
      * @memberof MLBSeason
      */
-    seasonId?: string;
+    seasonId: string;
     /**
      * 
      * @type {boolean}
@@ -49,7 +49,13 @@ export interface MLBSeason {
      * @type {string}
      * @memberof MLBSeason
      */
-    seasonStartDate?: string;
+    seasonStartDate: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MLBSeason
+     */
+    seasonEndDate: string;
     /**
      * 
      * @type {string}
@@ -67,7 +73,7 @@ export interface MLBSeason {
      * @type {string}
      * @memberof MLBSeason
      */
-    regularSeasonStartDate?: string;
+    regularSeasonStartDate: string;
     /**
      * 
      * @type {string}
@@ -91,7 +97,7 @@ export interface MLBSeason {
      * @type {string}
      * @memberof MLBSeason
      */
-    regularSeasonEndDate?: string;
+    regularSeasonEndDate: string;
     /**
      * 
      * @type {string}
@@ -146,6 +152,11 @@ export interface MLBSeason {
  * Check if a given object implements the MLBSeason interface.
  */
 export function instanceOfMLBSeason(value: object): value is MLBSeason {
+    if (!('seasonId' in value) || value['seasonId'] === undefined) return false;
+    if (!('seasonStartDate' in value) || value['seasonStartDate'] === undefined) return false;
+    if (!('seasonEndDate' in value) || value['seasonEndDate'] === undefined) return false;
+    if (!('regularSeasonStartDate' in value) || value['regularSeasonStartDate'] === undefined) return false;
+    if (!('regularSeasonEndDate' in value) || value['regularSeasonEndDate'] === undefined) return false;
     return true;
 }
 
@@ -159,18 +170,19 @@ export function MLBSeasonFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
-        'seasonId': json['seasonId'] == null ? undefined : json['seasonId'],
+        'seasonId': json['seasonId'],
         'hasWildcard': json['hasWildcard'] == null ? undefined : json['hasWildcard'],
         'preSeasonStartDate': json['preSeasonStartDate'] == null ? undefined : json['preSeasonStartDate'],
         'preSeasonEndDate': json['preSeasonEndDate'] == null ? undefined : json['preSeasonEndDate'],
-        'seasonStartDate': json['seasonStartDate'] == null ? undefined : json['seasonStartDate'],
+        'seasonStartDate': json['seasonStartDate'],
+        'seasonEndDate': json['seasonEndDate'],
         'springStartDate': json['springStartDate'] == null ? undefined : json['springStartDate'],
         'springEndDate': json['springEndDate'] == null ? undefined : json['springEndDate'],
-        'regularSeasonStartDate': json['regularSeasonStartDate'] == null ? undefined : json['regularSeasonStartDate'],
+        'regularSeasonStartDate': json['regularSeasonStartDate'],
         'lastDate1stHalf': json['lastDate1stHalf'] == null ? undefined : json['lastDate1stHalf'],
         'allStartDate': json['allStartDate'] == null ? undefined : json['allStartDate'],
         'firstDate2ndHalf': json['firstDate2ndHalf'] == null ? undefined : json['firstDate2ndHalf'],
-        'regularSeasonEndDate': json['regularSeasonEndDate'] == null ? undefined : json['regularSeasonEndDate'],
+        'regularSeasonEndDate': json['regularSeasonEndDate'],
         'postSeasonStartDate': json['postSeasonStartDate'] == null ? undefined : json['postSeasonStartDate'],
         'postSeasonEndDate': json['postSeasonEndDate'] == null ? undefined : json['postSeasonEndDate'],
         'offSeasonStartDate': json['offSeasonStartDate'] == null ? undefined : json['offSeasonStartDate'],
@@ -193,6 +205,7 @@ export function MLBSeasonToJSON(value?: MLBSeason | null): any {
         'preSeasonStartDate': value['preSeasonStartDate'],
         'preSeasonEndDate': value['preSeasonEndDate'],
         'seasonStartDate': value['seasonStartDate'],
+        'seasonEndDate': value['seasonEndDate'],
         'springStartDate': value['springStartDate'],
         'springEndDate': value['springEndDate'],
         'regularSeasonStartDate': value['regularSeasonStartDate'],

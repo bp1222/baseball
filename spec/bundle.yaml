@@ -106,6 +106,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/LeagueId'
         - $ref: '#/components/parameters/Season'
+        - $ref: '#/components/parameters/Date'
+        - $ref: '#/components/parameters/Fields'
       tags:
         - mlb
       responses:
@@ -123,12 +125,28 @@ paths:
                       $ref: '#/components/schemas/MLBStandings'
 components:
   parameters:
+    Date:
+      in: query
+      name: date
+      required: false
+      schema:
+        type: string
     EndDate:
       in: query
       name: endDate
       required: false
       schema:
         type: string
+    Fields:
+      in: query
+      name: fields
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+      style: form
+      explode: false
     LeagueId:
       in: query
       name: leagueId
@@ -174,6 +192,9 @@ components:
       description: |
         Division 
       type: object
+      required:
+        - id
+        - name
       properties:
         id:
           type: number
@@ -204,6 +225,18 @@ components:
       description: |
         Game
       type: object
+      required:
+        - gamePk
+        - gameGuid
+        - gameType
+        - season
+        - gameDate
+        - officialDate
+        - status
+        - teams
+        - gameNumber
+        - gamesInSeries
+        - seriesGameNumber
       properties:
         gamePk:
           type: number
@@ -292,6 +325,9 @@ components:
               type: string
         teams:
           type: object
+          required:
+            - away
+            - home
           properties:
             away:
               $ref: '#/components/schemas/MLBGameTeam'
@@ -347,6 +383,11 @@ components:
       description: |
         Game Team
       type: object
+      required:
+        - leagueReccord
+        - score
+        - isWinner
+        - team
       properties:
         leagueRecord:
           title: MLBTeamRecord
@@ -373,6 +414,9 @@ components:
       description: |
         League 
       type: object
+      required:
+        - id
+        - name
       properties:
         id:
           type: number
@@ -433,6 +477,12 @@ components:
       description: |
         Season
       type: object
+      required:
+        - seasonId
+        - seasonStartDate
+        - seasonEndDate
+        - regularSeasonStartDate
+        - regularSeasonEndDate
       properties:
         seasonId:
           type: string
@@ -443,6 +493,8 @@ components:
         preSeasonEndDate:
           type: string
         seasonStartDate:
+          type: string
+        seasonEndDate:
           type: string
         springStartDate:
           type: string
@@ -479,6 +531,12 @@ components:
       description: |
         Schedule
       type: object
+      required:
+        - totalItems
+        - totalEvents
+        - totalGames
+        - totalGamesInProgress
+        - dates
       properties:
         totalItems:
           type: number
@@ -493,6 +551,8 @@ components:
           items:
             title: MLBScheduleDay
             type: object
+            required:
+              - games
             properties:
               date:
                 type: string
@@ -513,6 +573,8 @@ components:
       description: |
         Sport
       type: object
+      required:
+        - id
       properties:
         id:
           type: number
@@ -533,6 +595,11 @@ components:
       description: |
         Standings
       type: object
+      required:
+        - league
+        - division
+        - sport
+        - teamRecords
       properties:
         standingsType:
           type: string
@@ -553,6 +620,16 @@ components:
       description: |
         Record
       type: object
+      required:
+        - team
+        - season
+        - streak
+        - divisionRank
+        - leagueRank
+        - gamesBack
+        - leagueRecord
+        - wins
+        - losses
       properties:
         team:
           $ref: '#/components/schemas/MLBTeam'
@@ -597,6 +674,11 @@ components:
         leagueRecord:
           title: MLBTeamRecord
           type: object
+          required:
+            - wins
+            - losses
+            - ties
+            - pct
           properties:
             wins:
               type: number
@@ -647,6 +729,9 @@ components:
       description: |
         Team
       type: object
+      required:
+        - id
+        - name
       properties:
         id:
           type: number
@@ -695,6 +780,9 @@ components:
       description: |
         Venue
       type: object
+      required:
+        - id
+        - name
       properties:
         id:
           type: number

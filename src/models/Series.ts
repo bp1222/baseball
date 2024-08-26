@@ -59,7 +59,7 @@ export type Series = {
   result: SeriesResult;
   homeaway: SeriesHomeAway;
   type: SeriesType;
-  against: MLBGameTeam;
+  against: MLBGameTeam|undefined;
   startDate: string;
   endDate: string;
   games: Game[];
@@ -100,7 +100,7 @@ function GenerateSeries(schedule: MLBSchedule, team: MLBTeam): Series[] {
       result: SeriesResult.Unplayed,
       homeaway: SeriesHomeAway.Unknown,
       type: SeriesType.Unknown,
-      against: {},
+      against: undefined,
       startDate: "",
       endDate: "",
       games: [],

@@ -59,7 +59,7 @@ const SeriesItem = ({ series }: SeriesItemProps) => {
       </Stack>
       <Box alignContent={"center"} minWidth={{ xs: "40%", md: "35%" }}>
         <SeriesTeam
-          against={findTeam(series.against.team?.id)!}
+          against={findTeam(series.against?.team?.id)!}
           homeaway={series.homeaway}
         />
       </Box>

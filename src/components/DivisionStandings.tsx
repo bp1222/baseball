@@ -46,8 +46,6 @@ const Standings = () => {
     getStandings();
   }, [getStandings]);
 
-  console.log(standings);
-
   const teamStanding = (record: MLBRecord) => {
     return (
       <TableRow key={record.team?.id}>

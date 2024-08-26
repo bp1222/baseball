@@ -2,6 +2,12 @@ title: MLBSchedule
 description: >
   Schedule
 type: object
+required:
+  - totalItems
+  - totalEvents
+  - totalGames
+  - totalGamesInProgress
+  - dates
 properties:
   totalItems:
     type: number
@@ -16,6 +22,8 @@ properties:
     items:
       title: MLBScheduleDay
       type: object
+      required:
+        - games
       properties:
         date:
           type: string

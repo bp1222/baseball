@@ -1,5 +1,5 @@
 in: query
-name: teamId
+name: date
 required: false
 schema:
-  type: number
+  type: string

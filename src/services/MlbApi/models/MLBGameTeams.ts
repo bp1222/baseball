@@ -31,19 +31,21 @@ export interface MLBGameTeams {
      * @type {MLBGameTeam}
      * @memberof MLBGameTeams
      */
-    away?: MLBGameTeam;
+    away: MLBGameTeam;
     /**
      * 
      * @type {MLBGameTeam}
      * @memberof MLBGameTeams
      */
-    home?: MLBGameTeam;
+    home: MLBGameTeam;
 }
 
 /**
  * Check if a given object implements the MLBGameTeams interface.
  */
 export function instanceOfMLBGameTeams(value: object): value is MLBGameTeams {
+    if (!('away' in value) || value['away'] === undefined) return false;
+    if (!('home' in value) || value['home'] === undefined) return false;
     return true;
 }
 
@@ -57,8 +59,8 @@ export function MLBGameTeamsFromJSONTyped(json: any, ignoreDiscriminator: boolea
     }
     return {
         
-        'away': json['away'] == null ? undefined : MLBGameTeamFromJSON(json['away']),
-        'home': json['home'] == null ? undefined : MLBGameTeamFromJSON(json['home']),
+        'away': MLBGameTeamFromJSON(json['away']),
+        'home': MLBGameTeamFromJSON(json['home']),
     };
 }
 

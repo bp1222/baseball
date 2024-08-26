@@ -32,37 +32,42 @@ export interface MLBSchedule {
      * @type {number}
      * @memberof MLBSchedule
      */
-    totalItems?: number;
+    totalItems: number;
     /**
      * 
      * @type {number}
      * @memberof MLBSchedule
      */
-    totalEvents?: number;
+    totalEvents: number;
     /**
      * 
      * @type {number}
      * @memberof MLBSchedule
      */
-    totalGames?: number;
+    totalGames: number;
     /**
      * 
      * @type {number}
      * @memberof MLBSchedule
      */
-    totalGamesInProgress?: number;
+    totalGamesInProgress: number;
     /**
      * 
      * @type {Array<MLBScheduleDay>}
      * @memberof MLBSchedule
      */
-    dates?: Array<MLBScheduleDay>;
+    dates: Array<MLBScheduleDay>;
 }
 
 /**
  * Check if a given object implements the MLBSchedule interface.
  */
 export function instanceOfMLBSchedule(value: object): value is MLBSchedule {
+    if (!('totalItems' in value) || value['totalItems'] === undefined) return false;
+    if (!('totalEvents' in value) || value['totalEvents'] === undefined) return false;
+    if (!('totalGames' in value) || value['totalGames'] === undefined) return false;
+    if (!('totalGamesInProgress' in value) || value['totalGamesInProgress'] === undefined) return false;
+    if (!('dates' in value) || value['dates'] === undefined) return false;
     return true;
 }
 
@@ -76,11 +81,11 @@ export function MLBScheduleFromJSONTyped(json: any, ignoreDiscriminator: boolean
     }
     return {
         
-        'totalItems': json['totalItems'] == null ? undefined : json['totalItems'],
-        'totalEvents': json['totalEvents'] == null ? undefined : json['totalEvents'],
-        'totalGames': json['totalGames'] == null ? undefined : json['totalGames'],
-        'totalGamesInProgress': json['totalGamesInProgress'] == null ? undefined : json['totalGamesInProgress'],
-        'dates': json['dates'] == null ? undefined : ((json['dates'] as Array<any>).map(MLBScheduleDayFromJSON)),
+        'totalItems': json['totalItems'],
+        'totalEvents': json['totalEvents'],
+        'totalGames': json['totalGames'],
+        'totalGamesInProgress': json['totalGamesInProgress'],
+        'dates': ((json['dates'] as Array<any>).map(MLBScheduleDayFromJSON)),
     };
 }
 
@@ -94,7 +99,7 @@ export function MLBScheduleToJSON(value?: MLBSchedule | null): any {
         'totalEvents': value['totalEvents'],
         'totalGames': value['totalGames'],
         'totalGamesInProgress': value['totalGamesInProgress'],
-        'dates': value['dates'] == null ? undefined : ((value['dates'] as Array<any>).map(MLBScheduleDayToJSON)),
+        'dates': ((value['dates'] as Array<any>).map(MLBScheduleDayToJSON)),
     };
 }
 

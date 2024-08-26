@@ -44,19 +44,19 @@ export interface MLBGameTeam {
      * @type {number}
      * @memberof MLBGameTeam
      */
-    score?: number;
+    score: number;
     /**
      * 
      * @type {MLBTeam}
      * @memberof MLBGameTeam
      */
-    team?: MLBTeam;
+    team: MLBTeam;
     /**
      * 
      * @type {boolean}
      * @memberof MLBGameTeam
      */
-    isWinner?: boolean;
+    isWinner: boolean;
     /**
      * 
      * @type {boolean}
@@ -75,6 +75,9 @@ export interface MLBGameTeam {
  * Check if a given object implements the MLBGameTeam interface.
  */
 export function instanceOfMLBGameTeam(value: object): value is MLBGameTeam {
+    if (!('score' in value) || value['score'] === undefined) return false;
+    if (!('team' in value) || value['team'] === undefined) return false;
+    if (!('isWinner' in value) || value['isWinner'] === undefined) return false;
     return true;
 }
 
@@ -89,9 +92,9 @@ export function MLBGameTeamFromJSONTyped(json: any, ignoreDiscriminator: boolean
     return {
         
         'leagueRecord': json['leagueRecord'] == null ? undefined : MLBTeamRecordFromJSON(json['leagueRecord']),
-        'score': json['score'] == null ? undefined : json['score'],
-        'team': json['team'] == null ? undefined : MLBTeamFromJSON(json['team']),
-        'isWinner': json['isWinner'] == null ? undefined : json['isWinner'],
+        'score': json['score'],
+        'team': MLBTeamFromJSON(json['team']),
+        'isWinner': json['isWinner'],
         'splitSquad': json['splitSquad'] == null ? undefined : json['splitSquad'],
         'seriesNumber': json['seriesNumber'] == null ? undefined : json['seriesNumber'],
     };

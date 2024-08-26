@@ -44,31 +44,31 @@ export interface MLBRecord {
      * @type {MLBTeam}
      * @memberof MLBRecord
      */
-    team?: MLBTeam;
+    team: MLBTeam;
     /**
      * 
      * @type {string}
      * @memberof MLBRecord
      */
-    season?: string;
+    season: string;
     /**
      * 
      * @type {MLBStreak}
      * @memberof MLBRecord
      */
-    streak?: MLBStreak;
+    streak: MLBStreak;
     /**
      * 
      * @type {string}
      * @memberof MLBRecord
      */
-    divisionRank?: string;
+    divisionRank: string;
     /**
      * 
      * @type {string}
      * @memberof MLBRecord
      */
-    leagueRank?: string;
+    leagueRank: string;
     /**
      * 
      * @type {string}
@@ -86,7 +86,7 @@ export interface MLBRecord {
      * @type {string}
      * @memberof MLBRecord
      */
-    gamesBack?: string;
+    gamesBack: string;
     /**
      * 
      * @type {string}
@@ -122,7 +122,7 @@ export interface MLBRecord {
      * @type {MLBTeamRecord1}
      * @memberof MLBRecord
      */
-    leagueRecord?: MLBTeamRecord1;
+    leagueRecord: MLBTeamRecord1;
     /**
      * 
      * @type {string}
@@ -212,13 +212,13 @@ export interface MLBRecord {
      * @type {number}
      * @memberof MLBRecord
      */
-    wins?: number;
+    wins: number;
     /**
      * 
      * @type {number}
      * @memberof MLBRecord
      */
-    losses?: number;
+    losses: number;
     /**
      * 
      * @type {number}
@@ -237,6 +237,15 @@ export interface MLBRecord {
  * Check if a given object implements the MLBRecord interface.
  */
 export function instanceOfMLBRecord(value: object): value is MLBRecord {
+    if (!('team' in value) || value['team'] === undefined) return false;
+    if (!('season' in value) || value['season'] === undefined) return false;
+    if (!('streak' in value) || value['streak'] === undefined) return false;
+    if (!('divisionRank' in value) || value['divisionRank'] === undefined) return false;
+    if (!('leagueRank' in value) || value['leagueRank'] === undefined) return false;
+    if (!('gamesBack' in value) || value['gamesBack'] === undefined) return false;
+    if (!('leagueRecord' in value) || value['leagueRecord'] === undefined) return false;
+    if (!('wins' in value) || value['wins'] === undefined) return false;
+    if (!('losses' in value) || value['losses'] === undefined) return false;
     return true;
 }
 
@@ -250,20 +259,20 @@ export function MLBRecordFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
-        'team': json['team'] == null ? undefined : MLBTeamFromJSON(json['team']),
-        'season': json['season'] == null ? undefined : json['season'],
-        'streak': json['streak'] == null ? undefined : MLBStreakFromJSON(json['streak']),
-        'divisionRank': json['divisionRank'] == null ? undefined : json['divisionRank'],
-        'leagueRank': json['leagueRank'] == null ? undefined : json['leagueRank'],
+        'team': MLBTeamFromJSON(json['team']),
+        'season': json['season'],
+        'streak': MLBStreakFromJSON(json['streak']),
+        'divisionRank': json['divisionRank'],
+        'leagueRank': json['leagueRank'],
         'sportRank': json['sportRank'] == null ? undefined : json['sportRank'],
         'gamesPlayed': json['gamesPlayed'] == null ? undefined : json['gamesPlayed'],
-        'gamesBack': json['gamesBack'] == null ? undefined : json['gamesBack'],
+        'gamesBack': json['gamesBack'],
         'wildCardGamesBack': json['wildCardGamesBack'] == null ? undefined : json['wildCardGamesBack'],
         'leagueGamesBack': json['leagueGamesBack'] == null ? undefined : json['leagueGamesBack'],
         'sportGamesBack': json['sportGamesBack'] == null ? undefined : json['sportGamesBack'],
         'divisionGamesBack': json['divisionGamesBack'] == null ? undefined : json['divisionGamesBack'],
         'conferenceGamesBack': json['conferenceGamesBack'] == null ? undefined : json['conferenceGamesBack'],
-        'leagueRecord': json['leagueRecord'] == null ? undefined : MLBTeamRecord1FromJSON(json['leagueRecord']),
+        'leagueRecord': MLBTeamRecord1FromJSON(json['leagueRecord']),
         'lastUpdated': json['lastUpdated'] == null ? undefined : json['lastUpdated'],
         'runsAllowed': json['runsAllowed'] == null ? undefined : json['runsAllowed'],
         'runsScored': json['runsScored'] == null ? undefined : json['runsScored'],
@@ -278,8 +287,8 @@ export function MLBRecordFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'eliminationNumberConference': json['eliminationNumberConference'] == null ? undefined : json['eliminationNumberConference'],
         'wildCardEliminationNumber': json['wildCardEliminationNumber'] == null ? undefined : json['wildCardEliminationNumber'],
         'magicNumber': json['magicNumber'] == null ? undefined : json['magicNumber'],
-        'wins': json['wins'] == null ? undefined : json['wins'],
-        'losses': json['losses'] == null ? undefined : json['losses'],
+        'wins': json['wins'],
+        'losses': json['losses'],
         'runDifferential': json['runDifferential'] == null ? undefined : json['runDifferential'],
         'winningPercentage': json['winningPercentage'] == null ? undefined : json['winningPercentage'],
     };

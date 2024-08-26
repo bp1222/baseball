@@ -2,6 +2,18 @@ title: MLBGame
 description: >
   Game
 type: object
+required:
+  - gamePk
+  - gameGuid
+  - gameType
+  - season
+  - gameDate
+  - officialDate
+  - status
+  - teams
+  - gameNumber
+  - gamesInSeries
+  - seriesGameNumber
 properties:
   gamePk:
     type: number
@@ -90,6 +102,9 @@ properties:
         type: string
   teams:
     type: object
+    required:
+      - away
+      - home
     properties:
       away:
         $ref: ./schemas.yaml#/MLBGameTeam

@@ -15,6 +15,7 @@ const TeamSchedule = () => {
   const { schedule, team } = useOutletContext<TeamScheduleProps>();
 
   useEffect(() => {
+    if (schedule == undefined || team == undefined) return
     setSeries(GenerateSeries(schedule, team));
   }, [schedule, team]);
 

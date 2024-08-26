@@ -24,31 +24,35 @@ export interface MLBTeamRecord1 {
      * @type {number}
      * @memberof MLBTeamRecord1
      */
-    wins?: number;
+    wins: number;
     /**
      * 
      * @type {number}
      * @memberof MLBTeamRecord1
      */
-    losses?: number;
+    losses: number;
     /**
      * 
      * @type {number}
      * @memberof MLBTeamRecord1
      */
-    ties?: number;
+    ties: number;
     /**
      * 
      * @type {string}
      * @memberof MLBTeamRecord1
      */
-    pct?: string;
+    pct: string;
 }
 
 /**
  * Check if a given object implements the MLBTeamRecord1 interface.
  */
 export function instanceOfMLBTeamRecord1(value: object): value is MLBTeamRecord1 {
+    if (!('wins' in value) || value['wins'] === undefined) return false;
+    if (!('losses' in value) || value['losses'] === undefined) return false;
+    if (!('ties' in value) || value['ties'] === undefined) return false;
+    if (!('pct' in value) || value['pct'] === undefined) return false;
     return true;
 }
 
@@ -62,10 +66,10 @@ export function MLBTeamRecord1FromJSONTyped(json: any, ignoreDiscriminator: bool
     }
     return {
         
-        'wins': json['wins'] == null ? undefined : json['wins'],
-        'losses': json['losses'] == null ? undefined : json['losses'],
-        'ties': json['ties'] == null ? undefined : json['ties'],
-        'pct': json['pct'] == null ? undefined : json['pct'],
+        'wins': json['wins'],
+        'losses': json['losses'],
+        'ties': json['ties'],
+        'pct': json['pct'],
     };
 }
 

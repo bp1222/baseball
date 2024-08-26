@@ -1,5 +1,10 @@
 in: query
-name: teamId
+name: fields
 required: false
 schema:
-  type: number
+  type: array
+  items:
+    type: string
+style: form
+explode: false
+

@@ -61,13 +61,14 @@ export interface MLBScheduleDay {
      * @type {Array<MLBGame>}
      * @memberof MLBScheduleDay
      */
-    games?: Array<MLBGame>;
+    games: Array<MLBGame>;
 }
 
 /**
  * Check if a given object implements the MLBScheduleDay interface.
  */
 export function instanceOfMLBScheduleDay(value: object): value is MLBScheduleDay {
+    if (!('games' in value) || value['games'] === undefined) return false;
     return true;
 }
 
@@ -86,7 +87,7 @@ export function MLBScheduleDayFromJSONTyped(json: any, ignoreDiscriminator: bool
         'totalEvents': json['totalEvents'] == null ? undefined : json['totalEvents'],
         'totalGames': json['totalGames'] == null ? undefined : json['totalGames'],
         'totalGamesInProgress': json['totalGamesInProgress'] == null ? undefined : json['totalGamesInProgress'],
-        'games': json['games'] == null ? undefined : ((json['games'] as Array<any>).map(MLBGameFromJSON)),
+        'games': ((json['games'] as Array<any>).map(MLBGameFromJSON)),
     };
 }
 
@@ -101,7 +102,7 @@ export function MLBScheduleDayToJSON(value?: MLBScheduleDay | null): any {
         'totalEvents': value['totalEvents'],
         'totalGames': value['totalGames'],
         'totalGamesInProgress': value['totalGamesInProgress'],
-        'games': value['games'] == null ? undefined : ((value['games'] as Array<any>).map(MLBGameToJSON)),
+        'games': ((value['games'] as Array<any>).map(MLBGameToJSON)),
     };
 }
 

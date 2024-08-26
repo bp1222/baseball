@@ -2,6 +2,11 @@ title: MLBGameTeam
 description: >
   Game Team
 type: object
+required:
+  - leagueReccord
+  - score
+  - isWinner
+  - team
 properties:
   leagueRecord:
     title: MLBTeamRecord

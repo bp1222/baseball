@@ -56,19 +56,19 @@ export interface MLBStandings {
      * @type {MLBLeague}
      * @memberof MLBStandings
      */
-    league?: MLBLeague;
+    league: MLBLeague;
     /**
      * 
      * @type {MLBDivision}
      * @memberof MLBStandings
      */
-    division?: MLBDivision;
+    division: MLBDivision;
     /**
      * 
      * @type {MLBSport}
      * @memberof MLBStandings
      */
-    sport?: MLBSport;
+    sport: MLBSport;
     /**
      * 
      * @type {string}
@@ -80,13 +80,17 @@ export interface MLBStandings {
      * @type {Array<MLBRecord>}
      * @memberof MLBStandings
      */
-    teamRecords?: Array<MLBRecord>;
+    teamRecords: Array<MLBRecord>;
 }
 
 /**
  * Check if a given object implements the MLBStandings interface.
  */
 export function instanceOfMLBStandings(value: object): value is MLBStandings {
+    if (!('league' in value) || value['league'] === undefined) return false;
+    if (!('division' in value) || value['division'] === undefined) return false;
+    if (!('sport' in value) || value['sport'] === undefined) return false;
+    if (!('teamRecords' in value) || value['teamRecords'] === undefined) return false;
     return true;
 }
 
@@ -101,11 +105,11 @@ export function MLBStandingsFromJSONTyped(json: any, ignoreDiscriminator: boolea
     return {
         
         'standingsType': json['standingsType'] == null ? undefined : json['standingsType'],
-        'league': json['league'] == null ? undefined : MLBLeagueFromJSON(json['league']),
-        'division': json['division'] == null ? undefined : MLBDivisionFromJSON(json['division']),
-        'sport': json['sport'] == null ? undefined : MLBSportFromJSON(json['sport']),
+        'league': MLBLeagueFromJSON(json['league']),
+        'division': MLBDivisionFromJSON(json['division']),
+        'sport': MLBSportFromJSON(json['sport']),
         'lastUpdated': json['lastUpdated'] == null ? undefined : json['lastUpdated'],
-        'teamRecords': json['teamRecords'] == null ? undefined : ((json['teamRecords'] as Array<any>).map(MLBRecordFromJSON)),
+        'teamRecords': ((json['teamRecords'] as Array<any>).map(MLBRecordFromJSON)),
     };
 }
 
@@ -120,7 +124,7 @@ export function MLBStandingsToJSON(value?: MLBStandings | null): any {
         'division': MLBDivisionToJSON(value['division']),
         'sport': MLBSportToJSON(value['sport']),
         'lastUpdated': value['lastUpdated'],
-        'teamRecords': value['teamRecords'] == null ? undefined : ((value['teamRecords'] as Array<any>).map(MLBRecordToJSON)),
+        'teamRecords': ((value['teamRecords'] as Array<any>).map(MLBRecordToJSON)),
     };
 }
 

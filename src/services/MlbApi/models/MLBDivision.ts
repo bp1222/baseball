@@ -38,13 +38,13 @@ export interface MLBDivision {
      * @type {number}
      * @memberof MLBDivision
      */
-    id?: number;
+    id: number;
     /**
      * 
      * @type {string}
      * @memberof MLBDivision
      */
-    name?: string;
+    name: string;
     /**
      * 
      * @type {string}
@@ -111,6 +111,8 @@ export interface MLBDivision {
  * Check if a given object implements the MLBDivision interface.
  */
 export function instanceOfMLBDivision(value: object): value is MLBDivision {
+    if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('name' in value) || value['name'] === undefined) return false;
     return true;
 }
 
@@ -124,8 +126,8 @@ export function MLBDivisionFromJSONTyped(json: any, ignoreDiscriminator: boolean
     }
     return {
         
-        'id': json['id'] == null ? undefined : json['id'],
-        'name': json['name'] == null ? undefined : json['name'],
+        'id': json['id'],
+        'name': json['name'],
         'season': json['season'] == null ? undefined : json['season'],
         'nameShort': json['nameShort'] == null ? undefined : json['nameShort'],
         'link': json['link'] == null ? undefined : json['link'],

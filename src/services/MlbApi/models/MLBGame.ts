@@ -50,13 +50,13 @@ export interface MLBGame {
      * @type {number}
      * @memberof MLBGame
      */
-    gamePk?: number;
+    gamePk: number;
     /**
      * 
      * @type {string}
      * @memberof MLBGame
      */
-    gameGuid?: string;
+    gameGuid: string;
     /**
      * 
      * @type {string}
@@ -76,25 +76,25 @@ export interface MLBGame {
      * @type {string}
      * @memberof MLBGame
      */
-    gameType?: MLBGameGameTypeEnum;
+    gameType: MLBGameGameTypeEnum;
     /**
      * 
      * @type {number}
      * @memberof MLBGame
      */
-    season?: number;
+    season: number;
     /**
      * 
      * @type {string}
      * @memberof MLBGame
      */
-    gameDate?: string;
+    gameDate: string;
     /**
      * 
      * @type {string}
      * @memberof MLBGame
      */
-    officialDate?: string;
+    officialDate: string;
     /**
      * 
      * @type {number}
@@ -124,13 +124,13 @@ export interface MLBGame {
      * @type {MLBGameStatus}
      * @memberof MLBGame
      */
-    status?: MLBGameStatus;
+    status: MLBGameStatus;
     /**
      * 
      * @type {MLBGameTeams}
      * @memberof MLBGame
      */
-    teams?: MLBGameTeams;
+    teams: MLBGameTeams;
     /**
      * 
      * @type {MLBVenue}
@@ -154,7 +154,7 @@ export interface MLBGame {
      * @type {number}
      * @memberof MLBGame
      */
-    gameNumber?: number;
+    gameNumber: number;
     /**
      * 
      * @type {boolean}
@@ -226,13 +226,13 @@ export interface MLBGame {
      * @type {number}
      * @memberof MLBGame
      */
-    gamesInSeries?: number;
+    gamesInSeries: number;
     /**
      * 
      * @type {number}
      * @memberof MLBGame
      */
-    seriesGameNumber?: number;
+    seriesGameNumber: number;
     /**
      * 
      * @type {string}
@@ -279,6 +279,17 @@ export type MLBGameGameTypeEnum = typeof MLBGameGameTypeEnum[keyof typeof MLBGam
  * Check if a given object implements the MLBGame interface.
  */
 export function instanceOfMLBGame(value: object): value is MLBGame {
+    if (!('gamePk' in value) || value['gamePk'] === undefined) return false;
+    if (!('gameGuid' in value) || value['gameGuid'] === undefined) return false;
+    if (!('gameType' in value) || value['gameType'] === undefined) return false;
+    if (!('season' in value) || value['season'] === undefined) return false;
+    if (!('gameDate' in value) || value['gameDate'] === undefined) return false;
+    if (!('officialDate' in value) || value['officialDate'] === undefined) return false;
+    if (!('status' in value) || value['status'] === undefined) return false;
+    if (!('teams' in value) || value['teams'] === undefined) return false;
+    if (!('gameNumber' in value) || value['gameNumber'] === undefined) return false;
+    if (!('gamesInSeries' in value) || value['gamesInSeries'] === undefined) return false;
+    if (!('seriesGameNumber' in value) || value['seriesGameNumber'] === undefined) return false;
     return true;
 }
 
@@ -292,23 +303,23 @@ export function MLBGameFromJSONTyped(json: any, ignoreDiscriminator: boolean): M
     }
     return {
         
-        'gamePk': json['gamePk'] == null ? undefined : json['gamePk'],
-        'gameGuid': json['gameGuid'] == null ? undefined : json['gameGuid'],
+        'gamePk': json['gamePk'],
+        'gameGuid': json['gameGuid'],
         'link': json['link'] == null ? undefined : json['link'],
-        'gameType': json['gameType'] == null ? undefined : json['gameType'],
-        'season': json['season'] == null ? undefined : json['season'],
-        'gameDate': json['gameDate'] == null ? undefined : json['gameDate'],
-        'officialDate': json['officialDate'] == null ? undefined : json['officialDate'],
+        'gameType': json['gameType'],
+        'season': json['season'],
+        'gameDate': json['gameDate'],
+        'officialDate': json['officialDate'],
         'rescheduledTo': json['rescheduledTo'] == null ? undefined : json['rescheduledTo'],
         'rescheduledToDate': json['rescheduledToDate'] == null ? undefined : json['rescheduledToDate'],
         'rescheduledFrom': json['rescheduledFrom'] == null ? undefined : json['rescheduledFrom'],
         'rescheduledFromDate': json['rescheduledFromDate'] == null ? undefined : json['rescheduledFromDate'],
-        'status': json['status'] == null ? undefined : MLBGameStatusFromJSON(json['status']),
-        'teams': json['teams'] == null ? undefined : MLBGameTeamsFromJSON(json['teams']),
+        'status': MLBGameStatusFromJSON(json['status']),
+        'teams': MLBGameTeamsFromJSON(json['teams']),
         'venue': json['venue'] == null ? undefined : MLBVenueFromJSON(json['venue']),
         'content': json['content'] == null ? undefined : MLBGameContentFromJSON(json['content']),
         'isTie': json['isTie'] == null ? undefined : json['isTie'],
-        'gameNumber': json['gameNumber'] == null ? undefined : json['gameNumber'],
+        'gameNumber': json['gameNumber'],
         'publicFacing': json['publicFacing'] == null ? undefined : json['publicFacing'],
         'doubleHeader': json['doubleHeader'] == null ? undefined : json['doubleHeader'],
         'gamedayType': json['gamedayType'] == null ? undefined : json['gamedayType'],
@@ -320,8 +331,8 @@ export function MLBGameFromJSONTyped(json: any, ignoreDiscriminator: boolean): M
         'scheduledInnings': json['scheduledInnings'] == null ? undefined : json['scheduledInnings'],
         'reverseHomeAwayStatus': json['reverseHomeAwayStatus'] == null ? undefined : json['reverseHomeAwayStatus'],
         'inningBreakLength': json['inningBreakLength'] == null ? undefined : json['inningBreakLength'],
-        'gamesInSeries': json['gamesInSeries'] == null ? undefined : json['gamesInSeries'],
-        'seriesGameNumber': json['seriesGameNumber'] == null ? undefined : json['seriesGameNumber'],
+        'gamesInSeries': json['gamesInSeries'],
+        'seriesGameNumber': json['seriesGameNumber'],
         'seriesDescription': json['seriesDescription'] == null ? undefined : json['seriesDescription'],
         'recordSource': json['recordSource'] == null ? undefined : json['recordSource'],
         'ifNecessary': json['ifNecessary'] == null ? undefined : json['ifNecessary'],

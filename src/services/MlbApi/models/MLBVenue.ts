@@ -25,13 +25,13 @@ export interface MLBVenue {
      * @type {number}
      * @memberof MLBVenue
      */
-    id?: number;
+    id: number;
     /**
      * 
      * @type {string}
      * @memberof MLBVenue
      */
-    name?: string;
+    name: string;
     /**
      * 
      * @type {string}
@@ -56,6 +56,8 @@ export interface MLBVenue {
  * Check if a given object implements the MLBVenue interface.
  */
 export function instanceOfMLBVenue(value: object): value is MLBVenue {
+    if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('name' in value) || value['name'] === undefined) return false;
     return true;
 }
 
@@ -69,8 +71,8 @@ export function MLBVenueFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     }
     return {
         
-        'id': json['id'] == null ? undefined : json['id'],
-        'name': json['name'] == null ? undefined : json['name'],
+        'id': json['id'],
+        'name': json['name'],
         'link': json['link'] == null ? undefined : json['link'],
         'active': json['active'] == null ? undefined : json['active'],
         'season': json['season'] == null ? undefined : json['season'],

@@ -1,6 +1,6 @@
 import { Box, Button, CssBaseline, Stack, ThemeProvider } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import GetTheme from "../colors";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
@@ -23,13 +23,14 @@ const Team = () => {
   const { state } = useContext(AppStateContext);
   const { teamId, seasonId } = useParams();
 
-  const [tab, setTab] = useState<Tab>(Tab.Schedule);
-  const [schedule, setSchedule] = useState<MLBSchedule>({});
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [tab, setTab] = useState<Tab>(location.pathname.endsWith("stats") ? Tab.Stats : Tab.Schedule);
+  const [schedule, setSchedule] = useState<MLBSchedule>();
 
   const team = state.teams.find((t) => t.id == parseInt(teamId ?? ""));
   const season = state.seasons.find((s) => s.seasonId == seasonId);
-
-  const navigate = useNavigate();
 
   const getSchedule = useCallback(async () => {
     if (team?.id == undefined) return;

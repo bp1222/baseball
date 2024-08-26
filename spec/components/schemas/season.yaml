@@ -2,6 +2,12 @@ title: MLBSeason
 description: >
   Season
 type: object
+required:
+  - seasonId
+  - seasonStartDate
+  - seasonEndDate
+  - regularSeasonStartDate
+  - regularSeasonEndDate
 properties:
   seasonId:
     type: string
@@ -12,6 +18,8 @@ properties:
   preSeasonEndDate:
     type: string
   seasonStartDate:
+    type: string
+  seasonEndDate:
     type: string
   springStartDate:
     type: string

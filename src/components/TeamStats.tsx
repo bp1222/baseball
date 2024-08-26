@@ -1,11 +1,15 @@
 import { Box, Stack } from "@mui/material";
-import Standings from "./Standings";
+import DivisionStandings from "./DivisionStandings";
+import TeamRanking from "./TeamRanking";
 
 const TeamStats = () => {
   return (
-    <Stack direction={"column"}>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Standings />
+    <Stack width={1} height={1} direction={"column"}>
+      <Box>
+        <DivisionStandings />
+      </Box>
+      <Box paddingTop={3}>
+        <TeamRanking />
       </Box>
     </Stack>
   );

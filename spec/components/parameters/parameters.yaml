@@ -1,6 +1,10 @@
 # ./query
+Date:
+  $ref: "./query/date.yaml"
 EndDate:
   $ref: "./query/endDate.yaml"
+Fields:
+  $ref: "./query/fields.yaml"
 LeagueId:
   $ref: "./query/leagueId.yaml"
 LeagueIds:

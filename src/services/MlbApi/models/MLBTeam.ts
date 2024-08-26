@@ -50,13 +50,13 @@ export interface MLBTeam {
      * @type {number}
      * @memberof MLBTeam
      */
-    id?: number;
+    id: number;
     /**
      * 
      * @type {string}
      * @memberof MLBTeam
      */
-    name?: string;
+    name: string;
     /**
      * 
      * @type {string}
@@ -177,6 +177,8 @@ export interface MLBTeam {
  * Check if a given object implements the MLBTeam interface.
  */
 export function instanceOfMLBTeam(value: object): value is MLBTeam {
+    if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('name' in value) || value['name'] === undefined) return false;
     return true;
 }
 
@@ -190,8 +192,8 @@ export function MLBTeamFromJSONTyped(json: any, ignoreDiscriminator: boolean): M
     }
     return {
         
-        'id': json['id'] == null ? undefined : json['id'],
-        'name': json['name'] == null ? undefined : json['name'],
+        'id': json['id'],
+        'name': json['name'],
         'link': json['link'] == null ? undefined : json['link'],
         'allStarStatus': json['allStarStatus'] == null ? undefined : json['allStarStatus'],
         'season': json['season'] == null ? undefined : json['season'],

@@ -32,13 +32,13 @@ export interface MLBLeague {
      * @type {number}
      * @memberof MLBLeague
      */
-    id?: number;
+    id: number;
     /**
      * 
      * @type {string}
      * @memberof MLBLeague
      */
-    name?: string;
+    name: string;
     /**
      * 
      * @type {string}
@@ -129,6 +129,8 @@ export interface MLBLeague {
  * Check if a given object implements the MLBLeague interface.
  */
 export function instanceOfMLBLeague(value: object): value is MLBLeague {
+    if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('name' in value) || value['name'] === undefined) return false;
     return true;
 }
 
@@ -142,8 +144,8 @@ export function MLBLeagueFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
-        'id': json['id'] == null ? undefined : json['id'],
-        'name': json['name'] == null ? undefined : json['name'],
+        'id': json['id'],
+        'name': json['name'],
         'link': json['link'] == null ? undefined : json['link'],
         'abbreviation': json['abbreviation'] == null ? undefined : json['abbreviation'],
         'nameShort': json['nameShort'] == null ? undefined : json['nameShort'],

@@ -14,7 +14,7 @@ const api = new MlbApi();
 const App = () => {
   const { state, dispatch } = useContext(AppStateContext);
   const { seasonId, teamId } = useParams();
-  const team = state.teams.find((t) => t.id == teamId);
+  const team = state.teams.find((t) => t.id == parseInt(teamId!));
   const navigate = useNavigate();
 
   const loadSeasonsState = useCallback(async () => {

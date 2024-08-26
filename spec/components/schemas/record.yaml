@@ -2,6 +2,16 @@ title: MLBRecord
 description: >
   Record
 type: object
+required:
+  - team
+  - season
+  - streak
+  - divisionRank
+  - leagueRank
+  - gamesBack
+  - leagueRecord
+  - wins
+  - losses
 properties:
   team:
     $ref: ./schemas.yaml#/MLBTeam
@@ -46,6 +56,11 @@ properties:
   leagueRecord:
     title: MLBTeamRecord
     type: object
+    required:
+      - wins
+      - losses
+      - ties
+      - pct
     properties:
       wins:
         type: number

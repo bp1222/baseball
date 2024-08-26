@@ -2,6 +2,11 @@ title: MLBStandings
 description: >
   Standings
 type: object
+required:
+  - league
+  - division
+  - sport
+  - teamRecords
 properties:
   standingsType:
     type: string

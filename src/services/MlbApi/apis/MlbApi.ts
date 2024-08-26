@@ -53,6 +53,8 @@ export interface GetSeasonRequest {
 export interface GetStandingsRequest {
     leagueId: number;
     season: string;
+    date?: string;
+    fields?: Array<string>;
 }
 
 export interface GetTeamsRequest {
@@ -233,6 +235,14 @@ export class MlbApi extends runtime.BaseAPI {
 
         if (requestParameters['season'] != null) {
             queryParameters['season'] = requestParameters['season'];
+        }
+
+        if (requestParameters['date'] != null) {
+            queryParameters['date'] = requestParameters['date'];
+        }
+
+        if (requestParameters['fields'] != null) {
+            queryParameters['fields'] = requestParameters['fields']!.join(runtime.COLLECTION_FORMATS["csv"]);
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

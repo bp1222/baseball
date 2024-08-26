@@ -25,7 +25,7 @@ export interface MLBSport {
      * @type {number}
      * @memberof MLBSport
      */
-    id?: number;
+    id: number;
     /**
      * 
      * @type {string}
@@ -68,6 +68,7 @@ export interface MLBSport {
  * Check if a given object implements the MLBSport interface.
  */
 export function instanceOfMLBSport(value: object): value is MLBSport {
+    if (!('id' in value) || value['id'] === undefined) return false;
     return true;
 }
 
@@ -81,7 +82,7 @@ export function MLBSportFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     }
     return {
         
-        'id': json['id'] == null ? undefined : json['id'],
+        'id': json['id'],
         'code': json['code'] == null ? undefined : json['code'],
         'link': json['link'] == null ? undefined : json['link'],
         'name': json['name'] == null ? undefined : json['name'],
