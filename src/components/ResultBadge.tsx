@@ -41,6 +41,7 @@ const ResultBadge = ({ result, type }: ResultBadgeProps) => {
     return (
       <Box
         minWidth={45}
+        maxWidth={45}
         sx={{
           backgroundColor: badgeBackgroundColor,
           height: 11,

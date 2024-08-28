@@ -53,8 +53,8 @@ const Standings = () => {
         <TableCell align="right">{record.wins}</TableCell>
         <TableCell align="right">{record.losses}</TableCell>
         <TableCell align="right">{record.winningPercentage}</TableCell>
-        <TableCell align="right">{record.gamesBack ? record.gamesBack : '-'}</TableCell>
-        <TableCell align="right">{record.eliminationNumber ? record.eliminationNumber : '-'}</TableCell>
+        <TableCell align="right">{record.gamesBack + " (" + record.wildCardGamesBack + ")"}</TableCell>
+        <TableCell align="right">{record.eliminationNumber + " (" + record.wildCardEliminationNumber + ")"}</TableCell>
       </TableRow>
     );
   };
@@ -69,8 +69,8 @@ const Standings = () => {
               <TableCell align="right">Wins</TableCell>
               <TableCell align="right">Losses</TableCell>
               <TableCell align="right">Pct</TableCell>
-              <TableCell align="right">Games Back</TableCell>
-              <TableCell align="right">Elimination Number</TableCell>
+              <TableCell align="right">Games Back (WC)</TableCell>
+              <TableCell align="right">Elimination (WC)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

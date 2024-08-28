@@ -48,7 +48,7 @@ const SeriesItem = ({ series }: SeriesItemProps) => {
     >
       <Stack
         position="absolute"
-        direction="row"
+        direction={{xs: "column", sm: "row"}}
         display={"flex"}
         mt={-0.8}
         ml={-1.5}

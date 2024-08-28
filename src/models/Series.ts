@@ -225,6 +225,45 @@ function GenerateSeries(schedule: MLBSchedule, team: MLBTeam): Series[] {
         game: game,
       });
 
+      // Determine the series disposition:
+      // We can possibly discern a series result early;
+      // i.e. won 2 of a 3 game series, we can safely denote a win.
+      //
+      // Are both wins && losses 0? If so, we haven't played this series yet.
+      // Are the total of wins+losses less than games in series?  We're in progress
+      // Otherwise:
+      // Did we have no losses this series? SWEEP
+      // Did we have no wins this series? SWEPT (oof)
+      // Did we have more wins than losses? Win!
+      // Did we equal losses? Tie
+      // Otherwise we lost
+      if (losses != 0 || wins != 0) {
+        if (
+          wins + losses < (game.gamesInSeries as number)
+        ) {
+          const det = Math.ceil((game.gamesInSeries+1) / 2)
+          currentSeries.result =
+            game.seriesGameNumber >= det
+              ? wins >= det
+                ? SeriesResult.Win
+                : losses >= det
+                  ? SeriesResult.Loss
+                  : SeriesResult.InProgress
+              : SeriesResult.InProgress
+        } else {
+          currentSeries.result =
+            losses == 0
+              ? SeriesResult.Sweep
+              : wins == 0
+                ? SeriesResult.Swept
+                : wins > losses
+                  ? SeriesResult.Win
+                  : wins == losses
+                    ? SeriesResult.Tie
+                    : SeriesResult.Loss;
+        }
+      }
+
       // Is this the end of the series?
       // Simple answer is if the pre-determined games in series is this game number.
       //   - This is handled in-season by postponed end games of a series decrementing
@@ -259,37 +298,9 @@ function GenerateSeries(schedule: MLBSchedule, team: MLBTeam): Series[] {
         return false;
       };
 
+
       if (endOfSeries()) {
         currentSeries.endDate = game.gameDate!;
-
-        // Determine the series disposition:
-        // Are both wins && losses 0? If so, we haven't played this series yet.
-        // Are the total of wins+losses less than games in series?  We're in progress
-        // Otherwise:
-        // Did we have no losses this series? SWEEP
-        // Did we have no wins this series? SWEPT (oof)
-        // Did we have more wins than losses? Win!
-        // Did we equal losses? Tie
-        // Otherwise we lost
-        if (losses != 0 || wins != 0) {
-          if (
-            wins + losses < (game.gamesInSeries as number) &&
-            game.gameType == MLBGameGameTypeEnum.Regular
-          ) {
-            currentSeries.result = SeriesResult.InProgress;
-          } else {
-            currentSeries.result =
-              losses == 0
-                ? SeriesResult.Sweep
-                : wins == 0
-                  ? SeriesResult.Swept
-                  : wins > losses
-                    ? SeriesResult.Win
-                    : wins == losses
-                      ? SeriesResult.Tie
-                      : SeriesResult.Loss;
-          }
-        }
 
         // Push this series to the return
         retval.push(currentSeries);

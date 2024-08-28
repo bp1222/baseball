@@ -27,13 +27,14 @@ const SeriesBadge = ({ type }: SeriesBadgeProps) => {
     return (
       <Box
         minWidth={90}
+        maxWidth={90}
         sx={{
           backgroundColor: blueGrey[300],
           border: 2,
           borderRadius: 2,
           borderColor: blueGrey[500],
           height: 11,
-          marginLeft: 1,
+          marginLeft: {xs: 0, sm: 1},
         }}
       >
         <Typography
