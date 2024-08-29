@@ -2,10 +2,10 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
 import { useParams } from "react-router-dom";
 import { MlbApi, MLBStandingsList } from "../services/MlbApi";
-import { LineChart, LineSeriesType } from "@mui/x-charts"
+import { BarLabel, ChartsLegend, LineChart, LineSeriesType } from "@mui/x-charts"
 import LoadCachedData from "../services/caching";
 import { Box } from "@mui/system";
-import { CircularProgress, Paper, TableContainer } from "@mui/material";
+import { CircularProgress, FormLabel, Paper, TableContainer, Typography } from "@mui/material";
 
 const api = new MlbApi()
 
@@ -106,6 +106,18 @@ const TeamRanking = () => {
 
   return (
     <TableContainer component={Paper}>
+      <Box>
+        <Typography
+        marginTop={2}
+        marginBottom={-4}
+        fontWeight={"bold"}
+        textAlign={"center"}
+        fontSize={"larger"}
+        color={"primary.main"}
+        >
+          Games Behind
+        </Typography>
+        </Box>
         <LineChart
           height={500}
           series={getSeries()}
@@ -116,6 +128,11 @@ const TeamRanking = () => {
               reverse: true,
             }
           ]}
+          slotProps={{
+            legend: {
+              hidden: true,
+            }
+          }}
           xAxis={[
               {
                 label: 'Day',

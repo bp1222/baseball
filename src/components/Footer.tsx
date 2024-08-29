@@ -8,6 +8,7 @@ const Footer = () => {
     <Box width={"100%"} display={"flex"} justifyContent={"center"}>
       <Box
         padding={0.5}
+        marginBottom={2}
         border={0.5}
         borderColor={grey[300]}
         borderRadius={2}
