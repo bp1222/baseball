@@ -62,7 +62,9 @@ const TeamStats = () => {
   return (
     <Stack width={1} height={1} direction={"column"}>
       <Stack direction={{xs: "column", sm: "row"}}>
-        <Box width={{xs: "100%", sm: "49.5%"}}>
+        <Box
+          width={{ xs: "100%", sm: "49.5%" }}
+        >
           <Typography
             marginTop={2}
             fontWeight={"bold"}

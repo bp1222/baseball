@@ -103,7 +103,7 @@ const TeamRanking = () => {
   }
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} elevation={2}>
       <LineChart
         height={500}
         margin={{top: 25}}

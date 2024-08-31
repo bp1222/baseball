@@ -9,6 +9,7 @@ const phillies = createTheme({
       main: "#6bace4",
     },
   },
+  /*
   components: {
     MuiCssBaseline: {
       styleOverrides: {
@@ -19,6 +20,7 @@ const phillies = createTheme({
       },
     },
   },
+  */
 });
 
 export default phillies;

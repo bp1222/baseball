@@ -131,6 +131,9 @@ const GetTheme = (teamId: number | undefined): Theme => {
       components: {
         MuiCssBaseline: {
           styleOverrides: {
+            "body": {
+              backgroundColor: "#f7f7f7",
+            },
             "*, *::before, *::after": {
               boxSizing: "initial",
             },

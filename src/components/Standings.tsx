@@ -42,7 +42,7 @@ const Standings = ({standings, wildCard}: StandingsProps) => {
 
   return (
     <Box>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} elevation={2} >
         <Table>
           <TableHead>
             <TableRow>
