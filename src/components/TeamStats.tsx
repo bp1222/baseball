@@ -57,7 +57,9 @@ const TeamStats = () => {
     }
   }))
   leagueStandingWildCard.sort((a, b) => parseFloat(a.winningPercentage!) > parseFloat(b.winningPercentage!) ? -1 : 1)
-  leagueStandings.push(...leagueStandingWildCard)
+
+  // For some reason, the 2023 AL Wildcard race lists the marianers as no games back?  wtf?  So only take top 3
+  leagueStandings.push(...leagueStandingWildCard.slice(0,3))
 
   return (
     <Stack width={1} height={1} direction={"column"}>
