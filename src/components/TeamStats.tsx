@@ -61,8 +61,8 @@ const TeamStats = () => {
 
   return (
     <Stack width={1} height={1} direction={"column"}>
-      <Stack direction={"row"}>
-        <Box width={"49.5%"}>
+      <Stack direction={{xs: "column", sm: "row"}}>
+        <Box width={{xs: "100%", sm: "49.5%"}}>
           <Typography
             marginTop={2}
             fontWeight={"bold"}
@@ -74,7 +74,7 @@ const TeamStats = () => {
           </Typography>
           <Standings standings={divisionStandings} wildCard={false} />
         </Box>
-        <Box width={"49.5%"} paddingLeft={"1%"}>
+        <Box width={{xs: "100%", sm: "49.5%"}} paddingLeft={{xs: 0, sm: "1%"}}>
           <Typography
             marginTop={2}
             fontWeight={"bold"}
@@ -90,7 +90,6 @@ const TeamStats = () => {
 
       <Box paddingTop={3}>
         <Typography
-          marginTop={2}
           fontWeight={"bold"}
           textAlign={"center"}
           fontSize={"larger"}

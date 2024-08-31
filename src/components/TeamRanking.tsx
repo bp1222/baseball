@@ -5,13 +5,11 @@ import { MlbApi, MLBStandingsList } from "../services/MlbApi";
 import { LineChart, LineSeriesType } from "@mui/x-charts"
 import LoadCachedData from "../services/caching";
 import { Box } from "@mui/system";
-import { CircularProgress, Paper, TableContainer, Typography } from "@mui/material";
+import { CircularProgress, Paper, TableContainer } from "@mui/material";
 
 const api = new MlbApi()
 
-type Rankings = {
-  [index: string]: (number)[]
-}
+type Rankings = Record<string, number[]>
 
 const TeamRanking = () => {
   const { state } = useContext(AppStateContext);
