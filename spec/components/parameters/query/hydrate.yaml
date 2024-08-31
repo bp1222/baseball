@@ -1,5 +1,5 @@
 in: query
-name: teamId
+name: hydrate 
 required: false
 schema:
-  type: number
+  type: string

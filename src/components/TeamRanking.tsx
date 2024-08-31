@@ -2,10 +2,10 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
 import { useParams } from "react-router-dom";
 import { MlbApi, MLBStandingsList } from "../services/MlbApi";
-import { BarLabel, ChartsLegend, LineChart, LineSeriesType } from "@mui/x-charts"
+import { LineChart, LineSeriesType } from "@mui/x-charts"
 import LoadCachedData from "../services/caching";
 import { Box } from "@mui/system";
-import { CircularProgress, FormLabel, Paper, TableContainer, Typography } from "@mui/material";
+import { CircularProgress, Paper, TableContainer, Typography } from "@mui/material";
 
 const api = new MlbApi()
 
@@ -36,16 +36,16 @@ const TeamRanking = () => {
     const newSeasonRankings: Rankings = {}
     const newSeasonDateRange: Date[] = []
 
-    for (let day = seasonStartDate; day <= endDate; ) {
+    for (let day = seasonStartDate; day <= endDate;) {
       const date = day.toISOString().substring(0, 10)
       const key = "mlbStandings:" + season.seasonId + ":" + team.league?.id + ":" + date
 
       const standings = await LoadCachedData<MLBStandingsList>(key, day < today, () => api.getStandings({
         leagueId: team.league!.id!,
         season: season.seasonId!,
-        date: date, 
+        date: date,
         fields: [
-          "records","division","id","team","name","teamRecords","leagueRecord","wins","losses","ties","pct","divisionGamesBack","gamesPlayed","magicNumber"
+          "records", "division", "id", "team", "name", "teamRecords", "leagueRecord", "wins", "losses", "ties", "pct", "divisionGamesBack", "gamesPlayed", "magicNumber"
         ]
       }))
 
@@ -106,47 +106,36 @@ const TeamRanking = () => {
 
   return (
     <TableContainer component={Paper}>
-      <Box>
-        <Typography
-        marginTop={2}
-        marginBottom={-4}
-        fontWeight={"bold"}
-        textAlign={"center"}
-        fontSize={"larger"}
-        color={"primary.main"}
-        >
-          Games Behind
-        </Typography>
-        </Box>
-        <LineChart
-          height={500}
-          series={getSeries()}
-          grid={{horizontal: true}}
-          yAxis={[
-            {
-              label: 'Games Back',
-              reverse: true,
-            }
-          ]}
-          slotProps={{
-            legend: {
-              hidden: true,
-            }
-          }}
-          xAxis={[
-              {
-                label: 'Day',
-                scaleType: 'band',
-                data: seasonDateRange,
-                tickInterval: (date, index) => date?.getDate() == 1 || index == 0,
-                tickLabelInterval: (date, index) => date?.getDate() == 1 || index == 0,
-                valueFormatter: (date, context) =>
-                  context.location === 'tick'
-                    ? date.toLocaleString('en-us', {month: 'short'})
-                    : date.toLocaleDateString('en-us', {month: 'long', day: '2-digit'})
-              }
-            ]}
-          />
+      <LineChart
+        height={500}
+        margin={{top: 25}}
+        series={getSeries()}
+        grid={{ horizontal: true }}
+        yAxis={[
+          {
+            label: 'Games Back',
+            reverse: true,
+          }
+        ]}
+        slotProps={{
+          legend: {
+            hidden: true,
+          }
+        }}
+        xAxis={[
+          {
+            label: 'Day',
+            scaleType: 'band',
+            data: seasonDateRange,
+            tickInterval: (date, index) => date?.getDate() == 1 || index == 0,
+            tickLabelInterval: (date, index) => date?.getDate() == 1 || index == 0,
+            valueFormatter: (date, context) =>
+              context.location === 'tick'
+                ? date.toLocaleString('en-us', { month: 'short' })
+                : date.toLocaleDateString('en-us', { month: 'long', day: '2-digit' })
+          }
+        ]}
+      />
     </TableContainer>
   );
 };

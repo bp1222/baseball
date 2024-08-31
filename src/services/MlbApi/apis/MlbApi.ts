@@ -55,6 +55,7 @@ export interface GetStandingsRequest {
     season: string;
     date?: string;
     fields?: Array<string>;
+    hydrate?: string;
 }
 
 export interface GetTeamsRequest {
@@ -243,6 +244,10 @@ export class MlbApi extends runtime.BaseAPI {
 
         if (requestParameters['fields'] != null) {
             queryParameters['fields'] = requestParameters['fields']!.join(runtime.COLLECTION_FORMATS["csv"]);
+        }
+
+        if (requestParameters['hydrate'] != null) {
+            queryParameters['hydrate'] = requestParameters['hydrate'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

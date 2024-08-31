@@ -108,6 +108,7 @@ paths:
         - $ref: '#/components/parameters/Season'
         - $ref: '#/components/parameters/Date'
         - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Hydrate'
       tags:
         - mlb
       responses:
@@ -147,6 +148,12 @@ components:
           type: string
       style: form
       explode: false
+    Hydrate:
+      in: query
+      name: hydrate
+      required: false
+      schema:
+        type: string
     LeagueId:
       in: query
       name: leagueId

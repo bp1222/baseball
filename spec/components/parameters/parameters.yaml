@@ -5,6 +5,8 @@ EndDate:
   $ref: "./query/endDate.yaml"
 Fields:
   $ref: "./query/fields.yaml"
+Hydrate:
+  $ref: "./query/hydrate.yaml"
 LeagueId:
   $ref: "./query/leagueId.yaml"
 LeagueIds:

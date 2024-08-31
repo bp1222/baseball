@@ -2,11 +2,10 @@ import { AppBar, Grid, Toolbar, Typography } from "@mui/material";
 import SportsBaseball from "@mui/icons-material/SportsBaseball";
 import TeamPicker from "./TeamPicker";
 import SeasonPicker from "./SeasonPicker";
-import React from "react";
 
 const Header = () => {
   return (
-    <React.Fragment>
+    <>
       <Grid container>
         <AppBar
           position="relative"
@@ -71,7 +70,7 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </Grid>
-    </React.Fragment>
+    </>
   );
 };
 

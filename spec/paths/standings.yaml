@@ -9,6 +9,7 @@ get:
     - $ref: ../components/parameters/parameters.yaml#/Season
     - $ref: ../components/parameters/parameters.yaml#/Date
     - $ref: ../components/parameters/parameters.yaml#/Fields
+    - $ref: ../components/parameters/parameters.yaml#/Hydrate
   tags:
     - mlb
   responses:
