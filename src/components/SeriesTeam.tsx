@@ -26,7 +26,7 @@ const SeriesTeam = ({ against, homeaway }: SeriesTeamProps) => {
         <img src={againstImage} height={24} width={24} />
       </Box>
       <Box paddingLeft={{xs: 1, sm: 0}}>
-        <Typography fontSize={"smaller"} overflow={'visible'} noWrap>
+        <Typography fontSize={"smaller"} overflow={'visible'} >
           {homeaway == SeriesHomeAway.Home
             ? "vs "
             : homeaway == SeriesHomeAway.Away
