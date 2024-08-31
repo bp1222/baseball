@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Paper, Stack, TableContainer, Typography } from "@mui/material";
 import TeamRanking from "./TeamRanking";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
@@ -61,12 +61,16 @@ const TeamStats = () => {
 
   return (
     <Stack width={1} height={1} direction={"column"}>
-      <Stack direction={{xs: "column", sm: "row"}}>
-        <Box
-          width={{ xs: "100%", sm: "49.5%" }}
+      <Stack direction={{ xs: "column", sm: "row" }}>
+        <TableContainer
+          component={Paper}
+          elevation={2}
+          sx={{
+            width: { xs: "100%", sm: "49.5%" }
+          }}
         >
           <Typography
-            marginTop={2}
+            marginTop={1}
             fontWeight={"bold"}
             textAlign={"center"}
             fontSize={"larger"}
@@ -75,10 +79,17 @@ const TeamStats = () => {
             Division Standings
           </Typography>
           <Standings standings={divisionStandings} wildCard={false} />
-        </Box>
-        <Box width={{xs: "100%", sm: "49.5%"}} paddingLeft={{xs: 0, sm: "1%"}}>
+        </TableContainer>
+        <TableContainer
+          component={Paper}
+          elevation={2}
+          sx={{
+            width: { xs: "100%", sm: "49.5%" },
+            marginLeft: { xs: 0, sm: "1%" },
+          }}
+        >
           <Typography
-            marginTop={2}
+            marginTop={1}
             fontWeight={"bold"}
             textAlign={"center"}
             fontSize={"larger"}
@@ -87,11 +98,18 @@ const TeamStats = () => {
             League Standings
           </Typography>
           <Standings standings={leagueStandings} wildCard={true} />
-        </Box>
+        </TableContainer>
       </Stack>
 
-      <Box paddingTop={3}>
+      <TableContainer
+        component={Paper}
+        elevation={2}
+        sx={{
+          marginTop: 3,
+        }}
+      >
         <Typography
+          marginTop={1}
           fontWeight={"bold"}
           textAlign={"center"}
           fontSize={"larger"}
@@ -99,9 +117,8 @@ const TeamStats = () => {
         >
           Games Behind
         </Typography>
-
         <TeamRanking />
-      </Box>
+      </TableContainer>
     </Stack>
   );
 };

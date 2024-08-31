@@ -1,11 +1,8 @@
 import { MLBRecord } from "../services/MlbApi";
 import {
-  Box,
-  Paper,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
 } from "@mui/material";
@@ -24,7 +21,7 @@ const DivisionLetter: Record<number, string> = {
   205: "C", // NL Central
 }
 
-const Standings = ({standings, wildCard}: StandingsProps) => {
+const Standings = ({ standings, wildCard }: StandingsProps) => {
   if (standings == undefined) return
 
   const teamStanding = (record: MLBRecord, showDivision: boolean) => {
@@ -34,32 +31,28 @@ const Standings = ({standings, wildCard}: StandingsProps) => {
         <TableCell padding={"checkbox"} align="right">{record.wins}</TableCell>
         <TableCell padding={"checkbox"} align="right">{record.losses}</TableCell>
         <TableCell padding={"checkbox"} align="right">{record.winningPercentage}</TableCell>
-        <TableCell padding={wildCard?"normal":"checkbox"} align="right">{wildCard ? record.wildCardGamesBack : record.gamesBack}</TableCell>
+        <TableCell padding={wildCard ? "normal" : "checkbox"} align="right">{wildCard ? record.wildCardGamesBack : record.gamesBack}</TableCell>
         {!wildCard ? <TableCell padding={"normal"} align="right">{wildCard ? record.wildCardEliminationNumber : record.eliminationNumber}</TableCell> : <></>}
       </TableRow>
     );
   };
 
   return (
-    <Box>
-      <TableContainer component={Paper} elevation={2} >
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell padding={"normal"}>Team</TableCell>
-              <TableCell padding={"checkbox"} align="right">W</TableCell>
-              <TableCell padding={"checkbox"} align="right">L</TableCell>
-              <TableCell padding={"checkbox"} align="right">Pct</TableCell>
-              <TableCell padding={wildCard?"normal":"checkbox"} align="right">GB</TableCell>
-              {!wildCard ? <TableCell padding={"normal"} align="right">E#</TableCell> : <></>}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {standings.map((s, idx) => teamStanding(s, wildCard && idx <= 2))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell padding={"normal"}>Team</TableCell>
+          <TableCell padding={"checkbox"} align="right">W</TableCell>
+          <TableCell padding={"checkbox"} align="right">L</TableCell>
+          <TableCell padding={"checkbox"} align="right">Pct</TableCell>
+          <TableCell padding={wildCard ? "normal" : "checkbox"} align="right">GB</TableCell>
+          {!wildCard ? <TableCell padding={"normal"} align="right">E#</TableCell> : <></>}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {standings.map((s, idx) => teamStanding(s, wildCard && idx <= 2))}
+      </TableBody>
+    </Table>
   );
 };
 
