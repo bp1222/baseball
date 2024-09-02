@@ -1,0 +1,27 @@
+{
+  "TableName": "LeagueStandings",
+  "KeySchema": [
+    {
+      "AttributeName": "season",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "league",
+      "KeyType": "RANGE"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "season",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "league",
+      "AttributeType": "S"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 2,
+    "WriteCapacityUnits": 2
+  }
+}
