@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: lambda
+Transform:
+- AWS::Serverless-2016-10-31
+Resources:
+  getSeasonStandings:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: getSeasonStandings.handler
+      Runtime: nodejs20.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP get method to get all items from
+        a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: SeasonStandingsTable
+      Environment:
+        Variables:
+          SEASON_STANDINGS_TABLE:
+            Ref: SeasonStandingsTable
+          DEVENV: OSX
+          NODE_OPTIONS: ' --enable-source-maps'
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /{season}/{league}
+            Method: GET
+      CodeUri: getSeasonStandings
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+        - src/handlers/getSeasonStandings.ts
+        Minify: true
+        Sourcemap: true
+        Target: es2020
+      SamResourceId: getSeasonStandings
+  SeasonStandingsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: SeasonStandingsTable
+      AttributeDefinitions:
+      - AttributeName: season
+        AttributeType: S
+      - AttributeName: league
+        AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+      - AttributeName: season
+        KeyType: HASH
+      - AttributeName: league
+        KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+Outputs:
+  WebEndpoint:
+    Description: API Gateway endpoint URL for Prod stage
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/

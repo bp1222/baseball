@@ -7,7 +7,7 @@ import {
 } from "../models/Series";
 import { useContext } from "react";
 import { AppStateContext } from "../state/Context";
-import { MLBTeam } from "../services/MlbApi/models";
+import { MLBTeam } from "@bp1222/stats-api";
 import SeriesGame from "./SeriesGame";
 import { amber } from "@mui/material/colors";
 import ResultBadge from "./ResultBadge";

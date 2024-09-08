@@ -1,6 +1,6 @@
 import { Box, Stack } from "@mui/material";
 import { GameResultColor, GameResult } from "../models/Series";
-import { MLBGame, MLBTeam } from "../services/MlbApi";
+import { MLBGame, MLBTeam } from "@bp1222/stats-api";
 
 type SeriesGameProps = {
   result: GameResult;

@@ -1,5 +1,5 @@
 {
-  "TableName": "LeagueStandings",
+  "TableName": "SeasonStandingsTable",
   "KeySchema": [
     {
       "AttributeName": "season",

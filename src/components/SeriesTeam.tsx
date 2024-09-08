@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { MLBTeam } from "../services/MlbApi";
+import { MLBTeam } from "@bp1222/stats-api";
 import { SeriesHomeAway } from "../models/Series";
 
 type SeriesTeamProps = {

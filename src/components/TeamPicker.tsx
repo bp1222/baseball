@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { MLBTeam } from "../services/MlbApi/models";
+import { MLBTeam } from "@bp1222/stats-api";
 import { MenuItem, Button, Menu, Typography } from "@mui/material";
 import { AppStateContext } from "../state/Context";
 import { useNavigate, useParams } from "react-router-dom";

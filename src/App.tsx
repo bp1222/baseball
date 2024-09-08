@@ -6,7 +6,7 @@ import { AppStateContext } from "./state/Context";
 import Header from "./components/Header";
 import GetTheme from "./colors";
 import { AppStateAction } from "./state/Actions";
-import { MlbApi } from "./services/MlbApi";
+import { MlbApi } from "@bp1222/stats-api";
 import Footer from "./components/Footer";
 
 const api = new MlbApi();

@@ -1,5 +1,5 @@
 import { Dispatch } from "react";
-import { MLBSeason, MLBTeam } from "../services/MlbApi";
+import { MLBSeason, MLBTeam } from "@bp1222/stats-api";
 
 export enum AppStateAction {
   Teams = "teams",

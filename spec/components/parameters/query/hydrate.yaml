@@ -1,5 +1,0 @@
-in: query
-name: hydrate 
-required: false
-schema:
-  type: string

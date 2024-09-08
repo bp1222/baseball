@@ -4,7 +4,7 @@ import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import GetTheme from "../colors";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
-import { MlbApi, MLBSchedule } from "../services/MlbApi";
+import { MlbApi, MLBSchedule } from "@bp1222/stats-api";
 import LoadCachedData from "../services/caching";
 
 enum Tab {

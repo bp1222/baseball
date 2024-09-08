@@ -2,7 +2,7 @@ import { Box, CircularProgress, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import GenerateSeries, { Series } from "../models/Series";
 import SeriesItem from "./SeriesItem";
-import { MLBSchedule, MLBTeam } from "../services/MlbApi";
+import { MLBSchedule, MLBTeam } from "@bp1222/stats-api";
 import { useOutletContext } from "react-router-dom";
 
 type TeamScheduleProps = {

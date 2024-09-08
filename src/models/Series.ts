@@ -15,7 +15,7 @@ import {
   MLBSchedule,
   MLBScheduleDay,
   MLBTeam,
-} from "../services/MlbApi";
+} from "@bp1222/stats-api";
 import { Color } from "@mui/material";
 
 export enum SeriesResult {

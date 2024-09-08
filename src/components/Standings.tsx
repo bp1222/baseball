@@ -1,4 +1,4 @@
-import { MLBRecord } from "../services/MlbApi";
+import { MLBRecord } from "@bp1222/stats-api";
 import {
   Table,
   TableBody,

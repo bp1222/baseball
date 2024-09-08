@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
 import { useParams } from "react-router-dom";
-import { MlbApi, MLBStandingsList } from "../services/MlbApi";
+import { MlbApi, MLBStandingsList } from "@bp1222/stats-api";
 import { LineChart, LineSeriesType } from "@mui/x-charts"
 import LoadCachedData from "../services/caching";
 import { Box } from "@mui/system";

@@ -1,66 +1,64 @@
-# This is the SAM template that represents the architecture of your serverless application
-# https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-template-basics.html
-
 AWSTemplateFormatVersion: 2010-09-09
-Description: lambda
+Description: >-
+  lambda
 
 Transform:
-  - AWS::Serverless-2016-10-31
-
-Parameters:
-  AWSREGIONNAME:
-    Type: String
-    Description: Default region for deployment.
-    Default: us-east-2
-  AWSENVNAME:
-    Type: String
-    Description: AWS Environment where code is being executed (AWS_SAM_LOCAL or AWS).
-    Default: AWS_SAM_LOCAL
-  DEVENVNAME:
-    Type: String
-    Description: Developer environment where code is being executed (OSX, Windows,
-      or Linux).
-    Default: OSX
+- AWS::Serverless-2016-10-31
 
 Resources:
-  LeagueStandings:
-    Type: AWS::Serverless::SimpleTable
-    Properties:
-      TableName: LeagueStandings
-      PrimaryKey:
-        Name: id
-        Type: String
-      ProvisionedThroughput:
-        ReadCapacityUnits: 2
-        WriteCapacityUnits: 2
-
-  getLeagueSeasonStandings:
+  getSeasonStandings:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: index.handler
+      Handler: src/handlers/getSeasonStandings.handler
       Runtime: nodejs20.x
+      Architectures:
+        - x86_64
       MemorySize: 128
       Timeout: 100
-      Description: A simple example includes a HTTP get method to get all items from a
-        DynamoDB table.
+      Description: A simple example includes a HTTP get method to get all items from a DynamoDB table.
       Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
         - DynamoDBCrudPolicy:
-            TableName: !Ref LeagueStandings
+            TableName: !Ref SeasonStandingsTable
       Environment:
         Variables:
-          TableName: !Ref LeagueStandings
-          AWSREGION: !Ref AWSREGIONNAME
-          AWSENV: !Ref AWSENVNAME
-          DEVENV: !Ref DEVENVNAME
+          # Make table name accessible as environment variable from function code during execution
+          SEASON_STANDINGS_TABLE: !Ref SeasonStandingsTable
+          DEVENV: OSX
       Events:
-        ServerlessRestApiGETleagueseason:
+        Api:
           Type: Api
           Properties:
             Path: /{season}/{league}
             Method: GET
-      CodeUri: ./src/getLeagueSeasonStandings
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/getSeasonStandings.ts
+
+  SeasonStandingsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: SeasonStandingsTable
+      AttributeDefinitions:
+        - AttributeName: season
+          AttributeType: S
+        - AttributeName: league
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: season
+          KeyType: HASH
+        - AttributeName: league
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
 
 Outputs:
   WebEndpoint:
-    Description: API Gateway endpoint URL for Prod stage
-    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

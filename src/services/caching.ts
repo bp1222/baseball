@@ -1,4 +1,4 @@
-import { MLBSchedule, MLBStandingsList } from "./MlbApi"
+import { MLBSchedule, MLBStandingsList } from "@bp1222/stats-api"
 
 type AllowableCache = MLBSchedule | MLBStandingsList
 type LoadCachedCallback<T extends AllowableCache> = () => Promise<T>

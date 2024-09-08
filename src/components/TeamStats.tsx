@@ -1,8 +1,8 @@
-import { Box, Paper, Stack, TableContainer, Typography } from "@mui/material";
+import { Paper, Stack, TableContainer, Typography } from "@mui/material";
 import TeamRanking from "./TeamRanking";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
-import { MlbApi, MLBRecord, MLBStandings, MLBStandingsList, MLBTeam } from "../services/MlbApi";
+import { MlbApi, MLBRecord, MLBStandings, MLBStandingsList, MLBTeam } from "@bp1222/stats-api";
 import { useParams } from "react-router-dom";
 import LoadCachedData from "../services/caching";
 import Standings from "./Standings";
