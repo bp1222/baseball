@@ -1,4 +1,0 @@
-node_modules
-.aws-sam
-env.json
-dist/
