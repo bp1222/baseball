@@ -2,21 +2,21 @@
   "TableName": "SeasonStandingsTable",
   "KeySchema": [
     {
-      "AttributeName": "season",
+      "AttributeName": "pk",
       "KeyType": "HASH"
     },
     {
-      "AttributeName": "league",
+      "AttributeName": "sort",
       "KeyType": "RANGE"
     }
   ],
   "AttributeDefinitions": [
     {
-      "AttributeName": "season",
+      "AttributeName": "pk",
       "AttributeType": "S"
     },
     {
-      "AttributeName": "league",
+      "AttributeName": "sort",
       "AttributeType": "S"
     }
   ],

@@ -1,78 +1,68 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
-import { MlbApi, MLBSeason } from '@bp1222/stats-api'
+import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import DynamoClient from '../utils/dynamo';
+import GetCORSHeaders from '../utils/cors';
+import { GetSeason, GetStandings } from './mlb';
 
-const mlbApi = new MlbApi()
 const db = new DynamoClient()
 
-const getStoredData = async (season: string, league: string): Promise<MLBSeason> => {
-  try {
-    const s = await mlbApi.getSeason({ sportId: 1, season: season })
-  } catch(err) {
-    console.error(err)
-  }
-  return null
-}
-
-export const handler = async (event: APIGatewayProxyEvent) => {
+export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   if (event.httpMethod !== 'GET') {
     throw new Error(`getMethod only accept GET method, you tried: ${event.httpMethod}`);
   }
 
-  // All log statements are written to CloudWatch
-  console.info('received:', event);
+  const seasonId = event.pathParameters.season;
+  const leagueId = event.pathParameters.league;
 
-  const season = event.pathParameters.season;
-  const league = event.pathParameters.league;
-  const key = {season: season, league: league}
+  //
+  // First: get the season 
+  //
+  const season = await GetSeason(seasonId)
 
-  console.log(await db.read({season: season, league: league}))
-
-  const data = {
-    dates: [{
-      date: "2024-04-12",
-      records: [{
-        team: "Phils",
-      }, { team: "Bravos" }]
-    },
-    {
-      date: "2024-04-13",
-      records: [{
-        team: "Phils",
-      }, { team: "Bravos" }]
-    }],
+  //
+  // Second: determine the most recent day for which we have a cache
+  //
+  const standings = await db.ReadStandings(seasonId, leagueId)
+  let mostRecentCachedDay = new Date("0000-00-00")
+  
+  if (Object.keys(standings).length > 0) {
+    mostRecentCachedDay = new Date(Object.keys(standings).reduce((a, b) => new Date(a) > new Date(b) ? a : b))
   }
-  try {
-    //await db.write({season: season, league: league}, data)
-  } catch (err) {
-    console.error(err)
+
+  //
+  // Third: discern where we need to start from, then query for and cache away new standings
+  //
+  const today = new Date()
+
+  const seasonStartDate = new Date(Date.parse(season!.regularSeasonStartDate!))
+  const seasonEndDate = new Date(Date.parse(season!.regularSeasonEndDate!))
+
+  // Determine which date we start with, if the season start date is before our cache, use our cache
+  const startDate = seasonStartDate < mostRecentCachedDay ? mostRecentCachedDay : seasonStartDate
+  const endDate = seasonEndDate < today ? seasonEndDate : today
+
+  console.log("Today is " + today + " will query MLB Data from: " + startDate + " to " + endDate)
+  for (let day = startDate; day <= endDate; /* iterates below */) {
+    const standingsDate = day.toISOString().substring(0, 10)
+    const dayStandings = await GetStandings(seasonId, leagueId, standingsDate)
+
+    if (dayStandings?.records) {
+      // Do not cache todays standings, they may still be in processing
+      if (today != day) {
+        await db.WriteStandings(seasonId, leagueId, standingsDate, dayStandings.records)
+      }
+      standings[standingsDate] = dayStandings.records
+    }
+    const nextDay = new Date(day)
+    nextDay.setDate(day.getDate() + 1)
+    day = nextDay
   }
+
+  //
+  // Fourth: return standings back to the suer
+  //
   return {
-    statusCode:200,
-  }
- 
-  const params = {
-    TableName: process.env.SEASON_STANDINGS_TABLE,
-    Key: { season: season, league: league },
-    Item: undefined,
-  };
-
-  try {
-    const data = await ddbDocClient.send(new GetCommand(params));
-    const items = data.Item;
-    console.log(items)
-    items.dates.forEach((d) => console.log(d.records))
-  } catch (err) {
-    console.log("Error", err);
-
-  }
- 
-  const response = {
     statusCode: 200,
-    body: JSON.stringify({})
-  };
-
-  // All log statements are written to CloudWatch
-  console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);
-  return response;
+    body: JSON.stringify(standings),
+    headers: GetCORSHeaders(event),
+   }
 }

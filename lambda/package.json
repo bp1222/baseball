@@ -4,9 +4,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.645.0",
-    "@aws-sdk/lib-dynamodb": "^3.398.0",
-    "@bp1222/stats-api": "^0.0.8",
+    "@bp1222/stats-api": "^0.1.5",
     "@types/aws-lambda": "^8.10.145",
     "aws-lambda": "^1.0.7",
     "aws-sdk": "^2.437.0"

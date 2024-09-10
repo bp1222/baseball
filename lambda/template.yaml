@@ -24,13 +24,14 @@ Resources:
         Variables:
           # Make table name accessible as environment variable from function code during execution
           SEASON_STANDINGS_TABLE: !Ref SeasonStandingsTable
-          DEVENV: OSX
       Events:
         Api:
           Type: Api
           Properties:
             Path: /{season}/{league}
             Method: GET
+            RestApiId:
+              Ref: RestApi
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
       BuildProperties:
@@ -45,20 +46,27 @@ Resources:
     Properties:
       TableName: SeasonStandingsTable
       AttributeDefinitions:
-        - AttributeName: season
+        - AttributeName: pk
           AttributeType: S
-        - AttributeName: league
+        - AttributeName: sort
           AttributeType: S
       BillingMode: PAY_PER_REQUEST
       KeySchema:
-        - AttributeName: season
+        - AttributeName: pk 
           KeyType: HASH
-        - AttributeName: league
+        - AttributeName: sort
           KeyType: RANGE
-      StreamSpecification:
-        StreamViewType: NEW_AND_OLD_IMAGES
+
+  RestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET,OPTIONS'"
+        AllowHeaders: "'Content-Type'"
+        AllowOrigin: "'*'"
 
 Outputs:
   WebEndpoint:
     Description: "API Gateway endpoint URL for Prod stage"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Value: !Sub "https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

@@ -24,4 +24,3 @@ bundle: ## Builds the yaml bundle
 
 gen:
 	npx --yes @openapitools/openapi-generator-cli generate --generator-key v0-client
-
