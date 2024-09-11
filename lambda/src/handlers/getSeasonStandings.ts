@@ -19,14 +19,12 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   const season = await GetSeason(seasonId)
 
   //
-  // Second: determine the most recent day for which we have a cache
+  // Second: Pull out cached standings, there's a non zero chance we may have errored pulling specific days
+  //         so we will use keys to discern if we need to requery and cache missing dates
   //
   const standings = await db.ReadStandings(seasonId, leagueId)
-  let mostRecentCachedDay = new Date("0000-00-00")
-  
-  if (Object.keys(standings).length > 0) {
-    mostRecentCachedDay = new Date(Object.keys(standings).reduce((a, b) => new Date(a) > new Date(b) ? a : b))
-  }
+  const standingsDates = Object.keys(standings)
+  console.info("Pulled " + standingsDates.length + " standings for " + seasonId + " from cache")
 
   //
   // Third: discern where we need to start from, then query for and cache away new standings
@@ -37,21 +35,26 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   const seasonEndDate = new Date(Date.parse(season!.regularSeasonEndDate!))
 
   // Determine which date we start with, if the season start date is before our cache, use our cache
-  const startDate = seasonStartDate < mostRecentCachedDay ? mostRecentCachedDay : seasonStartDate
+  const startDate = seasonStartDate
   const endDate = seasonEndDate < today ? seasonEndDate : today
 
-  console.log("Today is " + today + " will query MLB Data from: " + startDate + " to " + endDate)
   for (let day = startDate; day <= endDate; /* iterates below */) {
     const standingsDate = day.toISOString().substring(0, 10)
-    const dayStandings = await GetStandings(seasonId, leagueId, standingsDate)
 
-    if (dayStandings?.records) {
-      // Do not cache todays standings, they may still be in processing
-      if (today != day) {
-        await db.WriteStandings(seasonId, leagueId, standingsDate, dayStandings.records)
+    if (!standingsDates.includes(standingsDate)) {
+      const dayStandings = await GetStandings(seasonId, leagueId, standingsDate)
+      if (dayStandings?.records) {
+        console.info("Pulled standings for " + standingsDate + " from MLB API")
+        standings[standingsDate] = dayStandings.records
+
+        // Do not cache todays standings, they may still be in processing
+        if (today != day) {
+          console.log("Caching standings for", standingsDate)
+          await db.WriteStandings(seasonId, leagueId, standingsDate, dayStandings.records)
+        }
       }
-      standings[standingsDate] = dayStandings.records
     }
+
     const nextDay = new Date(day)
     nextDay.setDate(day.getDate() + 1)
     day = nextDay

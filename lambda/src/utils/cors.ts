@@ -4,7 +4,7 @@ const GetCORSHeaders = (event: APIGatewayProxyEvent): {
   [header: string]: boolean | number | string;
 } => {
   const allowedOrigins = [
-    "https://baseballseries.info",
+    "https://*.baseballseries.info",
     "http://localhost:[0-9]*"
   ];
 

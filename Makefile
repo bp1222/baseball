@@ -17,10 +17,6 @@ help: ## Display this help page
 		{printf "${CYAN}%-30s${RESET} %s\n", $$1, $$2} 				\
 	  	END {print "\n${YELLOW}See README.md for more information${RESET}\n"}'
 
-.PHONY: bundle
-bundle: ## Builds the yaml bundle
-	npx --yes @apidevtools/swagger-cli validate -d spec/openapi.yaml 
-	npx --yes @apidevtools/swagger-cli bundle spec/openapi.yaml --outfile spec/bundle.yaml --type yaml
-
-gen:
-	npx --yes @openapitools/openapi-generator-cli generate --generator-key v0-client
+.PHONY: local-serve
+local-serve:
+	sam build && sam local start-api -n env.dev.json

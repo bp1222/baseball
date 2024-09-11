@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Serverless Application for Baseball Series Includes A Typescript frontend
+  for getting the season standings, stored in S3 A Route53 managed domain A Lambda
+  function for getting the season standings A DynamoDB table for storing the season
+  standings
+Transform:
+- AWS::Serverless-2016-10-31
+Parameters:
+  ApplicationFQDN:
+    Type: String
+    Description: Fully qualified domain name for the application, for example baseballseries.info
+    Default: baseballseries.info
+  ZoneId:
+    Type: String
+    Description: Route53 Zone ID
+Resources:
+  SeasonStandingsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: SeasonStandingsTable
+      AttributeDefinitions:
+      - AttributeName: pk
+        AttributeType: S
+      - AttributeName: sort
+        AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+      - AttributeName: pk
+        KeyType: HASH
+      - AttributeName: sort
+        KeyType: RANGE
+    Metadata:
+      SamResourceId: SeasonStandingsTable
+  getSeasonStandings:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: getSeasonStandings
+      CodeUri: s3://aws-sam-cli-managed-default-samclisourcebucket-omt2jtrmhlcq/349193fffc6e976cd99073bf15264ee0
+      Handler: getSeasonStandings.handler
+      Runtime: nodejs20.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 120
+      Description: A simple example includes a HTTP get method to get all items from
+        a DynamoDB table.
+      am
+
+      Environment:
+        Variables:
+          DEVELOPMENT: 'false'
+          SEASON_STANDINGS_TABLE:
+            Ref: SeasonStandingsTable
+          NODE_OPTIONS: ' --enable-source-maps'
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /{season}/{league}
+            Method: GET
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+        - src/handlers/getSeasonStandings.ts
+        Minify: true
+        Sourcemap: true
+        Target: es2020u
+      SamResourceId: getSeasonStandings
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL for Prod stage
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+  GetSeasonStandingsFunction:
+    Description: GetSeasonStandings Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - getSeasonStandings
+      - Arn
+  GetSeasonStandingsFunctionIamRole:
+    Description: Implicit IAM Role created for GetSeasonStandings function
+    Value:
+      Fn::GetAtt:
+      - getSeasonStandingsRole
+      - Arn

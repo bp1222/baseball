@@ -4,7 +4,7 @@ version = 0.1
 
 [default]
 [default.global.parameters]
-stack_name = "standings-cache"
+stack_name = "baseballseries-stack"
 
 [default.build.parameters]
 cached = true
@@ -17,9 +17,10 @@ lint = true
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
-s3_prefix = "standings-cache"
-region = "us-east-2"
+s3_prefix = "baseballseries-stack"
+region = "us-east-1"
 image_repositories = []
+parameter_overrides = "ApplicationFQDN=\"baseballseries.info\" ZoneId=\"Z02865834YILV73ZBPGL\""
 
 [default.package.parameters]
 resolve_s3 = true

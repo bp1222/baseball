@@ -3,7 +3,7 @@ import { MlbApi, MLBSeason, MLBStandingsList } from "@bp1222/stats-api"
 const mlbApi = new MlbApi()
 
 export const GetStandings = async (seasonId: string, leagueId: string, date: string): Promise<MLBStandingsList> => {
-  const standings = await mlbApi.getStandings({
+  return await mlbApi.getStandings({
     leagueId: parseInt(leagueId),
     season: seasonId,
     date: date,
@@ -11,7 +11,6 @@ export const GetStandings = async (seasonId: string, leagueId: string, date: str
       "records", "division", "id", "team", "name", "teamRecords", "leagueRecord", "wins", "losses", "ties", "pct", "divisionGamesBack", "gamesPlayed", "magicNumber"
     ]
   })
-  return standings
 }
 
 export const GetSeason = async (season: string): Promise<MLBSeason> => {

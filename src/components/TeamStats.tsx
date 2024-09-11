@@ -2,9 +2,8 @@ import { Paper, Stack, TableContainer, Typography } from "@mui/material";
 import TeamRanking from "./TeamRanking";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
-import { MlbApi, MLBRecord, MLBStandings, MLBStandingsList, MLBTeam } from "@bp1222/stats-api";
+import { MlbApi, MLBRecord, MLBStandings, MLBTeam } from "@bp1222/stats-api";
 import { useParams } from "react-router-dom";
-import LoadCachedData from "../services/caching";
 import Standings from "./Standings";
 
 const api = new MlbApi();
@@ -15,21 +14,18 @@ const TeamStats = () => {
   const { seasonId, teamId } = useParams();
 
   const team: MLBTeam = state.teams.find(
-    (t) => t.id == parseInt(teamId ?? ""),
+      (t) => t.id == parseInt(teamId ?? ""),
   )!;
 
   const getStandings = useCallback(async () => {
     if (team == undefined) return;
     if (seasonId == undefined) return;
 
-    const seasonIdNum = parseInt(seasonId)
-    const storageKey = "mlbStandings:" + seasonIdNum + ":" + team.id!
-
-    const standings = await LoadCachedData<MLBStandingsList>(storageKey, (parseInt(seasonId) < (new Date().getFullYear())), () => api.getStandings({
+    const standings = await api.getStandings({
       leagueId: team.league!.id!,
       season: seasonId,
       hydrate: "team(division)"
-    }))
+    })
 
     if (standings?.records != undefined) {
       setStandings(standings.records);
@@ -62,66 +58,66 @@ const TeamStats = () => {
   leagueStandings.push(...leagueStandingWildCard.slice(0,3))
 
   return (
-    <Stack width={1} height={1} direction={"column"}>
-      <Stack direction={{ xs: "column", sm: "row" }}>
+      <Stack width={1} height={1} direction={"column"}>
+        <Stack direction={{ xs: "column", sm: "row" }}>
+          <TableContainer
+              component={Paper}
+              elevation={2}
+              sx={{
+                width: { xs: "100%", sm: "49.5%" }
+              }}
+          >
+            <Typography
+                marginTop={1}
+                fontWeight={"bold"}
+                textAlign={"center"}
+                fontSize={"larger"}
+                color={"primary.main"}
+            >
+              Division Standings
+            </Typography>
+            <Standings standings={divisionStandings} wildCard={false} />
+          </TableContainer>
+          <TableContainer
+              component={Paper}
+              elevation={2}
+              sx={{
+                width: { xs: "100%", sm: "49.5%" },
+                marginLeft: { xs: 0, sm: "1%" },
+              }}
+          >
+            <Typography
+                marginTop={1}
+                fontWeight={"bold"}
+                textAlign={"center"}
+                fontSize={"larger"}
+                color={"primary.main"}
+            >
+              League Standings
+            </Typography>
+            <Standings standings={leagueStandings} wildCard={true} />
+          </TableContainer>
+        </Stack>
+
         <TableContainer
-          component={Paper}
-          elevation={2}
-          sx={{
-            width: { xs: "100%", sm: "49.5%" }
-          }}
+            component={Paper}
+            elevation={2}
+            sx={{
+              marginTop: 3,
+            }}
         >
           <Typography
-            marginTop={1}
-            fontWeight={"bold"}
-            textAlign={"center"}
-            fontSize={"larger"}
-            color={"primary.main"}
+              marginTop={1}
+              fontWeight={"bold"}
+              textAlign={"center"}
+              fontSize={"larger"}
+              color={"primary.main"}
           >
-            Division Standings
+            Games Behind
           </Typography>
-          <Standings standings={divisionStandings} wildCard={false} />
-        </TableContainer>
-        <TableContainer
-          component={Paper}
-          elevation={2}
-          sx={{
-            width: { xs: "100%", sm: "49.5%" },
-            marginLeft: { xs: 0, sm: "1%" },
-          }}
-        >
-          <Typography
-            marginTop={1}
-            fontWeight={"bold"}
-            textAlign={"center"}
-            fontSize={"larger"}
-            color={"primary.main"}
-          >
-            League Standings
-          </Typography>
-          <Standings standings={leagueStandings} wildCard={true} />
+          <TeamRanking />
         </TableContainer>
       </Stack>
-
-      <TableContainer
-        component={Paper}
-        elevation={2}
-        sx={{
-          marginTop: 3,
-        }}
-      >
-        <Typography
-          marginTop={1}
-          fontWeight={"bold"}
-          textAlign={"center"}
-          fontSize={"larger"}
-          color={"primary.main"}
-        >
-          Games Behind
-        </Typography>
-        <TeamRanking />
-      </TableContainer>
-    </Stack>
   );
 };
 

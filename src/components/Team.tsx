@@ -5,7 +5,6 @@ import GetTheme from "../colors";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
 import { MlbApi, MLBSchedule } from "@bp1222/stats-api";
-import LoadCachedData from "../services/caching";
 
 enum Tab {
   Schedule,
@@ -38,14 +37,13 @@ const Team = () => {
     let schedule: MLBSchedule | null = null
 
     const seasonIdNum = parseInt(season.seasonId!)
-    const seasonStorageKey = "mlbSeason:" + seasonIdNum + ":" + team.id!
 
-    schedule = await LoadCachedData<MLBSchedule>(seasonStorageKey, (seasonIdNum < (new Date().getFullYear())), () => api.getSchedule({
+    schedule = await api.getSchedule({
       sportId: 1,
       teamId: team.id,
       startDate: season.springStartDate ?? season.preSeasonStartDate,
       endDate: season.postSeasonEndDate,
-    }))
+    })
 
     if (schedule) {
       setSchedule(schedule);

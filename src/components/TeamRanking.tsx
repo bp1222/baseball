@@ -1,13 +1,12 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppStateContext } from "../state/Context";
 import { useParams } from "react-router-dom";
-import { MlbApi, MLBRecord, MLBStandings, MLBStandingsList, MLBStandingsListFromJSON } from "@bp1222/stats-api";
+import { MLBStandings } from "@bp1222/stats-api";
 import { LineChart, LineSeriesType } from "@mui/x-charts"
-import LoadCachedData from "../services/caching";
 import { Box } from "@mui/system";
 import { CircularProgress } from "@mui/material";
-
-const api = new MlbApi()
+import {Simulate} from "react-dom/test-utils";
+import load = Simulate.load;
 
 type Rankings = Record<string, number[]>
 
@@ -17,6 +16,7 @@ const TeamRanking = () => {
 
   const [seasonRankings, setSeasonRankings] = useState<Rankings>({})
   const [seasonDateRange, setSeasonDateRange] = useState<Date[]>([])
+  const [loadError, setLoadError] = useState<boolean>(false)
 
   const season = state.seasons.find((s) => s.seasonId == seasonId);
   const team = state.teams.find((t) => t.id == parseInt(teamId ?? ""),)!;
@@ -29,7 +29,7 @@ const TeamRanking = () => {
     const newSeasonDateRange: Date[] = []
 
     try {
-      const result = await (await fetch("https://4jehxolf56.execute-api.us-east-2.amazonaws.com/Prod/" + season.seasonId + "/" + team.league?.id, {
+      const result = await (await fetch("https://api.baseballseries.info/" + season.seasonId + "/" + team.league?.id, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -52,6 +52,7 @@ const TeamRanking = () => {
       })
     } catch (err) {
       console.error(err)
+      setLoadError(true)
     }
 
     setSeasonDateRange(newSeasonDateRange)
@@ -79,11 +80,19 @@ const TeamRanking = () => {
   }
 
   if (Object.keys(seasonRankings).length <= 0) {
-    return (
-      <Box display={"flex"} justifyContent={"center"}>
-        <CircularProgress />
-      </Box>
-    );
+    if (loadError) {
+      return (
+          <Box display={"flex"} justifyContent={"center"} marginBottom={1}>
+            Error loading data, please try again later.
+          </Box>
+      );
+    } else {
+      return (
+          <Box display={"flex"} justifyContent={"center"} marginBottom={1}>
+            <CircularProgress/>
+          </Box>
+      );
+    }
   }
 
   return (
