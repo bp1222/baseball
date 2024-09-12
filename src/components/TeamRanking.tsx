@@ -29,7 +29,7 @@ const TeamRanking = () => {
     const newSeasonDateRange: Date[] = []
 
     try {
-      const result = await (await fetch("https://api.baseballseries.info/" + season.seasonId + "/" + team.league?.id, {
+      const result = await (await fetch(import.meta.env.VITE_STANDINGS_API + "/" + season.seasonId + "/" + team.league?.id + "/" + team.division?.id, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -38,16 +38,17 @@ const TeamRanking = () => {
       })).json()
 
       Object.keys(result).forEach((k: string) => {
+        const s: MLBStandings = result[k]
         newSeasonDateRange.push(new Date(k))
-        result[k].forEach((s: MLBStandings) => {
-          if (s.division.id != team.division?.id) return
 
-          s.teamRecords.forEach((tr) => {
-            if (newSeasonRankings[tr.team.name] == undefined) {
-              newSeasonRankings[tr.team.name] = []
-            }
-            newSeasonRankings[tr.team.name].push(parseFloat(tr.divisionGamesBack != '-' ? tr.divisionGamesBack! : '0'))
-          })
+        // This should now be taken care of by the cache.
+        if (s.division.id != team.division?.id) return
+
+        s.teamRecords.forEach((tr) => {
+          if (newSeasonRankings[tr.team.name] == undefined) {
+            newSeasonRankings[tr.team.name] = []
+          }
+          newSeasonRankings[tr.team.name].push(parseFloat(tr.divisionGamesBack != '-' ? tr.divisionGamesBack! : '0'))
         })
       })
     } catch (err) {

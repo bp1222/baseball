@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules/
 dist
 .aws-sam
+docker/dynamodb/
 dist-ssr
 *.local
 package-lock.json

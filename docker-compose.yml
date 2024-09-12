@@ -1,11 +1,13 @@
 version: '3.8'
 services:
   dynamodb-local:
-    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
     image: "amazon/dynamodb-local:latest"
     container_name: dynamodb-local
     ports:
       - "8000:8000"
+    volumes:
+      - "./docker/dynamodb:/home/dynamodblocal/data"
     working_dir: /home/dynamodblocal
     healthcheck:
       test: ["CMD-SHELL", '[ "$(curl -s -o /dev/null -I -w ''%{http_code}'' http://localhost:8000)" == "400" ]']
@@ -22,7 +24,7 @@ services:
     environment:
       AWS_ACCESS_KEY_ID: 'FAKEID'
       AWS_SECRET_ACCESS_KEY: 'FAKEKEY'
-      AWS_REGION: 'us-east-2'
+      AWS_REGION: 'us-east-1'
     entrypoint:
       - bash
     command:

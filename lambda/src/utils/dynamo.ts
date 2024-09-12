@@ -10,14 +10,17 @@ if (process.env.DEVELOPMENT === 'true') {
 const docClient = new DocumentClient(params);
 const table = process.env.SEASON_STANDINGS_TABLE;
 
-export const ReadStandings = async (season: string, league: string, date: string = null): Promise<{[x: string]: MLBStandings[]}> => {
+// Sort Key Format
+// {league}#{division}#{date}
+
+export const ReadStandings = async (seasonId: string, leagueId: string, divisionId: string, date: string = null): Promise<{[date:string]: MLBStandings}> => {
   const params: DocumentClient.QueryInput = {
     TableName: table,
     ExpressionAttributeValues: {
-      ":pk": season,
-      ":league": league,
+      ":pk": seasonId,
+      ":sortKey": leagueId + "#" + divisionId,
     },
-    KeyConditionExpression: "pk = :pk and begins_with(sort, :league)"
+    KeyConditionExpression: "pk = :pk and begins_with(sort, :sortKey)"
   };
 
   if (date != null) {
@@ -27,7 +30,7 @@ export const ReadStandings = async (season: string, league: string, date: string
 
   const result = await docClient.query(params).promise()
   try {
-    const retval: {[x: string]: MLBStandings[]} = {}
+    const retval: {[date: string]: MLBStandings} = {}
     result.Items.forEach((i) => retval[i.date] = i.standings)
     return retval
   } catch (err) {
@@ -35,12 +38,12 @@ export const ReadStandings = async (season: string, league: string, date: string
   }
 }
 
-export const WriteStandings = async (season: string, league: string, date: string, standings: MLBStandings[]) => {
+export const WriteStandings = async (seasonId: string, leagueId: string, divisionId: string, date: string, standings: MLBStandings) => {
   const params: DocumentClient.PutItemInput = {
     TableName: table,
     Item: {
-      "pk": season,
-      "sort": league + "#" + date,
+      "pk": seasonId,
+      "sort": leagueId + "#" + divisionId + "#" + date,
       "date": date,
       "standings": standings,
     }

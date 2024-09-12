@@ -75,7 +75,7 @@ Resources:
         GetApi:
           Type: Api
           Properties:
-            Path: /{season}/{league}
+            Path: /{season}/{league}/{division}
             Method: GET
       Policies:
         - DynamoDBCrudPolicy:
