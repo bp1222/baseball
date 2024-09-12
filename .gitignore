@@ -12,7 +12,7 @@ dist
 .aws-sam
 dist-ssr
 *.local
-/package-lock.json
+package-lock.json
 
 # Editor directories and files
 .vscode/*

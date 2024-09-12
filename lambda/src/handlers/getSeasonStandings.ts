@@ -1,9 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
-import DynamoClient from '../utils/dynamo';
-import GetCORSHeaders from '../utils/cors';
-import { GetSeason, GetStandings } from './mlb';
-
-const db = new DynamoClient()
+import { GetSeason, GetStandings } from '../utils/mlb';
+import {ReadStandings, WriteStandings} from "../utils/dynamo";
+import GetCorsHeaders from "../utils/cors";
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   if (event.httpMethod !== 'GET') {
@@ -19,10 +17,10 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   const season = await GetSeason(seasonId)
 
   //
-  // Second: Pull out cached standings, there's a non zero chance we may have errored pulling specific days
+  // Second: Pull out cached standings, there's a non-zero chance we may have errored pulling specific days
   //         so we will use keys to discern if we need to requery and cache missing dates
   //
-  const standings = await db.ReadStandings(seasonId, leagueId)
+  const standings = await ReadStandings(seasonId, leagueId)
   const standingsDates = Object.keys(standings)
   console.info("Pulled " + standingsDates.length + " standings for " + seasonId + " from cache")
 
@@ -50,7 +48,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
         // Do not cache todays standings, they may still be in processing
         if (today != day) {
           console.log("Caching standings for", standingsDate)
-          await db.WriteStandings(seasonId, leagueId, standingsDate, dayStandings.records)
+          await WriteStandings(seasonId, leagueId, standingsDate, dayStandings.records)
         }
       }
     }
@@ -65,7 +63,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   //
   return {
     statusCode: 200,
+    headers: GetCorsHeaders(event),
     body: JSON.stringify(standings),
-    headers: GetCORSHeaders(event),
    }
 }

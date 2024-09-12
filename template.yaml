@@ -21,12 +21,10 @@ Parameters:
 
 Globals:
   Api:
-    Auth:
-      AddDefaultAuthorizerToCorsPreflight: false
     Cors:
       AllowMethods: "'GET,OPTIONS'"
-      AllowHeaders: "'content-type'"
-      AllowOrigin: !Sub "'https://${ApplicationFQDN}'"
+      AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+      AllowOrigin: "'*'"
     Domain:
       DomainName: !Sub "api.${ApplicationFQDN}"
       CertificateArn: !Ref APICertificate
@@ -71,14 +69,14 @@ Resources:
       Environment:
         Variables:
           DEVELOPMENT: 'false'
+          FQDN: !Ref ApplicationFQDN
           SEASON_STANDINGS_TABLE: !Ref SeasonStandingsTable
       Events:
-        Api:
+        GetApi:
           Type: Api
           Properties:
             Path: /{season}/{league}
             Method: GET
-            Auth: null
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref SeasonStandingsTable
@@ -219,6 +217,9 @@ Outputs:
   DistributionId:
     Description: CloudFront Distribution Id
     Value: !Ref Distribution
+  WebsiteBucketName:
+    Description: "Name of S3 bucket to hold website content"
+    Value: !Ref WebsiteBucket
   WebsiteUrl:
     Description: "Name of S3 bucket to hold website content"
     Value: !Sub "https://${ApplicationFQDN}"

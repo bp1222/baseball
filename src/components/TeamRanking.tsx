@@ -83,7 +83,7 @@ const TeamRanking = () => {
     if (loadError) {
       return (
           <Box display={"flex"} justifyContent={"center"} marginBottom={1}>
-            Error loading data, please try again later.
+            Error loading data, we may be loading the cache, please try again later.
           </Box>
       );
     } else {

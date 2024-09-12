@@ -39,5 +39,5 @@ const clearCloudFrontCache = () => {
 uploadFiles();
 clearCloudFrontCache();
 
-const domain = getCloudFormationOuputValue("WebsiteUrl");
+const domain = getCloudFormationOuputValue("ApplicationFQDN");
 console.log(`Deployment done, visit https://${domain}`);
