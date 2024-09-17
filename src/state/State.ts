@@ -1,6 +1,8 @@
-import { MLBSeason, MLBTeam } from "@bp1222/stats-api";
+import {MLBSchedule, MLBSeason, MLBTeam} from "@bp1222/stats-api";
 
 export type AppState = {
-  teams: MLBTeam[];
-  seasons: MLBSeason[];
+  teams: MLBTeam[] | null;
+  seasons: MLBSeason[] | null;
+
+  seasonSchedule: MLBSchedule | null;
 };

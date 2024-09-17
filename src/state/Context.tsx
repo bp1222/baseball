@@ -3,8 +3,10 @@ import { AppState } from "./State";
 import { AppStateAction, AppStateActions, AppStateDispatch } from "./Actions";
 
 const initState: AppState = {
-  teams: [],
-  seasons: [],
+  teams: null,
+  seasons: null,
+
+  seasonSchedule: null,
 };
 
 export const AppStateContext = createContext<{
@@ -26,6 +28,11 @@ function reducer(state: AppState, action: AppStateActions): AppState {
       return {
         ...state,
         seasons: action.seasons,
+      };
+    case AppStateAction.SeasonSchedule:
+      return {
+        ...state,
+        seasonSchedule: action.schedule,
       };
     default:
       return {

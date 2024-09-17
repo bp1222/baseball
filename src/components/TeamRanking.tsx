@@ -1,99 +1,163 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState} from "react";
 import { AppStateContext } from "../state/Context";
 import { useParams } from "react-router-dom";
-import { MLBStandings } from "@bp1222/stats-api";
+import {MLBGameGameTypeEnum, MLBGameStatusCodedGameStateEnum, MLBTeam} from "@bp1222/stats-api";
 import { LineChart, LineSeriesType } from "@mui/x-charts"
 import { Box } from "@mui/system";
 import { CircularProgress } from "@mui/material";
-import {Simulate} from "react-dom/test-utils";
-import load = Simulate.load;
+import memoize from "fast-memoize"
 
-type Rankings = Record<string, number[]>
+type TeamDailyTally = {
+  teamId: number,
+  gameDifference: number
+}
+
+type DailyTally = {
+  date: string,
+  teams: TeamDailyTally[]
+}
+
+const findTeam = memoize((teams: MLBTeam[]|null, teamId: number): MLBTeam | undefined => {
+  return teams?.find((t) => t.id == teamId);
+});
 
 const TeamRanking = () => {
   const { state } = useContext(AppStateContext);
-  const { seasonId, teamId } = useParams();
+  const { teamId } = useParams();
+  const [standings, setStandings] = useState<DailyTally[]>()
 
-  const [seasonRankings, setSeasonRankings] = useState<Rankings>({})
-  const [seasonDateRange, setSeasonDateRange] = useState<Date[]>([])
-  const [loadError, setLoadError] = useState<boolean>(false)
-
-  const season = state.seasons.find((s) => s.seasonId == seasonId);
-  const team = state.teams.find((t) => t.id == parseInt(teamId ?? ""),)!;
-
-  const getSeasonRanking = useCallback(async () => {
-    if (team == undefined) return;
-    if (season == undefined) return;
-
-    const newSeasonRankings: Rankings = {}
-    const newSeasonDateRange: Date[] = []
-
-    try {
-      const result = await (await fetch(import.meta.env.VITE_STANDINGS_API + "/" + season.seasonId + "/" + team.league?.id + "/" + team.division?.id, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      })).json()
-
-      Object.keys(result).forEach((k: string) => {
-        const s: MLBStandings = result[k]
-        newSeasonDateRange.push(new Date(k))
-
-        // This should now be taken care of by the cache.
-        if (s.division.id != team.division?.id) return
-
-        s.teamRecords.forEach((tr) => {
-          if (newSeasonRankings[tr.team.name] == undefined) {
-            newSeasonRankings[tr.team.name] = []
-          }
-          newSeasonRankings[tr.team.name].push(parseFloat(tr.divisionGamesBack != '-' ? tr.divisionGamesBack! : '0'))
-        })
-      })
-    } catch (err) {
-      console.error(err)
-      setLoadError(true)
-    }
-
-    setSeasonDateRange(newSeasonDateRange)
-    setSeasonRankings(newSeasonRankings)
-  }, [team, season]);
+  const team = findTeam(state.teams, parseInt(teamId ?? ""))
 
   useEffect(() => {
-    getSeasonRanking();
-  }, [getSeasonRanking]);
+    const runningTallies: TeamDailyTally[] = []
+    const dailyTallies: DailyTally[] = []
+
+    const seenGames: number[] = []
+
+    const getEmptyDivisionTally = (): TeamDailyTally[] => {
+      const retval: TeamDailyTally[] = []
+      state.teams?.forEach((t) => {
+        if (t.division?.id == team?.division?.id) {
+          retval.push({teamId: t.id, gameDifference: 0})
+        }
+      })
+      return retval
+    }
+
+    const tallyGame = (date: string, team: MLBTeam, isWinner: boolean) => {
+      // Init where necessary
+      let teamRunningTally = runningTallies.find((t) => t.teamId == team.id)
+      if (teamRunningTally == undefined) {
+        teamRunningTally = {teamId: team.id, gameDifference: 0}
+        runningTallies.push(teamRunningTally)
+      }
+
+      let dailyTally = dailyTallies.find((t) => t.date == date)
+      if (dailyTally == undefined) {
+        let init: TeamDailyTally[]
+        if (dailyTallies.length > 0) {
+          init = JSON.parse(JSON.stringify(dailyTallies[dailyTallies.length - 1].teams))
+        } else {
+          init = JSON.parse(JSON.stringify(getEmptyDivisionTally()))
+        }
+        dailyTally = {date: date, teams: init}
+        dailyTallies.push(dailyTally)
+      }
+
+      // Do the actual manipulation
+      if (isWinner) {
+        teamRunningTally.gameDifference += 0.5
+      } else {
+        teamRunningTally.gameDifference -= 0.5
+      }
+
+      const teamDailyTally = dailyTally.teams.find((t) => t.teamId == team.id)!
+      teamDailyTally.gameDifference = teamRunningTally.gameDifference
+    }
+
+    state.seasonSchedule?.dates?.forEach((date) => {
+      // If we don't have a game
+      if (date.date == undefined) return
+
+      // Tally games played up until today.  Prior seasons will run through them all
+      const seasonDay = new Date(date.date)
+      if (seasonDay.getTime() >= new Date().getTime()) return
+
+      // For each game that day
+      date.games?.forEach((game) => {
+
+        // If the game was not a regular season game, was postponed, or is not final, skip it
+        if (game.gameType != MLBGameGameTypeEnum.Regular ||
+          game.status?.codedGameState == MLBGameStatusCodedGameStateEnum.Postponed ||
+          game.status?.codedGameState != MLBGameStatusCodedGameStateEnum.Final) {
+          return
+        }
+
+        const awayTeam = findTeam(state.teams, game.teams.away.team.id)
+        const homeTeam = findTeam(state.teams, game.teams.home.team.id)
+
+        if (awayTeam == undefined || homeTeam == undefined) return
+
+        // The gamePk will be the same for makeup games which were postponed, and suspended games.
+        // Those games that get suspended on one day, and resume prior to the following days game,
+        // will record the actual "Final" state in recorded games on _each_ day where the game was
+        // played.  There is not a "Suspended" status like what Postponed games have, so we need to
+        // track seen games here.  If we've already recorded a game, do not parse a duplicate
+        if (game.gamePk) {
+          if (seenGames.indexOf(game.gamePk) > 0) {
+            return
+          }
+          seenGames.push(game.gamePk)
+        }
+
+        // Tally if the away team was in this division
+        if (awayTeam.division?.id == team?.division?.id) {
+          tallyGame(date.date!, awayTeam, game.teams.away.isWinner)
+        }
+
+        // Tally if the home team was in this division
+        if (homeTeam.division?.id == team?.division?.id) {
+          tallyGame(date.date!, homeTeam, game.teams.home.isWinner)
+        }
+      })
+    })
+
+    // Normalize the tallies to have division leader at zero, and the rest of the teams relative to that
+    dailyTallies.forEach((dailyTally) => {
+      const max = dailyTally.teams.reduce((acc, val) => Math.max(acc, val.gameDifference), 0)
+
+      dailyTally.teams.forEach((team) => {
+        team.gameDifference = Math.abs(team.gameDifference - max)
+      })
+    })
+
+    setStandings(dailyTallies)
+  }, [state.seasonSchedule, state.teams, team])
+
+  if ((standings?.length ?? 0) <= 0) {
+    return (
+      <Box display={"flex"} justifyContent={"center"} marginBottom={1}>
+        <CircularProgress/>
+      </Box>
+    );
+  }
 
   const getSeries = (): LineSeriesType[] => {
     const ret: LineSeriesType[] = []
 
-    for (const k in seasonRankings) {
+    const teams = standings?.[0].teams.map((t) => t.teamId)
+
+    teams?.forEach((teamId) => {
+      const team = findTeam(state.teams, teamId)
       ret.push({
         type: 'line',
-        data: seasonRankings[k],
-        label: k,
+        data: standings?.map((t) => t.teams.filter((team) => team.teamId == teamId).map((team) => team.gameDifference)[0]),
+        label: team?.name,
         showMark: false,
         curve: 'step',
       })
-    }
-
+    })
     return ret
-  }
-
-  if (Object.keys(seasonRankings).length <= 0) {
-    if (loadError) {
-      return (
-          <Box display={"flex"} justifyContent={"center"} marginBottom={1}>
-            Error loading data, we may be loading the cache, please try again later.
-          </Box>
-      );
-    } else {
-      return (
-          <Box display={"flex"} justifyContent={"center"} marginBottom={1}>
-            <CircularProgress/>
-          </Box>
-      );
-    }
   }
 
   return (
@@ -117,7 +181,7 @@ const TeamRanking = () => {
         {
           label: 'Day',
           scaleType: 'band',
-          data: seasonDateRange,
+          data: standings?.map((t) => new Date(t.date)),
           tickInterval: (date, index) => date?.getDate() == 1 || index == 0,
           tickLabelInterval: (date, index) => date?.getDate() == 1 || index == 0,
           valueFormatter: (date, context) =>

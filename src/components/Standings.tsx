@@ -9,7 +9,7 @@ import {
 
 interface StandingsProps {
   standings: MLBRecord[] | undefined
-  wildCard: boolean
+  league: boolean
 }
 
 const DivisionLetter: Record<number, string> = {
@@ -17,11 +17,11 @@ const DivisionLetter: Record<number, string> = {
   201: "E", // AL East
   202: "C", // AL Central
   203: "W", // NL West
-  204: "E", // NL East 
+  204: "E", // NL East
   205: "C", // NL Central
 }
 
-const Standings = ({ standings, wildCard }: StandingsProps) => {
+const Standings = ({ standings, league }: StandingsProps) => {
   if (standings == undefined) return
 
   const teamStanding = (record: MLBRecord, showDivision: boolean) => {
@@ -31,8 +31,9 @@ const Standings = ({ standings, wildCard }: StandingsProps) => {
         <TableCell padding={"checkbox"} align="right">{record.wins}</TableCell>
         <TableCell padding={"checkbox"} align="right">{record.losses}</TableCell>
         <TableCell padding={"checkbox"} align="right">{record.winningPercentage}</TableCell>
-        <TableCell padding={wildCard ? "normal" : "checkbox"} align="right">{wildCard ? record.wildCardGamesBack : record.gamesBack}</TableCell>
-        {!wildCard ? <TableCell padding={"normal"} align="right">{wildCard ? record.wildCardEliminationNumber : record.eliminationNumber}</TableCell> : <></>}
+        <TableCell padding={league ? "normal" : "checkbox"} align="right">{league ? record.wildCardGamesBack : record.gamesBack}</TableCell>
+        {!league ? <TableCell padding={"checkbox"} align="right">{record.eliminationNumber}</TableCell> : <></>}
+        {!league ? <TableCell padding={"normal"} align="right">{record.wildCardEliminationNumber}</TableCell> : <></>}
       </TableRow>
     );
   };
@@ -45,12 +46,13 @@ const Standings = ({ standings, wildCard }: StandingsProps) => {
           <TableCell padding={"checkbox"} align="right">W</TableCell>
           <TableCell padding={"checkbox"} align="right">L</TableCell>
           <TableCell padding={"checkbox"} align="right">Pct</TableCell>
-          <TableCell padding={wildCard ? "normal" : "checkbox"} align="right">GB</TableCell>
-          {!wildCard ? <TableCell padding={"normal"} align="right">E#</TableCell> : <></>}
+          <TableCell padding={league ? "normal" : "checkbox"} align="right">GB</TableCell>
+          {!league ? <TableCell padding={"checkbox"} align="right">E#</TableCell> : <></>}
+          {!league ? <TableCell padding={"normal"} align="right">WC-E#</TableCell> : <></>}
         </TableRow>
       </TableHead>
       <TableBody>
-        {standings.map((s, idx) => teamStanding(s, wildCard && idx <= 2))}
+        {standings.map((s, idx) => teamStanding(s, league && idx <= 2))}
       </TableBody>
     </Table>
   );

@@ -22,7 +22,7 @@ const SeriesItem = ({ series }: SeriesItemProps) => {
   const { state } = useContext(AppStateContext);
 
   const findTeam = (id: number | undefined): MLBTeam | undefined => {
-    return state.teams.find((t) => t.id == id);
+    return state.teams?.find((t) => t.id == id);
   };
 
   const seriesBorderColor =
@@ -73,7 +73,7 @@ const SeriesItem = ({ series }: SeriesItemProps) => {
       >
         {series.games.map((sg) => (
           <SeriesGame
-            key={sg.game.gameGuid}
+            key={sg.game.gamePk}
             result={sg.result}
             game={sg.game}
             home={findTeam(sg.game.teams?.home?.team?.id)!}

@@ -1,10 +1,6 @@
-import { Box, Button, CssBaseline, Stack, ThemeProvider } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
-import GetTheme from "../colors";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { AppStateContext } from "../state/Context";
-import { MlbApi, MLBSchedule } from "@bp1222/stats-api";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 enum Tab {
   Schedule,
@@ -16,45 +12,12 @@ const TabLocation = {
   [Tab.Stats]: "stats",
 };
 
-const api = new MlbApi();
-
 const Team = () => {
-  const { state } = useContext(AppStateContext);
-  const { teamId, seasonId } = useParams();
-
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [schedule, setSchedule] = useState<MLBSchedule>();
-
-  const team = state.teams.find((t) => t.id == parseInt(teamId ?? ""));
-  const season = state.seasons.find((s) => s.seasonId == seasonId);
-
-  const getSchedule = useCallback(async () => {
-    if (team?.id == undefined) return;
-    if (season?.seasonId == undefined) return;
-
-    let schedule: MLBSchedule | null = null
-
-    const seasonIdNum = parseInt(season.seasonId!)
-
-    schedule = await api.getSchedule({
-      sportId: 1,
-      teamId: team.id,
-      startDate: season.springStartDate ?? season.preSeasonStartDate,
-      endDate: season.postSeasonEndDate,
-    })
-
-    if (schedule) {
-      setSchedule(schedule);
-    }
-  }, [season, team]);
-
-  useEffect(() => {
-    getSchedule();
-  }, [getSchedule]);
-
-  const makeButton = (text: string, loc: Tab, selected: boolean) => {
+  const makeButton = (text: string, loc: Tab) => {
+    const selected = location.pathname.endsWith(TabLocation[loc]);
     const bgColor = selected ? "secondary.main" : grey[200];
 
     return (
@@ -74,7 +37,9 @@ const Team = () => {
           },
         }}
       >
-        <Box>{text}</Box>
+        <Box>
+          {text}
+        </Box>
       </Button>
     );
   };
@@ -91,15 +56,12 @@ const Team = () => {
           spacing={2}
         >
           <>
-            {makeButton("schedule", Tab.Schedule, location.pathname.endsWith(TabLocation[Tab.Schedule]))}
-            {makeButton("stats", Tab.Stats, location.pathname.endsWith(TabLocation[Tab.Stats]))}
+            {makeButton("schedule", Tab.Schedule)}
+            {makeButton("stats", Tab.Stats)}
           </>
         </Stack>
       </Box>
-      <ThemeProvider theme={GetTheme(team?.id)}>
-        <CssBaseline />
-        <Outlet context={{ schedule, team }} />
-      </ThemeProvider>
+      <Outlet />
     </>
   );
 };

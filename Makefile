@@ -16,7 +16,3 @@ help: ## Display this help page
 		BEGIN {FS = ":.*?## "; print "${GREEN}mlb-season help:\n"} \
 		{printf "${CYAN}%-30s${RESET} %s\n", $$1, $$2} 				\
 	  	END {print "\n${YELLOW}See README.md for more information${RESET}\n"}'
-
-.PHONY: local-serve
-local-serve:
-	sam build && sam local start-api -n env.dev.json

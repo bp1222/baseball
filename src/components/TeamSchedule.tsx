@@ -1,35 +1,34 @@
 import { Box, CircularProgress, Grid } from "@mui/material";
-import { useEffect, useState } from "react";
+import {useContext, useEffect, useState} from "react";
 import GenerateSeries, { Series } from "../models/Series";
 import SeriesItem from "./SeriesItem";
-import { MLBSchedule, MLBTeam } from "@bp1222/stats-api";
-import { useOutletContext } from "react-router-dom";
-
-type TeamScheduleProps = {
-  schedule: MLBSchedule;
-  team: MLBTeam;
-};
+import {useParams} from "react-router-dom";
+import {AppStateContext} from "../state/Context.tsx";
 
 const TeamSchedule = () => {
+  const { state } = useContext(AppStateContext);
   const [series, setSeries] = useState<Series[]>([]);
-  const { schedule, team } = useOutletContext<TeamScheduleProps>();
+
+  const {teamId} = useParams();
+
+  const team = state.teams?.find((t) => t.id == parseInt(teamId ?? ""));
 
   useEffect(() => {
-    if (schedule == undefined || team == undefined) return
-    setSeries(GenerateSeries(schedule, team));
-  }, [schedule, team]);
+    if (state.seasonSchedule== undefined || team == undefined) return
+    const teamGames = state.seasonSchedule.dates.flatMap((d) => d.games).filter((g) => g.teams.away.team.id == team.id || g.teams.home.team.id == team.id)
+    setSeries(GenerateSeries(teamGames, team))
+  }, [state.seasonSchedule, team]);
 
-  if (series?.length > 0) {
-    return (
-      <Grid container display={"flex"} flexWrap={"wrap"} columns={2} columnSpacing={4} >
-          {series.map((s) => <Grid xs={1} padding={1} key={s.startDate} item><SeriesItem series={s} /></Grid>)}
-      </Grid>
-    );
+  if ((series?.length ?? 0) == 0) {
+    return (<Box display={"flex"} justifyContent={"center"}>
+        <CircularProgress/>
+      </Box>
+    )
   }
   return (
-    <Box display={"flex"} justifyContent={"center"}>
-      <CircularProgress />
-    </Box>
+    <Grid container display={"flex"} flexWrap={"wrap"} columns={2} columnSpacing={4} >
+      {series.map((s) => <Grid xs={1} padding={1} key={s.seriesNumber} item><SeriesItem series={s} /></Grid>)}
+    </Grid>
   );
 };
 

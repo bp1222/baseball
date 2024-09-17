@@ -1,65 +1,64 @@
-import { useCallback, useContext, useEffect } from "react";
-import { Outlet, useNavigate, useParams } from "react-router-dom";
+import {MlbApi} from "@bp1222/stats-api";
 import { CssBaseline, ThemeProvider } from "@mui/material";
+import {Outlet, useNavigate, useParams} from "react-router-dom";
 
-import { AppStateContext } from "./state/Context";
 import Header from "./components/Header";
 import GetTheme from "./colors";
-import { AppStateAction } from "./state/Actions";
-import { MlbApi } from "@bp1222/stats-api";
 import Footer from "./components/Footer";
+import {useContext, useEffect} from "react";
+import {AppStateAction} from "./state/Actions.ts";
+import {AppStateContext} from "./state/Context.tsx";
 
-const api = new MlbApi();
+const mlbApi = new MlbApi();
 
 const App = () => {
-  const { state, dispatch } = useContext(AppStateContext);
-  const { seasonId, teamId } = useParams();
-  const team = state.teams.find((t) => t.id == parseInt(teamId!));
+  const {state, dispatch} = useContext(AppStateContext);
+  const {seasonId, teamId} = useParams()
   const navigate = useNavigate();
 
-  const loadSeasonsState = useCallback(async () => {
-    if (state.seasons.length > 0) return;
+  useEffect(() => {
+    mlbApi.getAllSeasons({sportId: 1}).then((seasons) => {
+      dispatch({
+        type: AppStateAction.Seasons,
+        seasons:
+          seasons.seasons
+            ?.filter((s) => parseInt(s.seasonId!) > 1921)
+            .reverse() ?? [],
+      })
 
-    const seasons = await api.getAllSeasons({ sportId: 1 });
+      if (seasonId == undefined) {
+        navigate("/" + new Date().getFullYear())
+        return
+      }
+    })
+  }, [dispatch, navigate]);
 
-    if (seasonId == undefined) {
-      navigate("" + new Date().getFullYear());
-    }
+  useEffect(() => {
+    if (seasonId == null)
+      return;
 
-    dispatch({
-      type: AppStateAction.Seasons,
-      seasons:
-        seasons.seasons
-          ?.filter((s) => parseInt(s.seasonId!) > 1921)
-          .reverse() ?? [],
-    });
-  }, [dispatch, navigate, seasonId, state.seasons]);
-
-  const loadTeamsState = useCallback(async () => {
-    if (seasonId == undefined) return;
-    const teams = await api.getTeams({
+    mlbApi.getTeams({
       sportId: 1,
       leagueIds: [103, 104],
       season: seasonId,
-    });
-
-    dispatch({
-      type: AppStateAction.Teams,
-      teams: teams.teams!.sort((a, b) => a.name?.localeCompare(b.name!) ?? 0),
-    });
+    }).then((teams) => {
+      dispatch({
+        type: AppStateAction.Teams,
+        teams: teams.teams!.sort((a, b) => a.name?.localeCompare(b.name!) ?? 0),
+      })
+    })
   }, [dispatch, seasonId]);
 
-  useEffect(() => {
-    loadSeasonsState();
-    loadTeamsState();
-  }, [dispatch, loadSeasonsState, loadTeamsState]);
+  if (state.seasons == undefined || state.teams == undefined) {
+    return <div>Loading...</div>
+  }
 
   return (
-    <ThemeProvider theme={GetTheme(team?.id)}>
-      <CssBaseline />
-      <Header />
+    <ThemeProvider theme={GetTheme(parseInt(teamId ?? '0'))}>
+      <CssBaseline/>
+      <Header/>
       <Outlet />
-      <Footer />
+      <Footer/>
     </ThemeProvider>
   );
 };

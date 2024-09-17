@@ -76,7 +76,7 @@ const TeamStats = () => {
             >
               Division Standings
             </Typography>
-            <Standings standings={divisionStandings} wildCard={false} />
+            <Standings standings={divisionStandings} league={false} />
           </TableContainer>
           <TableContainer
               component={Paper}
@@ -95,7 +95,7 @@ const TeamStats = () => {
             >
               League Standings
             </Typography>
-            <Standings standings={leagueStandings} wildCard={true} />
+            <Standings standings={leagueStandings} league={true} />
           </TableContainer>
         </Stack>
 

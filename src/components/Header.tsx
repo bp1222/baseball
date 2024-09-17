@@ -5,7 +5,6 @@ import SeasonPicker from "./SeasonPicker";
 
 const Header = () => {
   return (
-    <>
       <Grid container>
         <AppBar
           position="relative"
@@ -70,7 +69,6 @@ const Header = () => {
           </Toolbar>
         </AppBar>
       </Grid>
-    </>
   );
 };
 

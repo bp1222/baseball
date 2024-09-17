@@ -1,18 +1,23 @@
 import { Button, Menu, MenuItem, Typography } from "@mui/material";
 import { MLBSeason } from "@bp1222/stats-api";
-import { useContext, useState } from "react";
+import {useContext, useEffect, useState} from "react";
 import { AppStateContext } from "../state/Context";
-import { useNavigate, useParams } from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 
 const SeasonPicker = () => {
   const { state } = useContext(AppStateContext);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const { seasonId } = useParams();
-  const navigate = useNavigate();
+  const [seasons, setSeasons] = useState<MLBSeason[]>([])
+  const {seasonId} = useParams()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    setSeasons(state.seasons ?? [])
+  }, [state.seasons])
 
   const handleSeasonSelect = (season: MLBSeason) => {
     setAnchorEl(null);
-    navigate("" + season.seasonId);
+    navigate("/" + season.seasonId)
   };
 
   return (
@@ -23,7 +28,7 @@ const SeasonPicker = () => {
         color="inherit"
       >
         <Typography>
-          {seasonId ? "Season: " + seasonId : "Select Season"}
+          {seasonId? "Season: " + seasonId: "Select Season"}
         </Typography>
       </Button>
       <Menu
@@ -32,7 +37,7 @@ const SeasonPicker = () => {
         open={anchorEl != null}
         onClose={() => setAnchorEl(null)}
       >
-        {state.seasons?.map((v) => (
+        {seasons?.map((v) => (
           <MenuItem onClick={() => handleSeasonSelect(v)} key={v.seasonId}>
             {v.seasonId}
           </MenuItem>
