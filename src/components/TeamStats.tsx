@@ -13,9 +13,9 @@ const TeamStats = () => {
   const [standings, setStandings] = useState<MLBStandings[]>([]);
   const { seasonId, teamId } = useParams();
 
-  const team: MLBTeam = state.teams.find(
+  const team: MLBTeam|undefined= state.teams?.find(
       (t) => t.id == parseInt(teamId ?? ""),
-  )!;
+  );
 
   const getStandings = useCallback(async () => {
     if (team == undefined) return;
@@ -37,7 +37,7 @@ const TeamStats = () => {
   }, [getStandings]);
 
   // Data for Division Standings
-  const divisionStandings = standings.find((s) => s.division?.id == team.division?.id)?.teamRecords
+  const divisionStandings = standings.find((s) => s.division?.id == team?.division?.id)?.teamRecords
 
   // Data for League Standings
   const leagueStandings: MLBRecord[] = []
