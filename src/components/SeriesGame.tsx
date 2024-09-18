@@ -1,15 +1,17 @@
 import { Box, Stack } from "@mui/material";
 import { GameResultColor, GameResult } from "../models/Series";
 import { MLBGame, MLBTeam } from "@bp1222/stats-api";
+import {grey} from "@mui/material/colors";
 
 type SeriesGameProps = {
-  result: GameResult;
-  game: MLBGame;
-  home: MLBTeam;
-  away: MLBTeam;
+  result: GameResult
+  game: MLBGame
+  home: MLBTeam
+  away: MLBTeam
+  colorScores?: boolean
 };
 
-const SeriesGame = ({ result, game, home, away }: SeriesGameProps) => {
+const SeriesGame = ({ result, game, home, away, colorScores }: SeriesGameProps) => {
   const getDay = (): string => {
     return new Date(game.officialDate ?? "")
       .toLocaleString("us", { month: "short", day: "numeric", timeZone: "utc" })
@@ -23,8 +25,8 @@ const SeriesGame = ({ result, game, home, away }: SeriesGameProps) => {
           sx={{
             borderRight: 1,
             borderBottom: 1,
-            borderColor: GameResultColor[result][100],
-            color: GameResultColor[result][700],
+            borderColor: colorScores ? GameResultColor[result][100] : grey[300],
+            color: colorScores ? GameResultColor[result][700] : grey[700],
             width: "70%",
             paddingTop: 0.1,
           }}
@@ -34,13 +36,13 @@ const SeriesGame = ({ result, game, home, away }: SeriesGameProps) => {
         <Box
           sx={{
             borderBottom: 1,
-            borderColor: GameResultColor[result][100],
+            borderColor: colorScores ? GameResultColor[result][100] : grey[300],
             width: "30%",
-            color: GameResultColor[result][700],
+            color: colorScores ? GameResultColor[result][700] : grey[700],
             paddingTop: 0.1,
           }}
         >
-          {score}
+          {score??0}
         </Box>
       </Stack>
     );
@@ -56,8 +58,8 @@ const SeriesGame = ({ result, game, home, away }: SeriesGameProps) => {
       sx={{
         border: 1,
         borderRadius: 0.5,
-        borderColor: GameResultColor[result][200],
-        backgroundColor: GameResultColor[result][50],
+        borderColor: colorScores ? GameResultColor[result][200] : grey[400],
+        backgroundColor: colorScores ? GameResultColor[result][50] : grey[100],
         minWidth: 50,
         fontSize: "smaller",
       }}
@@ -65,7 +67,7 @@ const SeriesGame = ({ result, game, home, away }: SeriesGameProps) => {
       <Box
         textAlign={"center"}
         sx={{
-          backgroundColor: GameResultColor[result][300],
+          backgroundColor: colorScores ? GameResultColor[result][300] : grey[400],
           color: "Background",
           paddingLeft: 0.2,
           paddingRight: 0.2,

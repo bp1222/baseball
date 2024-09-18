@@ -26,14 +26,54 @@ export enum SeriesResult {
   InProgress,
 }
 
-export const SeriesResultColor: { [key in SeriesResult]: Color } = {
-  [SeriesResult.Win]: lightGreen,
-  [SeriesResult.Loss]: red,
-  [SeriesResult.Tie]: blue,
-  [SeriesResult.Sweep]: amber,
-  [SeriesResult.Swept]: brown,
-  [SeriesResult.Unplayed]: grey,
-  [SeriesResult.InProgress]: purple,
+export const SeriesResultColor: { [key in SeriesResult]: {
+  background: string,
+  border: string,
+  badgeBackground: string,
+  badgeBorder: string,
+}} = {
+  [SeriesResult.Win]: {
+    background: lightGreen[50],
+    border: lightGreen[300],
+    badgeBackground: lightGreen[300],
+    badgeBorder: lightGreen[500]
+  },
+  [SeriesResult.Loss]: {
+    background: red[50],
+    border: red[300],
+    badgeBackground: red[300],
+    badgeBorder: red[500]
+  },
+  [SeriesResult.Tie]: {
+    background: blue[50],
+    border: blue[300],
+    badgeBackground: blue[300],
+    badgeBorder: blue[500]
+  },
+  [SeriesResult.Sweep]: {
+    background: amber[50],
+    border: amber[300],
+    badgeBackground: amber[300],
+    badgeBorder: amber[500]
+  },
+  [SeriesResult.Swept]: {
+    background: brown[50],
+    border: brown[300],
+    badgeBackground: brown[300],
+    badgeBorder: brown[500]
+  },
+  [SeriesResult.Unplayed]: {
+    background: grey[200],
+    border: grey[400],
+    badgeBackground: grey[300],
+    badgeBorder: grey[500]
+  },
+  [SeriesResult.InProgress]: {
+    background: purple[50],
+    border: purple[300],
+    badgeBackground: purple[300],
+    badgeBorder: purple[500]
+  },
 }
 
 export enum SeriesHomeAway {
@@ -54,10 +94,11 @@ export enum SeriesType {
 }
 
 export type Series = {
-  seriesNumber: number
+  pk: number
   result: SeriesResult
   homeaway: SeriesHomeAway
   type: SeriesType
+  team: MLBGameTeam|undefined
   against: MLBGameTeam|undefined
   startDate: string
   endDate: string
@@ -96,10 +137,11 @@ export type Game = {
 function GenerateSeries(schedule: MLBGame[], team: MLBTeam): Series[] {
   const newSeries = (): Series => {
     return {
-      seriesNumber: 0,
+      pk: 0,
       result: SeriesResult.Unplayed,
       homeaway: SeriesHomeAway.Unknown,
       type: SeriesType.Unknown,
+      team: undefined,
       against: undefined,
       startDate: "",
       endDate: "",
@@ -167,9 +209,11 @@ function GenerateSeries(schedule: MLBGame[], team: MLBTeam): Series[] {
         ? (game.teams?.away ?? {})
         : (game.teams?.home ?? {})
 
-      currentSeries.seriesNumber = isHome()
-        ? game.teams.home.seriesNumber!
-        : game.teams.away.seriesNumber!
+      currentSeries.team = isHome()
+        ? (game.teams?.home ?? {})
+        : (game.teams?.away ?? {})
+
+      currentSeries.pk = game.gamePk
     }
 
     // We need to decide if we're the home team, away team or a split series.

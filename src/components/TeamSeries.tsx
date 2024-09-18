@@ -5,7 +5,7 @@ import SeriesItem from "./SeriesItem";
 import {useParams} from "react-router-dom";
 import {AppStateContext} from "../state/Context.tsx";
 
-const TeamSchedule = () => {
+const TeamSeries = () => {
   const { state } = useContext(AppStateContext);
   const [series, setSeries] = useState<Series[]>([]);
 
@@ -26,10 +26,14 @@ const TeamSchedule = () => {
     )
   }
   return (
-    <Grid container display={"flex"} flexWrap={"wrap"} columns={2} columnSpacing={4} >
-      {series.map((s) => <Grid xs={1} padding={1} key={s.seriesNumber} item><SeriesItem series={s} /></Grid>)}
+    <Grid container flexWrap={"wrap"} columns={2}>
+      {series.map((s) => (
+        <Grid xs={1} padding={1} key={s.pk} item>
+          <SeriesItem series={s} />
+        </Grid>
+      ))}
     </Grid>
   );
 };
 
-export default TeamSchedule;
+export default TeamSeries;

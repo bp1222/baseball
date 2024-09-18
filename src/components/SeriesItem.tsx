@@ -9,30 +9,38 @@ import { useContext } from "react";
 import { AppStateContext } from "../state/Context";
 import { MLBTeam } from "@bp1222/stats-api";
 import SeriesGame from "./SeriesGame";
-import { amber } from "@mui/material/colors";
+import {amber, grey} from "@mui/material/colors";
 import ResultBadge from "./ResultBadge";
 import SeriesBadge from "./SeriesBadge";
 import SeriesTeam from "./SeriesTeam";
 
 type SeriesItemProps = {
-  series: Series;
+  series: Series
+  interested?: MLBTeam
 };
 
-const SeriesItem = ({ series }: SeriesItemProps) => {
+const SeriesItem = ({ series, interested }: SeriesItemProps) => {
   const { state } = useContext(AppStateContext);
 
   const findTeam = (id: number | undefined): MLBTeam | undefined => {
     return state.teams?.find((t) => t.id == id);
   };
 
+  console.log(interested)
+
   const seriesBorderColor =
-    series.type == SeriesType.World && series.result == SeriesResult.Win
-      ? amber[600]
-      : SeriesResultColor[series.result][300];
+    interested != undefined ? grey[400] :
+      series.type == SeriesType.World && series.result == SeriesResult.Win
+        ? amber[600]
+        : SeriesResultColor[series.result].border;
+
   const seriesBackgroundColor =
-    series.type == SeriesType.World && series.result == SeriesResult.Win
-      ? amber[300]
-      : SeriesResultColor[series.result][50];
+    interested != undefined ? grey[200] :
+      series.type == SeriesType.World && series.result == SeriesResult.Win
+        ? amber[300]
+        : SeriesResultColor[series.result].background;
+
+  console.log("HERE:" + interested)
 
   return (
     <Stack
@@ -46,19 +54,22 @@ const SeriesItem = ({ series }: SeriesItemProps) => {
         fontSize: "small",
       }}
     >
-      <Stack
-        position="absolute"
-        direction={{xs: "column", sm: "row"}}
-        display={"flex"}
-        mt={-0.8}
-        ml={-1.5}
-        padding="10"
-      >
-        <ResultBadge result={series.result} type={series.type} />
-        <SeriesBadge type={series.type} />
-      </Stack>
+      {interested == undefined ? (
+        <Stack
+          position="absolute"
+          direction={{xs: "column", sm: "row"}}
+          display={"flex"}
+          mt={-0.8}
+          ml={-1.5}
+          padding="10"
+        >
+          <ResultBadge result={series.result} type={series.type} />
+          <SeriesBadge type={series.type} />
+        </Stack>
+      ) : ''}
       <Box alignContent={"center"} minWidth={{ xs: "40%", md: "35%" }}>
         <SeriesTeam
+          interested={findTeam(interested?.id)}
           against={findTeam(series.against?.team?.id)!}
           homeaway={series.homeaway}
         />
@@ -67,8 +78,8 @@ const SeriesItem = ({ series }: SeriesItemProps) => {
       <Stack
         direction="row"
         width={"fill-available"}
-        justifyContent={"flex-end"}
-        alignContent={"flex-start"}
+        justifyContent={"end"}
+        alignContent={"center"}
         flexWrap={"wrap"}
       >
         {series.games.map((sg) => (
@@ -78,6 +89,7 @@ const SeriesItem = ({ series }: SeriesItemProps) => {
             game={sg.game}
             home={findTeam(sg.game.teams?.home?.team?.id)!}
             away={findTeam(sg.game.teams?.away?.team?.id)!}
+            colorScores={interested == undefined}
           />
         ))}
       </Stack>

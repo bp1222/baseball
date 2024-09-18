@@ -4,19 +4,20 @@ import { Container } from "@mui/material";
 import {createHashRouter, createRoutesFromElements, Outlet, Navigate, Route, RouterProvider} from "react-router-dom";
 import App from "./App.tsx";
 import Team from "./components/Team.tsx";
-import TeamSchedule from "./components/TeamSchedule.tsx";
+import TeamSeries from "./components/TeamSeries.tsx";
 import TeamStats from "./components/TeamStats.tsx";
 import {AppStateProvider} from "./state/Context.tsx";
 import Season from "./components/Season.tsx";
+import CurrentSeries from "./components/CurrentSeries.tsx";
 
 const applicationRoutes = createHashRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path=":seasonId" element={<Season />}>
-        <Route index element={<Outlet />} />
+        <Route index element={<CurrentSeries />} />
         <Route path=":teamId" element={<Team />}>
           <Route index element={<Navigate to={"schedule"} />} />
-          <Route path="schedule" element={<TeamSchedule />} />
+          <Route path="schedule" element={<TeamSeries />} />
           <Route path="stats" element={<TeamStats />} />
         </Route>
       </Route>

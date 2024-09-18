@@ -17,7 +17,7 @@ const Season = () => {
       sportId: 1,
       startDate: season.seasonStartDate,
       endDate: season.postSeasonEndDate,
-      fields: ["date","gamePk","dates","games","gameType","officialDate","status","codedGameState","teams","away","home","score","team","name","id","isWinner","seriesNumber","gamesInSeries","seriesGameNumber","division","seriesNumber"]
+      fields: ["date","gamePk","dates","games","gameType","gameDate","officialDate","status","codedGameState","teams","away","home","score","team","name","id","isWinner","seriesNumber","gamesInSeries","seriesGameNumber","division","seriesNumber"]
     }).then((schedule) => {
       dispatch({
         type: AppStateAction.SeasonSchedule,

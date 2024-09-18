@@ -30,12 +30,12 @@ const ResultBadge = ({ result, type }: ResultBadgeProps) => {
   const badgeBorderColor =
     type == SeriesType.World && result == SeriesResult.Win
       ? amber[700]
-      : SeriesResultColor[result][500];
+      : SeriesResultColor[result].badgeBorder;
 
   const badgeBackgroundColor =
     type == SeriesType.World && result == SeriesResult.Win
       ? amber[400]
-      : SeriesResultColor[result][300];
+      : SeriesResultColor[result].badgeBackground;
 
   if (badge.length > 0) {
     return (
