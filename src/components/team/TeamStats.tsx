@@ -1,40 +1,35 @@
-import { Paper, Stack, TableContainer, Typography } from "@mui/material";
-import TeamRanking from "./TeamRanking";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { AppStateContext } from "../state/Context";
-import { MlbApi, MLBRecord, MLBStandings, MLBTeam } from "@bp1222/stats-api";
-import { useParams } from "react-router-dom";
-import Standings from "./Standings";
+import { Paper, Stack, TableContainer, Typography } from "@mui/material"
+import { useContext, useEffect, useState} from "react"
+import { AppStateContext } from "../../state/Context.tsx"
+import { MlbApi, MLBRecord, MLBStandings } from "@bp1222/stats-api"
+import { useParams } from "react-router-dom"
 
-const api = new MlbApi();
+import Standings from "../Standings.tsx"
+import TeamRanking from "./TeamRanking.tsx"
+import {FindTeam} from "../../utils/findTeam.ts";
 
 const TeamStats = () => {
-  const { state } = useContext(AppStateContext);
-  const [standings, setStandings] = useState<MLBStandings[]>([]);
-  const { seasonId, teamId } = useParams();
+  const api = new MlbApi()
 
-  const team: MLBTeam|undefined= state.teams?.find(
-      (t) => t.id == parseInt(teamId ?? ""),
-  );
+  const { state } = useContext(AppStateContext)
+  const [standings, setStandings] = useState<MLBStandings[]>([])
+  const { seasonId, teamId } = useParams()
 
-  const getStandings = useCallback(async () => {
-    if (team == undefined) return;
-    if (seasonId == undefined) return;
+  const team = FindTeam(state.teams, parseInt(teamId ?? ""))
 
-    const standings = await api.getStandings({
+  useEffect(() => {
+    if (team == undefined) return
+    if (seasonId == undefined) return
+
+    api.getStandings({
       leagueId: team.league!.id!,
       season: seasonId,
       hydrate: "team(division)"
+    }).then((standings) => {
+      if (standings.records == undefined) return
+      setStandings(standings.records)
     })
-
-    if (standings?.records != undefined) {
-      setStandings(standings.records);
-    }
-  }, [team, seasonId]);
-
-  useEffect(() => {
-    getStandings();
-  }, [getStandings]);
+  }, [team, seasonId])
 
   // Data for Division Standings
   const divisionStandings = standings.find((s) => s.division?.id == team?.division?.id)?.teamRecords
@@ -118,7 +113,7 @@ const TeamStats = () => {
           <TeamRanking />
         </TableContainer>
       </Stack>
-  );
-};
+  )
+}
 
-export default TeamStats;
+export default TeamStats

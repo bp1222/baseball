@@ -2,10 +2,10 @@ import {Box, CircularProgress, Grid} from "@mui/material";
 import {AppStateContext} from "../state/Context.tsx";
 import {useContext, useEffect, useState} from "react";
 import GenerateSeries, {Series} from "../models/Series.ts";
-import SeriesItem from "./SeriesItem.tsx";
 
+import SeriesItem from "./series";
 
-const CurrentSeries = () => {
+export const Component = () => {
   const {state} = useContext(AppStateContext);
 
   const [currentSeries, setCurrentSeries] = useState<Series[]|undefined>();
@@ -13,12 +13,15 @@ const CurrentSeries = () => {
   useEffect(() => {
     const today = new Date()
 
+    const seenTeams: number[] = []
     const todaysGames = state.seasonSchedule?.dates.flatMap((d) => d.games).filter((g) => {
       const gameDate = new Date(g.gameDate)
       return gameDate.getFullYear() == today.getFullYear() && gameDate.getMonth() == today.getMonth() && gameDate.getDate() == today.getDate()
+    }).filter((g) => {
+      if (seenTeams.includes(g.teams.home.team.id)) return false
+      seenTeams.push(g.teams.home.team.id)
+      return true
     })
-
-    console.log(todaysGames)
 
     const activeSeries = todaysGames?.map((game) => {
       return state.seasonSchedule?.dates.flatMap((d) => d.games).filter((g) => {
@@ -45,13 +48,13 @@ const CurrentSeries = () => {
 
   return (
     <Grid container flexWrap={"wrap"} columns={2}>
-      {currentSeries?.map((series) => (
-        <Grid xs={1} padding={1} key={series.pk} item>
-          <SeriesItem series={series} interested={series.team?.team}/>
-        </Grid>
-      ))}
+      <Grid container flexWrap={"wrap"} columns={2}>
+        {currentSeries?.map((series) => (
+          <Grid xs={1} padding={1} key={series.pk} item>
+            <SeriesItem series={series} />
+          </Grid>
+        ))}
+      </Grid>
     </Grid>
   )
 };
-
-export default CurrentSeries;

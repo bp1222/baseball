@@ -63,6 +63,7 @@ const Header = () => {
               md={4}
               display={"flex"}
               justifyContent={"flex-end"}
+              alignItems={"center"}
             >
               <TeamPicker />
             </Grid>

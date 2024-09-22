@@ -1,20 +1,20 @@
-import {MlbApi} from "@bp1222/stats-api";
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import {Outlet, useNavigate, useParams} from "react-router-dom";
+import {MlbApi} from "@bp1222/stats-api"
+import { CssBaseline, ThemeProvider } from "@mui/material"
+import {Outlet, useNavigate, useParams} from "react-router-dom"
 
-import Header from "./components/Header";
-import GetTheme from "./colors";
-import Footer from "./components/Footer";
-import {useContext, useEffect} from "react";
-import {AppStateAction} from "./state/Actions.ts";
-import {AppStateContext} from "./state/Context.tsx";
+import Header from "./components/Header"
+import GetTheme from "./colors"
+import Footer from "./components/Footer"
+import {useContext, useEffect} from "react"
+import {AppStateAction} from "./state/Actions.ts"
+import {AppStateContext} from "./state/Context.tsx"
 
 const mlbApi = new MlbApi();
 
 const App = () => {
-  const {state, dispatch} = useContext(AppStateContext);
+  const {state, dispatch} = useContext(AppStateContext)
   const {seasonId, teamId} = useParams()
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   useEffect(() => {
     mlbApi.getAllSeasons({sportId: 1}).then((seasons) => {
@@ -31,11 +31,11 @@ const App = () => {
         return
       }
     })
-  }, [dispatch, navigate]);
+  }, [dispatch, navigate])
 
   useEffect(() => {
     if (seasonId == null)
-      return;
+      return
 
     mlbApi.getTeams({
       sportId: 1,
@@ -47,7 +47,7 @@ const App = () => {
         teams: teams.teams!.sort((a, b) => a.name?.localeCompare(b.name!) ?? 0),
       })
     })
-  }, [dispatch, seasonId]);
+  }, [dispatch, seasonId])
 
   if (state.seasons == undefined || state.teams == undefined) {
     return <div>Loading...</div>
@@ -55,12 +55,12 @@ const App = () => {
 
   return (
     <ThemeProvider theme={GetTheme(parseInt(teamId ?? '0'))}>
-      <CssBaseline/>
+      <CssBaseline />
       <Header/>
       <Outlet />
       <Footer/>
     </ThemeProvider>
-  );
-};
+  )
+}
 
-export default App;
+export default App

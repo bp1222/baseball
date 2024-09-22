@@ -1,25 +1,18 @@
-import { StrictMode } from "react";
+import {StrictMode} from "react";
 import { createRoot } from "react-dom/client";
 import { Container } from "@mui/material";
-import {createHashRouter, createRoutesFromElements, Outlet, Navigate, Route, RouterProvider} from "react-router-dom";
-import App from "./App.tsx";
-import Team from "./components/Team.tsx";
-import TeamSeries from "./components/TeamSeries.tsx";
-import TeamStats from "./components/TeamStats.tsx";
+import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider} from "react-router-dom";
 import {AppStateProvider} from "./state/Context.tsx";
-import Season from "./components/Season.tsx";
-import CurrentSeries from "./components/CurrentSeries.tsx";
 
-const applicationRoutes = createHashRouter(
+import App from "./App.tsx";
+import Season from  "./components/Season.tsx";
+
+const applicationRoutes = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path=":seasonId" element={<Season />}>
-        <Route index element={<CurrentSeries />} />
-        <Route path=":teamId" element={<Team />}>
-          <Route index element={<Navigate to={"schedule"} />} />
-          <Route path="schedule" element={<TeamSeries />} />
-          <Route path="stats" element={<TeamStats />} />
-        </Route>
+        <Route index lazy={() => import("./components/CurrentSeries")} />
+        <Route path=":teamId" lazy={() => import("./components/team/Team")} />
       </Route>
     </Route>,
   ),

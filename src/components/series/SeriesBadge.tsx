@@ -1,26 +1,26 @@
-import { Box, Typography } from "@mui/material";
-import { blueGrey } from "@mui/material/colors";
-import { SeriesType } from "../models/Series";
+import { Box, Typography } from "@mui/material"
+import { blueGrey } from "@mui/material/colors"
+import { SeriesType } from "../../models/Series.ts"
 
 type SeriesBadgeProps = {
-  type: SeriesType;
-};
+  type: SeriesType
+}
 
-const SeriesBadge = ({ type }: SeriesBadgeProps) => {
-  let badge = "";
+export const SeriesBadge = ({ type }: SeriesBadgeProps) => {
+  let badge = ""
   switch (type) {
     case SeriesType.WildCard:
-      badge = "Wild Card";
-      break;
+      badge = "Wild Card"
+      break
     case SeriesType.Division:
-      badge = "Divisional";
-      break;
+      badge = "Divisional"
+      break
     case SeriesType.League:
-      badge = "Championship";
-      break;
+      badge = "Championship"
+      break
     case SeriesType.World:
-      badge = "World Series";
-      break;
+      badge = "World Series"
+      break
   }
 
   if (badge.length > 0) {
@@ -48,8 +48,6 @@ const SeriesBadge = ({ type }: SeriesBadgeProps) => {
           {badge.toUpperCase()}
         </Typography>
       </Box>
-    );
+    )
   }
-};
-
-export default SeriesBadge;
+}

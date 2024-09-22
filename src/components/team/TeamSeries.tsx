@@ -1,9 +1,10 @@
-import { Box, CircularProgress, Grid } from "@mui/material";
+import {Box, CircularProgress, Grid} from "@mui/material";
 import {useContext, useEffect, useState} from "react";
-import GenerateSeries, { Series } from "../models/Series";
-import SeriesItem from "./SeriesItem";
+import GenerateSeries, {Series} from "../../models/Series.ts";
+import SeriesItem from "../series/SeriesItem.tsx";
 import {useParams} from "react-router-dom";
-import {AppStateContext} from "../state/Context.tsx";
+import {AppStateContext} from "../../state/Context.tsx";
+import {FindTeam} from "../../utils/findTeam.ts";
 
 const TeamSeries = () => {
   const { state } = useContext(AppStateContext);
@@ -11,7 +12,7 @@ const TeamSeries = () => {
 
   const {teamId} = useParams();
 
-  const team = state.teams?.find((t) => t.id == parseInt(teamId ?? ""));
+  const team = FindTeam(state.teams, parseInt(teamId ?? ""))
 
   useEffect(() => {
     if (state.seasonSchedule== undefined || team == undefined) return
@@ -29,11 +30,11 @@ const TeamSeries = () => {
     <Grid container flexWrap={"wrap"} columns={2}>
       {series.map((s) => (
         <Grid xs={1} padding={1} key={s.pk} item>
-          <SeriesItem series={s} />
+          <SeriesItem series={s} interested={team}/>
         </Grid>
       ))}
     </Grid>
   );
-};
+}
 
-export default TeamSeries;
+export default TeamSeries

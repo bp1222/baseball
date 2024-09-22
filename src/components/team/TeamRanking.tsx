@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState} from "react";
-import { AppStateContext } from "../state/Context";
+import { AppStateContext } from "../../state/Context.tsx";
 import { useParams } from "react-router-dom";
 import {MLBGameGameTypeEnum, MLBGameStatusCodedGameStateEnum, MLBTeam} from "@bp1222/stats-api";
 import { LineChart, LineSeriesType } from "@mui/x-charts"
 import { Box } from "@mui/system";
 import { CircularProgress } from "@mui/material";
-import memoize from "fast-memoize"
+import {FindTeam} from "../../utils/findTeam.ts";
 
 type TeamDailyTally = {
   teamId: number,
@@ -17,16 +17,12 @@ type DailyTally = {
   teams: TeamDailyTally[]
 }
 
-const findTeam = memoize((teams: MLBTeam[]|null, teamId: number): MLBTeam | undefined => {
-  return teams?.find((t) => t.id == teamId);
-});
-
 const TeamRanking = () => {
   const { state } = useContext(AppStateContext);
   const { teamId } = useParams();
   const [standings, setStandings] = useState<DailyTally[]>()
 
-  const team = findTeam(state.teams, parseInt(teamId ?? ""))
+  const team = FindTeam(state.teams, parseInt(teamId ?? ""))
 
   useEffect(() => {
     const runningTallies: TeamDailyTally[] = []
@@ -93,8 +89,8 @@ const TeamRanking = () => {
           return
         }
 
-        const awayTeam = findTeam(state.teams, game.teams.away.team.id)
-        const homeTeam = findTeam(state.teams, game.teams.home.team.id)
+        const awayTeam = FindTeam(state.teams, game.teams.away.team.id)
+        const homeTeam = FindTeam(state.teams, game.teams.home.team.id)
 
         if (awayTeam == undefined || homeTeam == undefined) return
 
@@ -148,7 +144,7 @@ const TeamRanking = () => {
     const teams = standings?.[0].teams.map((t) => t.teamId)
 
     teams?.forEach((teamId) => {
-      const team = findTeam(state.teams, teamId)
+      const team = FindTeam(state.teams, teamId)
       ret.push({
         type: 'line',
         data: standings?.map((t) => t.teams.filter((team) => team.teamId == teamId).map((team) => team.gameDifference)[0]),

@@ -1,6 +1,9 @@
 import { Box, Button, Stack } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import {Outlet, useLocation, useNavigate, useParams} from "react-router-dom";
+import {useState} from "react";
+import TeamSeries from "./TeamSeries.tsx";
+import TeamStats from "./TeamStats.tsx";
 
 enum Tab {
   Schedule,
@@ -12,25 +15,24 @@ const TabLocation = {
   [Tab.Stats]: "stats",
 };
 
-const Team = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+export const Component = () => {
+  const [tab, setTab] = useState<Tab>(Tab.Schedule);
 
   const makeButton = (text: string, loc: Tab) => {
-    const selected = location.pathname.endsWith(TabLocation[loc]);
+    const selected = tab == loc;
     const bgColor = selected ? "secondary.main" : grey[200];
 
     return (
       <Button
         onClick={() => {
-          navigate(TabLocation[loc]);
+          setTab(loc)
         }}
         sx={{
           minWidth: "20%",
           border: 1,
           borderColor: "secondary.dark",
           borderRadius: 4,
-          bgcolor: bgColor,
+          backgroundColor: bgColor,
           fontWeight: selected ? "bold" : "",
           ":hover": {
             bgcolor: grey[400],
@@ -61,9 +63,7 @@ const Team = () => {
           </>
         </Stack>
       </Box>
-      <Outlet />
+      {tab == Tab.Schedule ? <TeamSeries /> : <TeamStats />}
     </>
   );
 };
-
-export default Team;
