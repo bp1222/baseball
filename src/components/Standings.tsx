@@ -25,9 +25,10 @@ const Standings = ({ standings, league }: StandingsProps) => {
   if (standings == undefined) return
 
   const teamStanding = (record: MLBRecord, showDivision: boolean) => {
+    const playoffIndicator = record.clinched ? (record.divisionChamp ? ' - y' : ' - x') : null
     return (
       <TableRow key={record.team?.id}>
-        <TableCell padding={"normal"}>{(showDivision ? DivisionLetter[record.team.division!.id!] + " - " : '') + record.team?.name}</TableCell>
+        <TableCell padding={"normal"}>{(showDivision ? DivisionLetter[record.team.division!.id!] + " - " : '') + record.team?.clubName}{playoffIndicator}</TableCell>
         <TableCell padding={"checkbox"} align="right">{record.wins}</TableCell>
         <TableCell padding={"checkbox"} align="right">{record.losses}</TableCell>
         <TableCell padding={"checkbox"} align="right">{record.winningPercentage}</TableCell>
