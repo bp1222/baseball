@@ -1,13 +1,13 @@
 import {StrictMode} from "react";
 import { createRoot } from "react-dom/client";
 import { Container } from "@mui/material";
-import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider} from "react-router-dom";
+import {createHashRouter, createRoutesFromElements, Route, RouterProvider} from "react-router-dom";
 import {AppStateProvider} from "./state/Context.tsx";
 
 import App from "./App.tsx";
 import Season from  "./components/Season.tsx";
 
-const applicationRoutes = createBrowserRouter(
+const applicationRoutes = createHashRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path=":seasonId" element={<Season />}>
