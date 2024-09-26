@@ -1,5 +1,5 @@
 import {useContext, useState} from "react";
-import { MLBTeam } from "@bp1222/stats-api";
+import { Team } from "@bp1222/stats-api";
 import { MenuItem, Button, Menu, Typography } from "@mui/material";
 import { AppStateContext } from "../state/Context";
 import { useNavigate, useParams } from "react-router-dom";
@@ -13,7 +13,7 @@ const TeamPicker = () => {
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const handleTeamSelect = (team: MLBTeam|null) => {
+  const handleTeamSelect = (team: Team|null) => {
     setAnchorEl(null);
     if (team == null) {
       navigate(seasonId + "/");

@@ -1,5 +1,5 @@
 import { Button, Menu, MenuItem, Typography } from "@mui/material";
-import { MLBSeason } from "@bp1222/stats-api";
+import { Season } from "@bp1222/stats-api";
 import {useContext, useEffect, useState} from "react";
 import { AppStateContext } from "../state/Context";
 import {useParams, useNavigate} from "react-router-dom";
@@ -7,7 +7,7 @@ import {useParams, useNavigate} from "react-router-dom";
 const SeasonPicker = () => {
   const { state } = useContext(AppStateContext);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [seasons, setSeasons] = useState<MLBSeason[]>([])
+  const [seasons, setSeasons] = useState<Season[]>([])
   const {seasonId} = useParams()
   const navigate = useNavigate()
 
@@ -15,7 +15,7 @@ const SeasonPicker = () => {
     setSeasons(state.seasons ?? [])
   }, [state.seasons])
 
-  const handleSeasonSelect = (season: MLBSeason) => {
+  const handleSeasonSelect = (season: Season) => {
     setAnchorEl(null);
     navigate("/" + season.seasonId)
   };

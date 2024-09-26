@@ -2,18 +2,11 @@ import { createContext, useReducer, PropsWithChildren } from "react";
 import { AppState } from "./State";
 import { AppStateAction, AppStateActions, AppStateDispatch } from "./Actions";
 
-const initState: AppState = {
-  teams: null,
-  seasons: null,
-
-  seasonSchedule: null,
-};
-
 export const AppStateContext = createContext<{
   state: AppState;
   dispatch: AppStateDispatch;
 }>({
-  state: initState,
+  state: {},
   dispatch: () => null,
 });
 
@@ -29,10 +22,10 @@ function reducer(state: AppState, action: AppStateActions): AppState {
         ...state,
         seasons: action.seasons,
       };
-    case AppStateAction.SeasonSchedule:
+    case AppStateAction.SeasonSeries:
       return {
         ...state,
-        seasonSchedule: action.schedule,
+        seasonSeries: action.series,
       };
     default:
       return {
@@ -42,7 +35,7 @@ function reducer(state: AppState, action: AppStateActions): AppState {
 }
 
 export function AppStateProvider({ children }: PropsWithChildren) {
-  const [state, dispatch] = useReducer(reducer, initState);
+  const [state, dispatch] = useReducer(reducer, {});
 
   return (
     <AppStateContext.Provider value={{ state, dispatch }}>

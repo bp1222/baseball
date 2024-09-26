@@ -1,4 +1,4 @@
-import { MLBRecord } from "@bp1222/stats-api";
+import { TeamRecord } from "@bp1222/stats-api";
 import {
   Table,
   TableBody,
@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 
 interface StandingsProps {
-  standings: MLBRecord[] | undefined
+  standings: TeamRecord[] | undefined
   league: boolean
 }
 
@@ -24,7 +24,7 @@ const DivisionLetter: Record<number, string> = {
 const Standings = ({ standings, league }: StandingsProps) => {
   if (standings == undefined) return
 
-  const teamStanding = (record: MLBRecord, showDivision: boolean) => {
+  const teamStanding = (record: TeamRecord, showDivision: boolean) => {
     const playoffIndicator = record.clinched ? (record.divisionChamp ? ' - y' : ' - x') : null
     return (
       <TableRow key={record.team?.id}>

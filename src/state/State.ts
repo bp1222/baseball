@@ -1,8 +1,9 @@
-import {MLBSchedule, MLBSeason, MLBTeam} from "@bp1222/stats-api";
+import {Season, Team} from "@bp1222/stats-api"
+import {Series} from "../models/Series.ts"
 
 export type AppState = {
-  teams: MLBTeam[] | null;
-  seasons: MLBSeason[] | null;
+  teams?: Team[]
+  seasons?: Season[]
 
-  seasonSchedule: MLBSchedule | null;
-};
+  seasonSeries?: Series[]
+}

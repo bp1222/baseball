@@ -1,9 +1,6 @@
 import {
-  MLBGame,
-  MLBGameGameTypeEnum,
-  MLBGameStatusCodedGameStateEnum,
-  MLBGameTeam,
-  MLBTeam,
+  Game, GameStatusCode, GameTeam,
+  GameType, Team,
 } from "@bp1222/stats-api"
 
 export enum SeriesResult {
@@ -33,17 +30,6 @@ export enum SeriesType {
   World,
 }
 
-export type Series = {
-  pk: number
-  result: SeriesResult
-  homeaway: SeriesHomeAway
-  type: SeriesType
-  against: MLBGameTeam|undefined
-  startDate: string
-  endDate: string
-  games: Game[]
-}
-
 export enum GameResult {
   Win,
   Loss,
@@ -53,58 +39,200 @@ export enum GameResult {
   GameOver,
 }
 
-export type Game = {
-  result: GameResult
-  game: MLBGame
+export type Series = {
+  pk: string
+  type: SeriesType
+  startDate: string
+  endDate: string
+  games: Game[]
 }
 
-/**
- *
- * @param schedule
- * @param team team which we are discerning results for, either they won or lost
- * @returns
- */
-function GenerateSeries(schedule: MLBGame[], team: MLBTeam): Series[] {
-  const newSeries = (): Series => {
+export const GetSeriesHomeAway = (series: Series, team?: Team): SeriesHomeAway => {
+  if (team == undefined) {
+    return SeriesHomeAway.Unknown
+  }
+
+  if (series.games.length == 0) {
+    return SeriesHomeAway.Unknown
+  }
+
+  if (series.games[0].teams == undefined) {
+    throw new Error("Game has no teams")
+  }
+
+  let isAway = false
+  let isHome = false
+  series.games.forEach((game) => {
+    if (game.teams.home.team.id == team.id) {
+      isHome = true
+    }
+    if (game.teams.away.team.id == team.id) {
+      isAway = true
+    }
+  })
+
+  if (isHome && isAway) {
+    return SeriesHomeAway.Split
+  }
+
+  if (isHome) {
+    return SeriesHomeAway.Home
+  }
+
+  if (isAway) {
+    return SeriesHomeAway.Away
+  }
+
+  return SeriesHomeAway.Unknown
+}
+
+export const GetSeriesGameResult = (game: Game, team?: Team): GameResult => {
+  if (game.teams == undefined) {
+    throw new Error("Game has no teams")
+  }
+
+  if (team == undefined) {
+    return GameResult.Unplayed
+  }
+
+  if (game.teams.home.team.id == team.id) {
+    if (game.teams.home.isWinner) {
+      return GameResult.Win
+    } else if (game.teams.away.isWinner) {
+      return GameResult.Loss
+    }
+  } else if (game.teams.away.team.id == team.id) {
+    if (game.teams.away.isWinner) {
+      return GameResult.Win
+    } else if (game.teams.home.isWinner) {
+      return GameResult.Loss
+    }
+  }
+
+  return GameResult.Unplayed
+}
+
+export const GetSeriesResult = (series: Series, team?: Team): SeriesResult => {
+  let wins = 0
+  let losses = 0
+
+  if (team == undefined) {
+    return SeriesResult.Unplayed
+  }
+
+  series.games.forEach((game) => {
+    if (game.teams == undefined) {
+      throw new Error("Game has no teams")
+    }
+
+    if (game.teams.home.team.id == team.id) {
+      if (game.teams.home.isWinner) {
+        wins++
+      } else if (game.teams.away.isWinner) {
+        losses++
+      }
+    } else if (game.teams.away.team.id == team.id) {
+      if (game.teams.away.isWinner) {
+        wins++
+      } else if (game.teams.home.isWinner) {
+        losses++
+      }
+    }
+  })
+
+  if (losses != 0 || wins != 0) {
+    const playedGames = losses + wins
+    const gamesInSeries = series.games.length
+    if (playedGames < gamesInSeries) {
+      const det = Math.ceil((gamesInSeries + 1) / 2)
+      return playedGames >= det
+        ? wins >= det
+          ? SeriesResult.Win
+          : losses >= det
+            ? SeriesResult.Loss
+            : SeriesResult.InProgress
+        : SeriesResult.InProgress
+    } else {
+      return losses == 0
+        ? SeriesResult.Sweep
+        : wins == 0
+          ? SeriesResult.Swept
+          : wins > losses
+            ? SeriesResult.Win
+            : wins == losses
+              ? SeriesResult.Tie
+              : SeriesResult.Loss
+    }
+  }
+
+  return SeriesResult.Unplayed
+}
+
+const GenerateSeasonSeries = (schedule: Game[]): Series[] => {
+  const seenGames: number[] = []
+  const seasonSeries: Series[] = []
+
+  const newSeries = () => {
     return {
-      pk: 0,
-      result: SeriesResult.Unplayed,
-      homeaway: SeriesHomeAway.Unknown,
+      pk: "",
       type: SeriesType.Unknown,
-      against: undefined,
       startDate: "",
       endDate: "",
       games: [],
     }
   }
 
-  const retval: Series[] = []
-  let currentSeries: Series = newSeries()
+  const seriesPk = (team: GameTeam): string => {
+    return team.team.id + "-" + team.seriesNumber
+  }
 
-  let wins = 0
-  let losses = 0
+  const gameToSeriesType = (game: Game): SeriesType => {
+    return game.gameType == GameType.Regular
+      ? SeriesType.RegularSeason
+      : game.gameType == GameType.WildCardSeries
+        ? SeriesType.WildCard
+        : game.gameType == GameType.DivisionSeries
+          ? SeriesType.Division
+          : game.gameType == GameType.LeagueChampionshipSeries
+            ? SeriesType.League
+            : game.gameType == GameType.WorldSeries
+              ? SeriesType.World
+              : SeriesType.Unknown
+  }
 
-  // Suspended games don't denote as such, and are duplicated
-  const seenGames: number[] = []
-
-  schedule.forEach((game: MLBGame) => {
-    const isHome = (): boolean => {
-      return game.teams?.home?.team?.id == team.id
+  const getCurrentSeries = (game: Game): Series => {
+    if (game.teams == undefined) {
+      throw new Error("Game has no teams")
     }
 
-    if (
-      game.gameType == MLBGameGameTypeEnum.SpringTraining ||
-      game.gameType == MLBGameGameTypeEnum.Exhibition
-    ) {
+    // Get the existing series, or create a new one
+    // Existing series may be a home/away, so will need to check if the pk is based
+    // on either the most recent series being an alternate home/away.
+    // Also need to ensure they're the same type of series; regular season, playoffs, etc.
+    let currentSeries = seasonSeries.find((s) =>
+      (s.pk == seriesPk(game.teams.home) || s.pk == seriesPk(game.teams.away))
+      && s.type == gameToSeriesType(game))
+
+    if (!currentSeries) {
+      currentSeries = newSeries()
+      currentSeries.pk = seriesPk(game.teams.home)
+      seasonSeries.push(currentSeries)
+    }
+
+    return currentSeries
+  }
+
+  schedule.forEach((game: Game) => {
+    if (game.gameType == GameType.SpringTraining || game.gameType == GameType.Exhibition) {
       return
     }
 
     // Do not track postponed games, they apply to a future series
-    if (
-      game.status?.codedGameState == MLBGameStatusCodedGameStateEnum.Postponed
-    ) {
+    if (game.status?.codedGameState == GameStatusCode.Postponed) {
       return
     }
+
+    const currentSeries = getCurrentSeries(game)
 
     // The gamePk will be the same for makeup games which were postponed, and suspended games.
     // Those games that get suspended on one day, and resume prior to the following days game,
@@ -121,169 +249,17 @@ function GenerateSeries(schedule: MLBGame[], team: MLBTeam): Series[] {
     // If the first game of the series, set the series start date, and teams
     if (game.seriesGameNumber == 1) {
       currentSeries.startDate = game.gameDate!
-      currentSeries.type =
-        game.gameType == MLBGameGameTypeEnum.Regular
-          ? SeriesType.RegularSeason
-          : game.gameType == MLBGameGameTypeEnum.WildCardSeries
-            ? SeriesType.WildCard
-            : game.gameType == MLBGameGameTypeEnum.DivisionSeries
-              ? SeriesType.Division
-              : game.gameType == MLBGameGameTypeEnum.LeagueChampionshipSeries
-                ? SeriesType.League
-                : game.gameType == MLBGameGameTypeEnum.WorldSeries
-                  ? SeriesType.World
-                  : SeriesType.Unknown
-
-      currentSeries.against = isHome()
-        ? (game.teams?.away ?? {})
-        : (game.teams?.home ?? {})
-
-      currentSeries.pk = game.gamePk
+      currentSeries.type = gameToSeriesType(game)
     }
 
-    // We need to decide if we're the home team, away team or a split series.
-    // If we've already determined a split series, don't check again
-    if (currentSeries.homeaway != SeriesHomeAway.Split) {
-      if (isHome()) {
-        if (currentSeries.homeaway == SeriesHomeAway.Away) {
-          currentSeries.homeaway = SeriesHomeAway.Split
-        } else {
-          currentSeries.homeaway = SeriesHomeAway.Home
-        }
-      } else {
-        if (currentSeries.homeaway == SeriesHomeAway.Home) {
-          currentSeries.homeaway = SeriesHomeAway.Split
-        } else {
-          currentSeries.homeaway = SeriesHomeAway.Away
-        }
-      }
-    }
-
-    // If we're the home team, and the home team won, increment wins
-    // else: if we weren't the home team and the we won increment wins
-    // else: we lost :(
-    const won =
-      isHome() && game.teams?.home?.isWinner
-        ? true
-        : !!(!isHome() && game.teams?.away?.isWinner)
-
-    if (
-      game.status?.codedGameState == MLBGameStatusCodedGameStateEnum.Final
-    ) {
-      if (won) {
-        wins++
-      } else {
-        losses++
-      }
-    }
+    // Always update, we don't know if the last game of a scheduled series may end up postponed.
+    currentSeries.endDate = game.gameDate!
 
     // Store this game into the series.
-    currentSeries.games.push({
-      result:
-        game.status?.codedGameState ==
-        MLBGameStatusCodedGameStateEnum.InProgress
-          ? GameResult.InProgress
-          : game.status?.codedGameState ==
-          MLBGameStatusCodedGameStateEnum.GameOver
-            ? GameResult.GameOver
-            : game.status?.codedGameState !=
-            MLBGameStatusCodedGameStateEnum.Final
-              ? GameResult.Unplayed
-              : won
-                ? GameResult.Win
-                : GameResult.Loss,
-      game: game,
-    })
-
-    // Determine the series disposition:
-    // We can possibly discern a series result early
-    // i.e. won 2 of a 3 game series, we can safely denote a win.
-    //
-    // Are both wins && losses 0? If so, we haven't played this series yet.
-    // Are the total of wins+losses less than games in series?  We're in progress
-    // Otherwise:
-    // Did we have no losses this series? SWEEP
-    // Did we have no wins this series? SWEPT (oof)
-    // Did we have more wins than losses? Win!
-    // Did we equal losses? Tie
-    // Otherwise we lost
-    if (losses != 0 || wins != 0) {
-      if (
-        wins + losses < (game.gamesInSeries as number)
-      ) {
-        const det = Math.ceil((game.gamesInSeries+1) / 2)
-        currentSeries.result =
-          game.seriesGameNumber >= det
-            ? wins >= det
-              ? SeriesResult.Win
-              : losses >= det
-                ? SeriesResult.Loss
-                : SeriesResult.InProgress
-            : SeriesResult.InProgress
-      } else {
-        currentSeries.result =
-          losses == 0
-            ? SeriesResult.Sweep
-            : wins == 0
-              ? SeriesResult.Swept
-              : wins > losses
-                ? SeriesResult.Win
-                : wins == losses
-                  ? SeriesResult.Tie
-                  : SeriesResult.Loss
-      }
-    }
-
-    // Is this the end of the series?
-    // Simple answer is if the pre-determined games in series is this game number.
-    //   - This is handled in-season by postponed end games of a series decrementing
-    //     the series count for the last game in the series that wasn't postponed.
-    //   - This is handled different for postseason games, where it will always list
-    //     the series as the max length.  So if a WildCard Series is won in 2 games
-    //     there will only be the 2 games, both with a `3` listed for gamesInSeries
-    const endOfSeries = (): boolean => {
-      if (game.gamesInSeries == game.seriesGameNumber) {
-        return true
-      }
-
-      if (
-        game.gameType == MLBGameGameTypeEnum.WildCardSeries &&
-        (wins == 2 || losses == 2)
-      ) {
-        return true
-      }
-      if (
-        game.gameType == MLBGameGameTypeEnum.DivisionSeries &&
-        (wins == 3 || losses == 3)
-      ) {
-        return true
-      }
-      if (
-        (game.gameType == MLBGameGameTypeEnum.LeagueChampionshipSeries ||
-          game.gameType == MLBGameGameTypeEnum.WorldSeries) &&
-        (wins == 4 || losses == 4)
-      ) {
-        return true
-      }
-      return false
-    }
-
-
-    if (endOfSeries()) {
-      currentSeries.endDate = game.gameDate!
-
-      // Push this series to the return
-      retval.push(currentSeries)
-
-      // Reset for the next series
-      currentSeries = newSeries()
-
-      wins = 0
-      losses = 0
-    }
+    currentSeries.games.push(game)
   })
 
-  return retval
+  return seasonSeries
 }
 
-export default GenerateSeries
+export default GenerateSeasonSeries

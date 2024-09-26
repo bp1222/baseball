@@ -1,11 +1,12 @@
 import {Box, Stack} from "@mui/material"
 import {
+  GetSeriesGameResult,
+  GetSeriesResult,
   Series,
 } from "../../models/Series.ts"
 import { useContext } from "react"
 import { AppStateContext } from "../../state/Context.tsx"
-import { MLBTeam } from "@bp1222/stats-api"
-import {grey } from "@mui/material/colors"
+import { Team } from "@bp1222/stats-api"
 import {ResultBadge} from "./ResultBadge.tsx"
 import {SeriesBadge} from "./SeriesBadge.tsx"
 import {SeriesTeams} from "./SeriesTeams.tsx"
@@ -18,12 +19,13 @@ type SeriesItemProps = {
 
   // If we're interested in a specific team, we'll highlight the series with respect to them
   // If not, we will highlight scores based on the result
-  interested?: MLBTeam
+  interested?: Team
 }
 
 const SeriesItem = ({ series, interested }: SeriesItemProps) => {
   const { state } = useContext(AppStateContext)
-  const {background, border} = interested ? GetSeriesColors(series.type, series.result) : DefaultSeriesResultColor
+  const seriesResult = GetSeriesResult(series, interested)
+  const {background, border} = interested ? GetSeriesColors(series.type, seriesResult) : DefaultSeriesResultColor
 
   return (
     <Stack
@@ -46,7 +48,7 @@ const SeriesItem = ({ series, interested }: SeriesItemProps) => {
           ml={-1.5}
           padding="10"
         >
-          <ResultBadge result={series.result} type={series.type} />
+          <ResultBadge result={seriesResult} type={series.type} />
           <SeriesBadge type={series.type} />
         </Stack>
       ) : ''}
@@ -64,13 +66,13 @@ const SeriesItem = ({ series, interested }: SeriesItemProps) => {
         alignContent={"center"}
         flexWrap={"wrap"}
       >
-        {series.games.map((sg) => (
+        {series.games.map((g) => (
           <SeriesGame
-            key={sg.game.gamePk}
-            result={sg.result}
-            game={sg.game}
-            home={FindTeam(state.teams, sg.game.teams?.home?.team?.id)!}
-            away={FindTeam(state.teams, sg.game.teams?.away?.team?.id)!}
+            key={g.gamePk}
+            result={GetSeriesGameResult(g, interested)}
+            game={g}
+            home={FindTeam(state.teams, g.teams?.home?.team?.id)!}
+            away={FindTeam(state.teams, g.teams?.away?.team?.id)!}
             interested={interested}
           />
         ))}

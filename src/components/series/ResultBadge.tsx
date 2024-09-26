@@ -1,4 +1,3 @@
-import { amber } from "@mui/material/colors"
 import { SeriesResult, SeriesType } from "../../models/Series.ts"
 import { Box, Typography } from "@mui/material"
 import {GetBadgeColors} from "./colors.ts";

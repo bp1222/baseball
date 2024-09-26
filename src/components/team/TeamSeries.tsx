@@ -1,6 +1,6 @@
 import {Box, CircularProgress, Grid} from "@mui/material";
 import {useContext, useEffect, useState} from "react";
-import GenerateSeries, {Series} from "../../models/Series.ts";
+import {Series} from "../../models/Series.ts";
 import SeriesItem from "../series/SeriesItem.tsx";
 import {useParams} from "react-router-dom";
 import {AppStateContext} from "../../state/Context.tsx";
@@ -15,10 +15,9 @@ const TeamSeries = () => {
   const team = FindTeam(state.teams, parseInt(teamId ?? ""))
 
   useEffect(() => {
-    if (state.seasonSchedule== undefined || team == undefined) return
-    const teamGames = state.seasonSchedule.dates.flatMap((d) => d.games).filter((g) => g.teams.away.team.id == team.id || g.teams.home.team.id == team.id)
-    setSeries(GenerateSeries(teamGames, team))
-  }, [state.seasonSchedule, team]);
+    if (state.seasonSeries == undefined || team == undefined) return
+    setSeries(state.seasonSeries.filter((s) => s.games.some((g) => g.teams.away.team.id == team.id || g.teams.home.team.id == team.id)))
+  }, [state.seasonSeries, team]);
 
   if ((series?.length ?? 0) == 0) {
     return (<Box display={"flex"} justifyContent={"center"}>

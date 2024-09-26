@@ -1,6 +1,5 @@
 import { Box, Button, Stack } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import {Outlet, useLocation, useNavigate, useParams} from "react-router-dom";
 import {useState} from "react";
 import TeamSeries from "./TeamSeries.tsx";
 import TeamStats from "./TeamStats.tsx";
@@ -9,11 +8,6 @@ enum Tab {
   Schedule,
   Stats,
 }
-
-const TabLocation = {
-  [Tab.Schedule]: "schedule",
-  [Tab.Stats]: "stats",
-};
 
 export const Component = () => {
   const [tab, setTab] = useState<Tab>(Tab.Schedule);

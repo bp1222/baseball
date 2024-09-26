@@ -1,15 +1,16 @@
-import { Dispatch } from "react";
-import {MLBSchedule, MLBSeason, MLBTeam} from "@bp1222/stats-api";
+import { Dispatch } from "react"
+import {Season, Team} from "@bp1222/stats-api"
+import {Series} from "../models/Series.ts"
 
 export enum AppStateAction {
   Teams = "teams",
   Seasons = "seasons",
-  SeasonSchedule = "seasonSchedule",
+  SeasonSeries = "series"
 }
 
 export type AppStateActions =
-  | { type: AppStateAction.Teams; teams: MLBTeam[] }
-  | { type: AppStateAction.Seasons; seasons: MLBSeason[] }
-  | { type: AppStateAction.SeasonSchedule; schedule: MLBSchedule };
+  | { type: AppStateAction.Teams; teams: Team[] }
+  | { type: AppStateAction.Seasons; seasons: Season[] }
+  | { type: AppStateAction.SeasonSeries; series: Series[] }
 
-export type AppStateDispatch = Dispatch<AppStateActions>;
+export type AppStateDispatch = Dispatch<AppStateActions>

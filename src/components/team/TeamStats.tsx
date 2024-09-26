@@ -1,18 +1,19 @@
-import { Paper, Stack, TableContainer, Typography } from "@mui/material"
-import { useContext, useEffect, useState} from "react"
+import {CircularProgress, Paper, Stack, TableContainer, Typography} from "@mui/material"
+import {lazy, Suspense, useContext, useEffect, useState} from "react"
 import { AppStateContext } from "../../state/Context.tsx"
-import { MlbApi, MLBRecord, MLBStandings } from "@bp1222/stats-api"
+import { MlbApi, TeamRecord, DivisionStandings } from "@bp1222/stats-api"
 import { useParams } from "react-router-dom"
 
 import Standings from "../Standings.tsx"
-import TeamRanking from "./TeamRanking.tsx"
 import {FindTeam} from "../../utils/findTeam.ts";
+
+const TeamRanking = lazy(() => import("./TeamRanking.tsx"))
 
 const TeamStats = () => {
   const api = new MlbApi()
 
   const { state } = useContext(AppStateContext)
-  const [standings, setStandings] = useState<MLBStandings[]>([])
+  const [standings, setStandings] = useState<DivisionStandings[]>([])
   const { seasonId, teamId } = useParams()
 
   const team = FindTeam(state.teams, parseInt(teamId ?? ""))
@@ -35,12 +36,12 @@ const TeamStats = () => {
   const divisionStandings = standings.find((s) => s.division?.id == team?.division?.id)?.teamRecords
 
   // Data for League Standings
-  const leagueStandings: MLBRecord[] = []
+  const leagueStandings: TeamRecord[] = []
   // Get the top three
   standings.forEach((s) => leagueStandings.push(s.teamRecords[0]))
   leagueStandings.sort((a, b) => parseFloat(a.winningPercentage!) > parseFloat(b.winningPercentage!) ? -1 : 1)
   // Get the next three
-  const leagueStandingWildCard: MLBRecord[] = []
+  const leagueStandingWildCard: TeamRecord[] = []
   standings.forEach((s) => s.teamRecords.forEach((tr) => {
     if (tr.wildCardGamesBack! === '-' || tr.wildCardGamesBack?.startsWith('+')) {
       if (leagueStandings.find((s) => s.team.id == tr.team.id)) return
@@ -49,7 +50,7 @@ const TeamStats = () => {
   }))
   leagueStandingWildCard.sort((a, b) => parseFloat(a.winningPercentage!) > parseFloat(b.winningPercentage!) ? -1 : 1)
 
-  // For some reason, the 2023 AL Wildcard race lists the marianers as no games back?  wtf?  So only take top 3
+  // For some reason, the 2023 AL Wildcard race lists the mariners as no games back?  wtf?  So only take top 3
   leagueStandings.push(...leagueStandingWildCard.slice(0,3))
 
   return (
@@ -110,7 +111,9 @@ const TeamStats = () => {
           >
             Games Behind
           </Typography>
-          <TeamRanking />
+          <Suspense fallback={<Stack justifyContent={"center"}><CircularProgress /></Stack>}>
+            <TeamRanking />
+          </Suspense>
         </TableContainer>
       </Stack>
   )

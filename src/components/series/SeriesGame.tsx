@@ -1,22 +1,24 @@
 import {Box, Color, Stack} from "@mui/material"
 import { GameResult } from "../../models/Series.ts"
-import { MLBGame, MLBTeam } from "@bp1222/stats-api"
+import { Game, Team } from "@bp1222/stats-api"
 import {DefaultGameResultColor, GameResultColor } from "./colors.ts";
+
+import dayjs from "../../utils/dayjs.ts"
 
 type SeriesGameProps = {
   result: GameResult
-  game: MLBGame
-  home: MLBTeam
-  away: MLBTeam
+  game: Game
+  home: Team
+  away: Team
 
   // If we want to color the game box, or just the winners score
-  interested?: MLBTeam
+  interested?: Team
 }
 
 export const SeriesGame = ({ result, game, home, away, interested }: SeriesGameProps) => {
   const getDay = (): string => {
-    return new Date(game.officialDate ?? "")
-      .toLocaleString("us", { month: "short", day: "numeric", timeZone: "utc" })
+    return dayjs(game.officialDate ?? "")
+      .format("MMM DD")
       .toUpperCase()
   }
   const color = interested ? GameResultColor[result] : DefaultGameResultColor

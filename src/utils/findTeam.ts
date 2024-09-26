@@ -1,7 +1,7 @@
 import memoize from "fast-memoize";
-import {MLBTeam} from "@bp1222/stats-api";
+import {Team} from "@bp1222/stats-api";
 
-export const FindTeam = memoize((teams: MLBTeam[]|null, teamId: number | undefined): MLBTeam | undefined => {
+export const FindTeam = memoize((teams: Team[]|undefined, teamId: number | undefined): Team | undefined => {
   return teams?.find((t) => t.id == teamId);
 });
 
