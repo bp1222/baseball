@@ -182,8 +182,8 @@ const GenerateSeasonSeries = (schedule: Game[]): Series[] => {
     }
   }
 
-  const seriesPk = (team: GameTeam): string => {
-    return team.team.id + "-" + team.seriesNumber
+  const seriesPk = (team: GameTeam, seriesType: SeriesType): string => {
+    return team.team.id + "-" + seriesType + "-" + team.seriesNumber
   }
 
   const gameToSeriesType = (game: Game): SeriesType => {
@@ -210,12 +210,12 @@ const GenerateSeasonSeries = (schedule: Game[]): Series[] => {
     // on either the most recent series being an alternate home/away.
     // Also need to ensure they're the same type of series; regular season, playoffs, etc.
     let currentSeries = seasonSeries.find((s) =>
-      (s.pk == seriesPk(game.teams.home) || s.pk == seriesPk(game.teams.away))
+      (s.pk == seriesPk(game.teams.home, gameToSeriesType(game)) || s.pk == seriesPk(game.teams.away, gameToSeriesType(game)))
       && s.type == gameToSeriesType(game))
 
     if (!currentSeries) {
       currentSeries = newSeries()
-      currentSeries.pk = seriesPk(game.teams.home)
+      currentSeries.pk = seriesPk(game.teams.home, gameToSeriesType(game))
       seasonSeries.push(currentSeries)
     }
 
