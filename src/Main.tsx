@@ -1,17 +1,14 @@
-import {StrictMode} from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Container } from "@mui/material";
-import {createHashRouter, createRoutesFromElements, Route, RouterProvider} from "react-router-dom";
-import {AppStateProvider} from "./state/Context.tsx";
-
-import App from "./App.tsx";
-import Season from  "./components/Season.tsx";
+import { createHashRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
+import { AppStateProvider } from "./state/Context.tsx";
 
 const applicationRoutes = createHashRouter(
   createRoutesFromElements(
-    <Route path="/" element={<App />}>
-      <Route path=":seasonId" element={<Season />}>
-        <Route index lazy={() => import("./components/CurrentSeries")} />
+    <Route path="/" lazy={() => import('./App.tsx')}>
+      <Route path=":seasonId" lazy={() => import('./components/Season.tsx')}>
+        <Route index lazy={() => import('./components/CurrentDay.tsx')} />
         <Route path=":teamId" lazy={() => import("./components/team/Team")} />
       </Route>
     </Route>,

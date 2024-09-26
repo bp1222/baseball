@@ -7,7 +7,7 @@ import GenerateSeasonSeries from "../models/Series.ts";
 
 const mlbApi = new MlbApi();
 
-const Season = () => {
+export const Component = () => {
   const { state, dispatch } = useContext(AppStateContext);
   const { seasonId } = useParams();
   const season = state.seasons?.find((s) => s.seasonId == seasonId);
@@ -32,5 +32,3 @@ const Season = () => {
     <Outlet />
   );
 };
-
-export default Season;

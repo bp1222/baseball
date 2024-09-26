@@ -250,8 +250,10 @@ const GenerateSeasonSeries = (schedule: Game[]): Series[] => {
     // of a previously seen game
     const currentSeries = getCurrentSeries(game)
 
-    // If the first game of the series, set the series start date, and teams
-    if (game.seriesGameNumber == 1) {
+    // If this series has no games, set some defaults.  Why not just look if it's the first game in a series?
+    // Because the 2021 Reds start the season on game 4 of a 6 game series.  Clearly a data problem with
+    // MLB data, because it should be game 1 of 3.  WTF?!
+    if (currentSeries.games.length == 0) {
       currentSeries.startDate = game.gameDate!
       currentSeries.type = gameToSeriesType(game)
     }

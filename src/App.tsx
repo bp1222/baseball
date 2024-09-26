@@ -1,23 +1,26 @@
-import {MlbApi} from "@bp1222/stats-api"
+import { MlbApi } from "@bp1222/stats-api"
 import { CssBaseline, ThemeProvider } from "@mui/material"
-import {Outlet, useNavigate, useParams} from "react-router-dom"
+import { Outlet, useNavigate, useParams } from "react-router-dom"
+import { useContext, useEffect } from "react"
 
-import Header from "./components/Header"
+import { AppStateAction } from "./state/Actions.ts"
+import { AppStateContext } from "./state/Context.tsx"
+
 import GetTheme from "./colors"
+import Header from "./components/Header"
 import Footer from "./components/Footer"
-import {useContext, useEffect} from "react"
-import {AppStateAction} from "./state/Actions.ts"
-import {AppStateContext} from "./state/Context.tsx"
 
 const mlbApi = new MlbApi();
 
-const App = () => {
-  const {state, dispatch} = useContext(AppStateContext)
+export const Component = () => {
+  const {dispatch} = useContext(AppStateContext)
   const {seasonId, teamId} = useParams()
   const navigate = useNavigate()
 
   useEffect(() => {
-    mlbApi.getAllSeasons({sportId: 1}).then((seasons) => {
+    mlbApi.getAllSeasons({
+      sportId: 1
+    }).then((seasons) => {
       dispatch({
         type: AppStateAction.Seasons,
         seasons:
@@ -31,7 +34,7 @@ const App = () => {
         return
       }
     })
-  }, [dispatch, navigate])
+  }, [dispatch, navigate, seasonId])
 
   useEffect(() => {
     if (seasonId == null)
@@ -49,10 +52,6 @@ const App = () => {
     })
   }, [dispatch, seasonId])
 
-  if (state.seasons == undefined || state.teams == undefined) {
-    return <div>Loading...</div>
-  }
-
   return (
     <ThemeProvider theme={GetTheme(parseInt(teamId ?? '0'))}>
       <CssBaseline />
@@ -62,5 +61,3 @@ const App = () => {
     </ThemeProvider>
   )
 }
-
-export default App
