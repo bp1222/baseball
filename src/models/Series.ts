@@ -232,8 +232,6 @@ const GenerateSeasonSeries = (schedule: Game[]): Series[] => {
       return
     }
 
-    const currentSeries = getCurrentSeries(game)
-
     // The gamePk will be the same for makeup games which were postponed, and suspended games.
     // Those games that get suspended on one day, and resume prior to the following days game,
     // will record the actual "Final" state in recorded games on _each_ day where the game was
@@ -245,6 +243,12 @@ const GenerateSeasonSeries = (schedule: Game[]): Series[] => {
       }
       seenGames.push(game.gamePk)
     }
+
+    // This is after the above check.  If a game is suspended and completed at a later date
+    // The first game will be recorded as a "Final" state, and the second game will also be recorded
+    // But it will have a different series number associated.  Thus, we don't want to pull the series
+    // of a previously seen game
+    const currentSeries = getCurrentSeries(game)
 
     // If the first game of the series, set the series start date, and teams
     if (game.seriesGameNumber == 1) {
