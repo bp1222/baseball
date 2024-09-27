@@ -8,7 +8,7 @@ import {DatePicker} from "@mui/x-date-pickers/DatePicker"
 
 import dayJs from "../utils/dayjs.ts"
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import {ChevronRight} from "@mui/icons-material";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const CurrentSeries = lazy(() => import("./CurrentSeries.tsx"))
 
@@ -47,7 +47,7 @@ export const Component = () => {
             }}
           ></DatePicker>
         </LocalizationProvider>
-        <ChevronRight fontSize={"large"} onClick={() => setSelectedDate(selectedDate.add(1, "day"))} />
+        <ChevronRightIcon fontSize={"large"} onClick={() => setSelectedDate(selectedDate.add(1, "day"))} />
       </Box>
       <CurrentSeries selectedDate={selectedDate} />
     </>

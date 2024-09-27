@@ -19,8 +19,6 @@ const TeamSeries = () => {
     setSeries(state.seasonSeries.filter((s) => s.games.some((g) => g.teams.away.team.id == team.id || g.teams.home.team.id == team.id)))
   }, [state.seasonSeries, team]);
 
-  console.log(series)
-
   if ((series?.length ?? 0) == 0) {
     return (<Box display={"flex"} justifyContent={"center"}>
         <CircularProgress/>

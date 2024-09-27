@@ -1,7 +1,7 @@
 import {Box, Color, Stack} from "@mui/material"
-import { GameResult } from "../../models/Series.ts"
-import { Game, Team } from "@bp1222/stats-api"
-import {DefaultGameResultColor, GameResultColor } from "./colors.ts";
+import {GameResult} from "../../models/Series.ts"
+import {Game, GameStatusCode, Team} from "@bp1222/stats-api"
+import {DefaultGameResultColor, GameResultColor} from "./colors.ts";
 
 import dayjs from "../../utils/dayjs.ts"
 
@@ -13,15 +13,17 @@ type SeriesGameProps = {
 
   // If we want to color the game box, or just the winners score
   interested?: Team
+
+  // For outlining a day
+  selectedDate?: dayjs.Dayjs
 }
 
-export const SeriesGame = ({ result, game, home, away, interested }: SeriesGameProps) => {
+export const SeriesGame = ({ result, game, home, away, interested, selectedDate }: SeriesGameProps) => {
   const getDay = (): string => {
     return dayjs(game.officialDate ?? "")
       .format("MMM DD")
       .toUpperCase()
   }
-  const color = interested ? GameResultColor[result] : DefaultGameResultColor
 
   const renderScore = (name: string | undefined, score: number | undefined, scoreColor: Color) => {
     return (
@@ -56,41 +58,42 @@ export const SeriesGame = ({ result, game, home, away, interested }: SeriesGameP
   }
 
   const winnerColor = interested
-    ? color
-    : (result == GameResult.Unplayed) || (result == GameResult.InProgress)
-      ? DefaultGameResultColor
-      : GameResultColor[GameResult.Win]
+    ? GameResultColor[result]
+    : game.status.codedGameState == GameStatusCode.Final
+      ? GameResultColor[GameResult.Win]
+      : DefaultGameResultColor
+
   const loserColor = interested
-    ? color
-    : (result == GameResult.Unplayed) || (result == GameResult.InProgress)
-      ? DefaultGameResultColor
-      : GameResultColor[GameResult.Loss]
+    ? GameResultColor[result]
+    : game.status.codedGameState == GameStatusCode.Final
+      ? GameResultColor[GameResult.Loss]
+      : DefaultGameResultColor
+
+  const gameTileColor = interested ? GameResultColor[result] : DefaultGameResultColor
+
+  const gameIsToday = dayjs(game.officialDate ?? "").isSame(interested ? dayjs() : selectedDate, "day")
 
   return (
     <Stack
       direction={"column"}
+      height={"fit-content"}
+      minWidth={50}
       marginTop={0.5}
       marginBottom={0.5}
       marginRight={1}
-      height={"fit-content"}
-      sx={{
-        border: 1,
-        borderRadius: 0.5,
-        borderColor: color[200],
-        backgroundColor: color[50],
-        minWidth: 50,
-        fontSize: "smaller",
-      }}
+      border={1}
+      borderRadius={.5}
+      borderColor={gameIsToday ? "black" : gameTileColor[200]}
+      bgcolor={gameTileColor[50]}
+      fontSize={"smaller"}
     >
       <Box
         textAlign={"center"}
-        sx={{
-          backgroundColor: color[300],
-          color: "Background",
-          paddingLeft: 0.2,
-          paddingRight: 0.2,
-          textAlign: "center",
-        }}
+        border={gameIsToday ?  1 : 0}
+        color={"Background"}
+        paddingLeft={0.2}
+        paddingRight={0.2}
+        bgcolor={gameTileColor[300]}
       >
         {getDay()}
       </Box>

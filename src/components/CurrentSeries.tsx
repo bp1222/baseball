@@ -12,19 +12,21 @@ type CurrentSeriesProps = {
 
 const CurrentSeries = ({selectedDate} : CurrentSeriesProps) => {
   const {state} = useContext(AppStateContext);
-  const [currentSeries, setCurrentSeries] = useState<Series[]|null>([]);
+  const [currentSeries, setCurrentSeries] = useState<Series[] | null>([]);
 
   useEffect(() => {
-    setCurrentSeries(
-      state.seasonSeries?.filter(
-        (s) => selectedDate.isBetween(dayJs(s.startDate), dayJs(s.endDate), "day", "[]")
-      ) ?? null
-    )
+    if (state.seasonSeries?.length??0 > 0) {
+      setCurrentSeries(
+        state.seasonSeries?.filter(
+          (s) => selectedDate.isBetween(dayJs(s.startDate), dayJs(s.endDate), "day", "[]")
+        ) ?? null
+      )
+    }
   }, [state.seasonSeries, selectedDate])
 
   if (currentSeries?.length == 0) {
     return (
-      <Box display={"flex"} justifyContent={"center"}>
+      <Box display={"flex"} justifyContent={"center"} marginTop={2}>
         <CircularProgress/>
       </Box>
     );
@@ -42,7 +44,7 @@ const CurrentSeries = ({selectedDate} : CurrentSeriesProps) => {
         <Grid container flexWrap={"wrap"} columns={2}>
           {currentSeries?.map((series) => (
             <Grid xs={1} padding={1} key={series.pk} item>
-              <SeriesItem series={series}/>
+              <SeriesItem series={series} selectedDate={selectedDate}/>
             </Grid>
           ))}
         </Grid>

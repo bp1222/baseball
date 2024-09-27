@@ -13,6 +13,7 @@ import {SeriesTeams} from "./SeriesTeams.tsx"
 import {SeriesGame} from "./SeriesGame.tsx"
 import {FindTeam} from "../../utils/findTeam.ts";
 import {DefaultSeriesResultColor, GetSeriesColors} from "./colors.ts";
+import dayjs from "../../utils/dayjs.ts";
 
 type SeriesItemProps = {
   series: Series
@@ -20,9 +21,12 @@ type SeriesItemProps = {
   // If we're interested in a specific team, we'll highlight the series with respect to them
   // If not, we will highlight scores based on the result
   interested?: Team
+
+  // For outlining a day
+  selectedDate?: dayjs.Dayjs
 }
 
-const SeriesItem = ({ series, interested }: SeriesItemProps) => {
+const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
   const { state } = useContext(AppStateContext)
   const seriesResult = GetSeriesResult(series, interested)
   const {background, border} = interested ? GetSeriesColors(series.type, seriesResult) : DefaultSeriesResultColor
@@ -74,6 +78,7 @@ const SeriesItem = ({ series, interested }: SeriesItemProps) => {
             home={FindTeam(state.teams, g.teams?.home?.team?.id)!}
             away={FindTeam(state.teams, g.teams?.away?.team?.id)!}
             interested={interested}
+            selectedDate={selectedDate}
           />
         ))}
       </Stack>
