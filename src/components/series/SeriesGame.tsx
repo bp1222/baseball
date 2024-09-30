@@ -75,11 +75,9 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
 
   const gameTileColor = interested
     ? GameResultColor[result]
-    : result == GameResult.InProgress
-      ? GameResultColor[GameResult.InProgress]
-      : result == GameResult.Canceled
-        ? GameResultColor[GameResult.Canceled]
-        : DefaultGameResultColor
+    : [GameResult.InProgress, GameResult.Canceled, GameResult.GameOver, GameResult.Tie].indexOf(result) > -1
+      ? GameResultColor[result]
+      : DefaultGameResultColor
 
   const gameIsToday = dayjs(game.officialDate ?? "").isSame(interested ? dayjs() : selectedDate, "day")
 
