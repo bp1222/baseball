@@ -33,66 +33,30 @@ const TeamStats = () => {
   }, [team, seasonId])
 
   // Data for Division Standings
-  const divisionStandings = standings.find((s) => s.division?.id == team?.division?.id)?.teamRecords
 
-  // Data for League Standings
-  const leagueStandings: TeamRecord[] = []
-  // Get the top three
-  standings.forEach((s) => leagueStandings.push(s.teamRecords[0]))
-  leagueStandings.sort((a, b) => parseFloat(a.winningPercentage!) > parseFloat(b.winningPercentage!) ? -1 : 1)
-  // Get the next three
-  const leagueStandingWildCard: TeamRecord[] = []
-  standings.forEach((s) => s.teamRecords.forEach((tr) => {
-    if (tr.wildCardGamesBack! === '-' || tr.wildCardGamesBack?.startsWith('+')) {
-      if (leagueStandings.find((s) => s.team.id == tr.team.id)) return
-      leagueStandingWildCard.push(tr)
-    }
-  }))
-  leagueStandingWildCard.sort((a, b) => parseFloat(a.winningPercentage!) > parseFloat(b.winningPercentage!) ? -1 : 1)
+  const divisionStandings = standings
+    .filter((s) => s.division?.id == team?.division?.id)
+    .flatMap((s) => s.teamRecords)
+    .sort((a, b) => parseFloat(a.divisionRank) > parseFloat(b.divisionRank!) ? 1 : -1)
 
-  // For some reason, the 2023 AL Wildcard race lists the mariners as no games back?  wtf?  So only take top 3
-  leagueStandings.push(...leagueStandingWildCard.slice(0,3))
+  // Data for League Standings if they're in the same league
+  const leagueStandings: TeamRecord[] = standings
+    .filter((s) => s.league?.id == team?.league?.id)
+    .flatMap((s) => s.teamRecords)
+    .sort((a, b) => {
+      if (a.divisionChamp && b.divisionChamp) {
+        return parseFloat(a.leagueRank) > parseFloat(b.leagueRank!) ? 1 : -1
+      }
+      if (a.divisionChamp && !b.divisionChamp) return -1
+      if (!a.divisionChamp && b.divisionChamp) return 1
+      return parseFloat(a.leagueRank) > parseFloat(b.leagueRank!) ? 1 : -1
+    })
 
   return (
       <Stack width={1} height={1} direction={"column"}>
         <Stack direction={{ xs: "column", sm: "row" }}>
-          <TableContainer
-              component={Paper}
-              elevation={2}
-              sx={{
-                width: { xs: "100%", sm: "49.5%" }
-              }}
-          >
-            <Typography
-                marginTop={1}
-                fontWeight={"bold"}
-                textAlign={"center"}
-                fontSize={"larger"}
-                color={"primary.main"}
-            >
-              Division Standings
-            </Typography>
-            <Standings standings={divisionStandings} league={false} />
-          </TableContainer>
-          <TableContainer
-              component={Paper}
-              elevation={2}
-              sx={{
-                width: { xs: "100%", sm: "49.5%" },
-                marginLeft: { xs: 0, sm: "1%" },
-              }}
-          >
-            <Typography
-                marginTop={1}
-                fontWeight={"bold"}
-                textAlign={"center"}
-                fontSize={"larger"}
-                color={"primary.main"}
-            >
-              League Standings
-            </Typography>
-            <Standings standings={leagueStandings} league={true} />
-          </TableContainer>
+          <Standings standings={divisionStandings} league={false} />
+          <Standings standings={leagueStandings} league={true} />
         </Stack>
 
         <TableContainer

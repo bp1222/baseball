@@ -37,6 +37,8 @@ export enum GameResult {
   Unplayed,
   InProgress,
   GameOver,
+  Canceled,
+  Postponed
 }
 
 export type Series = {
@@ -89,6 +91,16 @@ export const GetSeriesHomeAway = (series: Series, team?: Team): SeriesHomeAway =
 export const GetSeriesGameResult = (game: Game, team?: Team): GameResult => {
   if (game.teams == undefined) {
     throw new Error("Game has no teams")
+  }
+
+  switch (game.status.codedGameState) {
+    case GameStatusCode.Canceled:
+      return GameResult.Canceled
+    case GameStatusCode.Postponed:
+      return GameResult.Postponed
+    case GameStatusCode.InProgress:
+    case GameStatusCode.Pregame:
+      return GameResult.InProgress
   }
 
   if (team == undefined) {
@@ -171,6 +183,8 @@ export const GetSeriesResult = (series: Series, team?: Team): SeriesResult => {
 const GenerateSeasonSeries = (schedule: Game[]): Series[] => {
   const seenGames: number[] = []
   const seasonSeries: Series[] = []
+
+  console.log("generating")
 
   const newSeries = () => {
     return {

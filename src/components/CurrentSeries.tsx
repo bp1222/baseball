@@ -1,7 +1,7 @@
 import {Box, CircularProgress, Grid} from "@mui/material"
 import {AppStateContext} from "../state/Context.tsx"
 import {useContext, useEffect, useState} from "react"
-import {Series} from "../models/Series.ts"
+import {Series, SeriesType} from "../models/Series.ts"
 import SeriesItem from "./series";
 
 import dayJs from "../utils/dayjs.ts";
@@ -12,19 +12,30 @@ type CurrentSeriesProps = {
 
 const CurrentSeries = ({selectedDate} : CurrentSeriesProps) => {
   const {state} = useContext(AppStateContext);
-  const [currentSeries, setCurrentSeries] = useState<Series[] | null>([]);
+  const [currentSeries, setCurrentSeries] = useState<Series[] | null>(null);
 
   useEffect(() => {
     if (state.seasonSeries?.length??0 > 0) {
       setCurrentSeries(
-        state.seasonSeries?.filter(
-          (s) => selectedDate.isBetween(dayJs(s.startDate), dayJs(s.endDate), "day", "[]")
-        ) ?? null
-      )
+      state.seasonSeries
+        ?.filter((s) => selectedDate.isBetween(dayJs(s.startDate), dayJs(s.endDate), "day", "[]"))
+        .sort((a, b) => {
+          if ([
+            SeriesType.WildCard,
+            SeriesType.Division,
+            SeriesType.League,
+            SeriesType.World].indexOf(a.type) >= 0) {
+            if (a.games[0].teams.home.team.league?.id && b.games[0].teams.home.team.league?.id) {
+              return a.games[0].teams.home.team.league?.id < b?.games[0]?.teams?.home?.team?.league?.id ? -1 : 1
+            }
+          }
+          return a.games[0].teams.home.team.name.localeCompare(b.games[0].teams.home.team.name)
+        }) ?? []
+    )
     }
   }, [state.seasonSeries, selectedDate])
 
-  if (currentSeries?.length == 0) {
+  if (currentSeries == null) {
     return (
       <Box display={"flex"} justifyContent={"center"} marginTop={2}>
         <CircularProgress/>
@@ -32,10 +43,10 @@ const CurrentSeries = ({selectedDate} : CurrentSeriesProps) => {
     );
   }
 
-  if (currentSeries == null) {
+  if (currentSeries.length == 0) {
     return (
       <Box display={"flex"} justifyContent={"center"}>
-        No Games Today
+        No Games on This Date
       </Box>
     );
   } else {

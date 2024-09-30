@@ -1,6 +1,19 @@
 import {GameResult, SeriesResult, SeriesType} from "../../models/Series.ts";
-import {Color} from "@mui/material";
-import {amber, blue, brown, grey, lightGreen, purple, red} from "@mui/material/colors";
+import {Color, darken} from "@mui/material";
+import {
+  amber,
+  blue,
+  brown,
+  deepOrange,
+  grey,
+  lightBlue,
+  lightGreen,
+  orange,
+  pink,
+  purple,
+  red
+} from "@mui/material/colors";
+import {getPickersOutlinedInputUtilityClass} from "@mui/x-date-pickers";
 
 export const OppositeSeriesResult = (result: SeriesResult): SeriesResult => {
   switch (result) {
@@ -103,8 +116,8 @@ export const BadgeResultColor: { [key in SeriesResult]: ResultColors } = {
     border: brown[500]
   },
   [SeriesResult.InProgress]: {
-    background: purple[300],
-    border: purple[500]
+    background: lightBlue[300],
+    border: lightBlue[500]
   },
   [SeriesResult.Unplayed]: DefaultBadgeResultColor
 }
@@ -114,9 +127,9 @@ export const GameResultColor: { [key in GameResult]: Color } = {
   [GameResult.Win]: lightGreen,
   [GameResult.Loss]: red,
   [GameResult.Tie]: blue,
-  [GameResult.InProgress]: purple,
+  [GameResult.InProgress]: lightBlue,
   [GameResult.GameOver]: purple,
+  [GameResult.Canceled]: deepOrange,
+  [GameResult.Postponed]: orange,
   [GameResult.Unplayed]: DefaultGameResultColor,
 }
-
-

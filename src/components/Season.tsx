@@ -19,7 +19,11 @@ export const Component = () => {
       gameTypes: [GameType.Regular, GameType.WildCardSeries, GameType.DivisionSeries, GameType.LeagueChampionshipSeries, GameType.WorldSeries],
       startDate: season.regularSeasonStartDate,
       endDate: season.postSeasonEndDate,
-      fields: ["date","gamePk","dates","games","gameType","gameDate","officialDate","status","codedGameState","teams","away","home","score","team","name","id","isWinner","seriesNumber","gamesInSeries","seriesGameNumber","division","seriesNumber"]
+      fields: ["date","gamePk","dates","games","gameType","gameDate",
+        "officialDate","status","codedGameState","teams","away","home",
+        "score","team","name","id","isWinner","seriesNumber",
+        "gamesInSeries","seriesGameNumber","division","seriesNumber","league"],
+      hydrate: "team(league)"
     }).then((schedule) => {
       dispatch({
         type: AppStateAction.SeasonSeries,
