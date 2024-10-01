@@ -186,8 +186,6 @@ const GenerateSeasonSeries = (schedule: Game[]): Series[] => {
   const seenGames: number[] = []
   const seasonSeries: Series[] = []
 
-  console.log("generating")
-
   const newSeries = () => {
     return {
       pk: "",

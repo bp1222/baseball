@@ -47,8 +47,13 @@ const TeamStats = () => {
       if (a.divisionChamp && b.divisionChamp) {
         return parseFloat(a.leagueRank) > parseFloat(b.leagueRank!) ? 1 : -1
       }
+
       if (a.divisionChamp && !b.divisionChamp) return -1
       if (!a.divisionChamp && b.divisionChamp) return 1
+
+      if (a.clinched && !b.clinched) return -1
+      if (!a.clinched && b.clinched) return 1
+
       return parseFloat(a.leagueRank) > parseFloat(b.leagueRank!) ? 1 : -1
     })
 
