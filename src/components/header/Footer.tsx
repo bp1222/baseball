@@ -2,7 +2,7 @@ import { Box, Stack, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import GitHubIcon from '@mui/icons-material/GitHub';
 
-import img from "../assets/c.png";
+import img from "../../assets/c.png";
 import {Link} from "react-router-dom";
 
 const Footer = () => {

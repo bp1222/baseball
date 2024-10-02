@@ -1,5 +1,5 @@
 import { MlbApi } from "@bp1222/stats-api"
-import { CssBaseline, ThemeProvider } from "@mui/material"
+import {Container, CssBaseline, ThemeProvider} from "@mui/material"
 import { Outlet, useNavigate, useParams } from "react-router-dom"
 import { useContext, useEffect } from "react"
 
@@ -7,8 +7,8 @@ import { AppStateAction } from "./state/Actions.ts"
 import { AppStateContext } from "./state/Context.tsx"
 
 import GetTheme from "./colors"
-import Header from "./components/Header"
-import Footer from "./components/Footer"
+import Header from "./components/header/Header.tsx"
+import Footer from "./components/header/Footer.tsx"
 
 const mlbApi = new MlbApi();
 
@@ -56,7 +56,9 @@ export const Component = () => {
     <ThemeProvider theme={GetTheme(parseInt(teamId ?? '0'))}>
       <CssBaseline />
       <Header/>
-      <Outlet />
+      <Container maxWidth={"md"}>
+        <Outlet />
+      </Container>
       <Footer/>
     </ThemeProvider>
   )

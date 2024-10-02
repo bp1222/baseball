@@ -1,6 +1,5 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Container } from "@mui/material";
 import { createHashRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
 import { AppStateProvider } from "./state/Context.tsx";
 
@@ -17,10 +16,8 @@ const applicationRoutes = createHashRouter(
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Container maxWidth={"md"}>
-      <AppStateProvider>
-        <RouterProvider router={applicationRoutes} />
-      </AppStateProvider>
-    </Container>
+    <AppStateProvider>
+      <RouterProvider router={applicationRoutes} />
+    </AppStateProvider>
   </StrictMode>,
 );
