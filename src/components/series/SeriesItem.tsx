@@ -79,41 +79,5 @@ const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
       </Grid2>
     </Grid2>
   )
-  /*
-  return (
-    <Stack direction={"row"}
-           border={1}
-           borderRadius={1}
-           borderColor={border}
-           bgcolor={background}
-           fontSize={"small"}>
-      <Box alignContent={"center"} minWidth={{ xs: "40%", md: "35%" }}>
-        <SeriesTeams
-          series={series}
-          interested={interested}
-        />
-      </Box>
-
-      <Stack
-        direction="row"
-        width={"fill-available"}
-        justifyContent={"end"}
-        alignContent={"center"}
-      >
-        {series.games.map((g) => (
-          <SeriesGame
-            key={g.gamePk}
-            result={GetSeriesGameResult(g, interested)}
-            game={g}
-            home={FindTeam(state.teams, g.teams?.home?.team?.id)!}
-            away={FindTeam(state.teams, g.teams?.away?.team?.id)!}
-            interested={interested}
-            selectedDate={selectedDate}
-          />
-        ))}
-      </Stack>
-    </Stack>
-  )
-   */
 }
 export default SeriesItem

@@ -21,15 +21,11 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
     return name
   }
 
-  const getImage = (id: number | undefined) => {
-    console.log(id)
-    return <img
-      src = {"https://www.mlbstatic.com/team-logos/team-cap-on-light/" +id + ".svg"}
-      height = {24}
-      width = {24}
-    />
-  }
-
+  const getImage = (id: number | undefined) => <img
+    src = {"https://www.mlbstatic.com/team-logos/team-cap-on-light/" +id + ".svg"}
+    height = {24}
+    width = {24}
+  />
 
   if (!interested) {
     let home = FindTeam(state.teams, series.games[0].teams.home.team.id)
@@ -41,7 +37,6 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
     if (away == undefined) {
       away = series.games[0].teams.away.team
     }
-    console.log(away)
 
     return (
       <Grid2 container
