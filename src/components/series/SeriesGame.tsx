@@ -1,4 +1,4 @@
-import {Box, Color, Stack} from "@mui/material"
+import {Box, Color, Grid2, Stack, Typography} from "@mui/material"
 import {GameResult} from "../../models/Series.ts"
 import {Game, GameStatusCode, Team} from "@bp1222/stats-api"
 import {DefaultGameResultColor, GameResultColor} from "./colors.ts";
@@ -27,33 +27,33 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
 
   const renderScore = (name: string | undefined, score: number | undefined, scoreColor: Color) => {
     return (
-      <Stack direction={"row"} sx={{ fontSize: "smaller", textAlign: "center" }}>
-        <Box
-          sx={{
-            borderRight: 1,
-            borderBottom: 1,
-            backgroundColor: scoreColor[50],
-            borderColor: scoreColor[100],
-            color: scoreColor[700],
-            width: "70%",
-            paddingTop: 0.1,
-          }}
-        >
+      <Grid2 container
+             display={"flex"}
+             flexDirection={"row"}
+             flexGrow={1}
+             flexWrap={"nowrap"}>
+        <Grid2 fontSize={"x-small"}
+               textAlign={"center"}
+               borderRight={1}
+               borderBottom={1}
+               borderColor={scoreColor[100]}
+               bgcolor={scoreColor[50]}
+               color={scoreColor[700]}
+               width={"70%"}
+               paddingTop={0.1}>
           {name}
-        </Box>
-        <Box
-          sx={{
-            borderBottom: 1,
-            backgroundColor: scoreColor[50],
-            borderColor: scoreColor[100],
-            width: "30%",
-            color: scoreColor[700],
-            paddingTop: 0.1,
-          }}
-        >
+        </Grid2>
+        <Grid2 fontSize={"x-small"}
+               textAlign={"center"}
+               borderBottom={1}
+               borderColor={scoreColor[100]}
+               bgcolor={scoreColor[50]}
+               color={scoreColor[700]}
+               width={"30%"}
+               paddingTop={0.1}>
           {score??0}
-        </Box>
-      </Stack>
+        </Grid2>
+      </Grid2>
     )
   }
 
@@ -82,31 +82,29 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
   const gameIsToday = dayjs(game.officialDate ?? "").isSame(interested ? dayjs() : selectedDate, "day")
 
   return (
-    <Stack
-      direction={"column"}
-      height={"fit-content"}
-      minWidth={50}
-      marginTop={0.5}
-      marginBottom={0.5}
-      marginRight={1}
-      border={1}
-      borderRadius={.5}
-      borderColor={gameIsToday ? "black" : gameTileColor[200]}
-      bgcolor={gameTileColor[50]}
-      fontSize={"smaller"}
-    >
-      <Box
-        textAlign={"center"}
-        border={gameIsToday ?  1 : 0}
-        color={"Background"}
-        paddingLeft={0.2}
-        paddingRight={0.2}
-        bgcolor={gameTileColor[300]}
-      >
+    <Grid2 display={"flex"}
+           flexDirection={"column"}
+           maxWidth={50}
+           minWidth={50}
+           marginTop={0.75}
+           marginBottom={0.75}
+           marginRight={1}
+           border={1}
+           borderRadius={.5}
+           borderColor={gameIsToday ? "black" : gameTileColor[200]}
+           bgcolor={gameTileColor[50]}>
+      <Typography flexGrow={1}
+                  fontSize={"smaller"}
+                  textAlign={"center"}
+                  border={gameIsToday ?  1 : 0}
+                  color={"Background"}
+                  paddingLeft={0.2}
+                  paddingRight={0.2}
+                  bgcolor={gameTileColor[300]}>
         {getDay()}
-      </Box>
+      </Typography>
       {renderScore(away?.abbreviation, game.teams?.away?.score, game.teams?.away?.isWinner ? winnerColor : loserColor)}
       {renderScore(home?.abbreviation, game.teams?.home?.score, game.teams?.home?.isWinner ? winnerColor : loserColor)}
-    </Stack>
+    </Grid2>
   )
 }

@@ -1,4 +1,4 @@
-import {Box, Stack} from "@mui/material"
+import {Grid2} from "@mui/material"
 import {
   GetSeriesGameResult,
   GetSeriesResult,
@@ -32,30 +32,61 @@ const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
   const {background, border} = interested ? GetSeriesColors(series.type, seriesResult) : DefaultSeriesResultColor
 
   return (
-    <Stack
-      direction={"row"}
-      height={1}
-      sx={{
-        border: 1,
-        borderRadius: 1,
-        borderColor: border,
-        backgroundColor: background,
-        fontSize: "small",
-      }}
+    <Grid2 display={"flex"}
+           flexDirection={"row"}
+           flexGrow={1}
+           border={1}
+           borderRadius={1}
+           borderColor={border}
+           bgcolor={background}
+           maxWidth={400}
+           fontSize={"small"}
     >
       {interested ? (
-        <Stack
-          position="absolute"
-          direction={{xs: "column", sm: "row"}}
-          display={"flex"}
-          mt={-0.8}
-          ml={-1.5}
-          padding="10"
+        <Grid2 container
+               flexDirection={"row"}
+               position={"absolute"}
+               marginTop={-0.8}
+               marginLeft={-1.5}
+               padding="10"
         >
           <ResultBadge result={seriesResult} type={series.type} />
           <SeriesBadge type={series.type} />
-        </Stack>
+        </Grid2>
       ) : ''}
+      <SeriesTeams
+        series={series}
+        interested={interested}
+      />
+      <Grid2 display={"flex"}
+             flexDirection={"row"}
+             flexGrow={1}
+             justifyContent={"flex-end"}
+             alignContent={"space-evenly"}
+             flexWrap={"wrap"}
+      >
+        {series.games.map((g) => (
+          <SeriesGame
+            key={g.gamePk}
+            result={GetSeriesGameResult(g, interested)}
+            game={g}
+            home={FindTeam(state.teams, g.teams?.home?.team?.id)!}
+            away={FindTeam(state.teams, g.teams?.away?.team?.id)!}
+            interested={interested}
+            selectedDate={selectedDate}
+          />
+        ))}
+      </Grid2>
+    </Grid2>
+  )
+  /*
+  return (
+    <Stack direction={"row"}
+           border={1}
+           borderRadius={1}
+           borderColor={border}
+           bgcolor={background}
+           fontSize={"small"}>
       <Box alignContent={"center"} minWidth={{ xs: "40%", md: "35%" }}>
         <SeriesTeams
           series={series}
@@ -68,7 +99,6 @@ const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
         width={"fill-available"}
         justifyContent={"end"}
         alignContent={"center"}
-        flexWrap={"wrap"}
       >
         {series.games.map((g) => (
           <SeriesGame
@@ -84,5 +114,6 @@ const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
       </Stack>
     </Stack>
   )
+   */
 }
 export default SeriesItem

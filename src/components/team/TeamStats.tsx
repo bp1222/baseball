@@ -1,5 +1,5 @@
 import {CircularProgress, Paper, Stack, TableContainer, Typography} from "@mui/material"
-import {lazy, Suspense, useContext, useEffect, useState} from "react"
+import {Suspense, useContext, useEffect, useState} from "react"
 import { AppStateContext } from "../../state/Context.tsx"
 import { MlbApi, TeamRecord, DivisionStandings } from "@bp1222/stats-api"
 import { useParams } from "react-router-dom"
@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom"
 import Standings from "../Standings.tsx"
 import {FindTeam} from "../../utils/findTeam.ts";
 
-const TeamRanking = lazy(() => import("./TeamRanking.tsx"))
+import TeamRanking from "./TeamRanking.tsx"
 
 const TeamStats = () => {
   const api = new MlbApi()
@@ -80,7 +80,8 @@ const TeamStats = () => {
           >
             Games Behind
           </Typography>
-          <Suspense fallback={<Stack justifyContent={"center"}><CircularProgress /></Stack>}>
+
+          <Suspense fallback={<CircularProgress />}>
             <TeamRanking />
           </Suspense>
         </TableContainer>

@@ -1,5 +1,5 @@
 import {AppStateContext} from "../state/Context.tsx"
-import {lazy, useContext, useEffect, useState} from "react"
+import {lazy, Suspense, useContext, useEffect, useState} from "react"
 import {useParams} from "react-router-dom"
 import {Box} from "@mui/material"
 import {LocalizationProvider} from "@mui/x-date-pickers"
@@ -49,7 +49,10 @@ export const Component = () => {
         </LocalizationProvider>
         <ChevronRightIcon fontSize={"large"} onClick={() => setSelectedDate(selectedDate.add(1, "day"))} />
       </Box>
-      <CurrentSeries selectedDate={selectedDate} />
+
+      <Suspense fallback={<div>Loading...</div>}>
+        <CurrentSeries selectedDate={selectedDate} />
+      </Suspense>
     </>
   )
 }

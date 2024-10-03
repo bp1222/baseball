@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material"
+import { Typography } from "@mui/material"
 import { blueGrey } from "@mui/material/colors"
 import { SeriesType } from "../../models/Series.ts"
 
@@ -25,29 +25,24 @@ export const SeriesBadge = ({ type }: SeriesBadgeProps) => {
 
   if (badge.length > 0) {
     return (
-      <Box
-        minWidth={90}
-        maxWidth={90}
-        sx={{
-          backgroundColor: blueGrey[300],
-          border: 2,
-          borderRadius: 2,
-          borderColor: blueGrey[500],
-          height: 11,
-          marginLeft: {xs: 0, sm: 1},
-        }}
-      >
         <Typography
+          minWidth={87}
+          maxWidth={87}
+          height={11}
           color={"Background"}
+          bgcolor={blueGrey[300]}
           fontSize={"smaller"}
           lineHeight={1}
           letterSpacing={-0.5}
           textAlign={"center"}
+          border={2}
+          borderRadius={2}
+          borderColor={blueGrey[500]}
+          marginLeft={3}
           noWrap
         >
           {badge.toUpperCase()}
         </Typography>
-      </Box>
     )
   }
 }

@@ -56,7 +56,7 @@ export const Component = () => {
     <ThemeProvider theme={GetTheme(parseInt(teamId ?? '0'))}>
       <CssBaseline />
       <Header/>
-      <Container maxWidth={"md"}>
+      <Container maxWidth={"lg"}>
         <Outlet />
       </Container>
       <Footer/>

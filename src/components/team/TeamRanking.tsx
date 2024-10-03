@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useMemo, useState} from "react";
 import { AppStateContext } from "../../state/Context.tsx";
 import { useParams } from "react-router-dom";
-import { GameType, GameStatusCode, Team } from "@bp1222/stats-api";
+import {GameType, GameStatusCode, Team} from "@bp1222/stats-api";
 import { LineChart, LineSeriesType } from "@mui/x-charts"
 import { Box } from "@mui/system";
 import { CircularProgress } from "@mui/material";
@@ -20,22 +20,22 @@ type DailyTally = {
 
 const TeamRanking = () => {
   const { state } = useContext(AppStateContext);
-  const { seasonId, teamId } = useParams();
-  const [standings, setStandings] = useState<DailyTally[]>()
+  const { teamId } = useParams();
 
-  const season = state.seasons?.find((s) => s.seasonId == seasonId)
   const team = FindTeam(state.teams, parseInt(teamId ?? ""))
 
-  useEffect(() => {
-    const runningTallies: TeamDailyTally[] = []
-    const dailyTallies: DailyTally[] = []
+  const standings = useMemo(() => {
+    if (state.teams == undefined || state.seasonSeries == undefined || team == undefined) return
 
+    const runningTallies: TeamDailyTally[] = []
+
+    const dailyTallies: DailyTally[] = []
     const seenGames: number[] = []
 
     const getEmptyDivisionTally = (): TeamDailyTally[] => {
       const retval: TeamDailyTally[] = []
-      state.teams?.forEach((t) => {
-        if (t.division?.id == team?.division?.id) {
+      state.teams!.forEach((t) => {
+        if (t.division?.id == team.division?.id) {
           retval.push({teamId: t.id, gameDifference: 0})
         }
       })
@@ -75,7 +75,9 @@ const TeamRanking = () => {
       teamDailyTally.gameDifference = teamRunningTally.gameDifference
     }
 
-    state.seasonSeries?.flatMap((s) => s.games)
+    state.seasonSeries
+      .flatMap((s) => s.games)
+
       .sort((a, b) => a.officialDate.localeCompare(b.officialDate))
 
       .filter((game) => game.gameType == GameType.Regular && game.status.codedGameState == GameStatusCode.Final)
@@ -91,8 +93,10 @@ const TeamRanking = () => {
       .filter((game) => {
         const awayTeam = FindTeam(state.teams, game.teams.away.team.id)
         const homeTeam = FindTeam(state.teams, game.teams.home.team.id)
+
         if (awayTeam == undefined || homeTeam == undefined) return false
-        return awayTeam.division?.id == team?.division?.id || homeTeam.division?.id == team?.division?.id
+
+        return awayTeam.division?.id == team.division?.id || homeTeam.division?.id == team.division?.id
       })
 
       // Filter out games that are not regular season games
@@ -104,12 +108,12 @@ const TeamRanking = () => {
         const day = dayjs(game.officialDate)
 
         // Tally if the away team was in this division
-        if (awayTeam!.division?.id == team?.division?.id) {
+        if (awayTeam!.division?.id == team.division?.id) {
           tallyGame(day, awayTeam!, game.teams.away.isWinner)
         }
 
         // Tally if the home team was in this division
-        if (homeTeam!.division?.id == team?.division?.id) {
+        if (homeTeam!.division?.id == team.division?.id) {
           tallyGame(day, homeTeam!, game.teams.home.isWinner)
         }
       })
@@ -123,12 +127,14 @@ const TeamRanking = () => {
       })
     })
 
-    setStandings(dailyTallies)
-  }, [state.seasonSeries, state.teams, season, team])
+    return dailyTallies
+  }, [state.teams, state.seasonSeries, team])
 
   if ((standings?.length ?? 0) <= 0) {
     return (
-      <Box display={"flex"} justifyContent={"center"} marginBottom={1}>
+      <Box display={"flex"}
+           justifyContent={"center"}
+           marginBottom={1}>
         <CircularProgress/>
       </Box>
     );
@@ -152,36 +158,33 @@ const TeamRanking = () => {
   }
 
   return (
-    <LineChart
-      height={500}
-      margin={{ top: 25, right: 25 }}
-      series={getSeries()}
-      grid={{ horizontal: true }}
-      yAxis={[
-        {
-          label: 'Games Back',
-          reverse: true,
-        }
-      ]}
-      slotProps={{
-        legend: {
-          hidden: true,
-        }
-      }}
-      xAxis={[
-        {
-          label: 'Day',
-          scaleType: 'band',
-          data: standings?.map((t) => t.date.toISOString()),
-          tickInterval: (date, index) => dayjs(date).get("date") == 1 || index == 0,
-          tickLabelInterval: (date, index) => dayjs(date).get("date") == 1 || index == 0,
-          valueFormatter: (date, context) =>
-            context.location === 'tick'
-              ? dayjs(date).format("MMM")
-              : dayjs(date).format("MMMM DD")
-        }
-      ]}
-    />
+    <LineChart height={500}
+               margin={{ top: 25, right: 25 }}
+               series={getSeries()}
+               grid={{ horizontal: true, vertical: true}}
+               slotProps={{
+                 legend: {
+                   hidden: true,
+                 }
+               }}
+               yAxis={[
+                  {
+                    label: 'Games Back',
+                    scaleType: 'linear',
+                    reverse: true,
+                  }
+               ]}
+               xAxis={[{
+                 label: 'Day',
+                 scaleType: 'band',
+                 data: standings?.map((t) => t.date.toISOString()),
+                 tickInterval: (date, index) => dayjs(date).get("date") == 1 || index == 0,
+                 tickLabelInterval: (date, index) => dayjs(date).get("date") == 1 || index == 0,
+                 valueFormatter: (date, context) =>
+                   context.location === 'tick'
+                     ? dayjs(date).format("MMM")
+                     : dayjs(date).format("MMMM DD")
+               }]}/>
   );
 };
 

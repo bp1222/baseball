@@ -1,5 +1,5 @@
 import { SeriesResult, SeriesType } from "../../models/Series.ts"
-import { Box, Typography } from "@mui/material"
+import { Typography } from "@mui/material"
 import {GetBadgeColors} from "./colors.ts";
 
 type ResultBadgeProps = {
@@ -31,27 +31,22 @@ export const ResultBadge = ({ result, type }: ResultBadgeProps) => {
 
   if (badge.length > 0) {
     return (
-      <Box
+      <Typography
         minWidth={45}
         maxWidth={45}
-        sx={{
-          backgroundColor: background,
-          height: 11,
-          border: 2,
-          borderRadius: 2,
-          borderColor: border,
-        }}
+        height={11}
+        bgcolor={background}
+        color={"Background"}
+        fontSize={"smaller"}
+        lineHeight={1}
+        letterSpacing={-0.5}
+        textAlign={"center"}
+        border={2}
+        borderRadius={2}
+        borderColor={border}
       >
-        <Typography
-          color={"Background"}
-          fontSize={"smaller"}
-          lineHeight={1}
-          letterSpacing={-0.5}
-          textAlign={"center"}
-        >
-          {badge.toUpperCase()}
-        </Typography>
-      </Box>
+        {badge.toUpperCase()}
+      </Typography>
     )
   }
 }
