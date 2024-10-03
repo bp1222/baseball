@@ -28,19 +28,16 @@ export const SeriesBadge = ({ type }: SeriesBadgeProps) => {
         <Typography
           minWidth={87}
           maxWidth={87}
+          lineHeight={1}
           height={11}
           color={"Background"}
           bgcolor={blueGrey[300]}
           fontSize={"smaller"}
-          lineHeight={1}
-          letterSpacing={-0.5}
           textAlign={"center"}
           border={2}
           borderRadius={2}
           borderColor={blueGrey[500]}
-          marginLeft={3}
-          noWrap
-        >
+          marginTop={1}>
           {badge.toUpperCase()}
         </Typography>
     )

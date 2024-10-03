@@ -13,19 +13,17 @@ type SeriesListProps = {
 const SeriesList = ({series, selectedDate, interested}: SeriesListProps) => {
   return (
     <Grid2 container
-           flexGrow={1}
+           justifyContent={"center"}
            columns={2}>
-        {series?.map((s) => (
-          <Grid2 padding={1}
-                 size={1}
-                 display={"flex"}
-                 flexGrow={1}
-                 justifyContent={"center"}
-                 key={s.pk}>
-            <SeriesItem series={s} selectedDate={selectedDate} interested={interested}/>
-          </Grid2>
-        ))}
-      </Grid2>
+      {series?.map((s) => (
+        <Grid2 size={1}
+               display={"flex"}
+               justifyContent={"center"}
+               padding={1}>
+          <SeriesItem key={s.pk} series={s} selectedDate={selectedDate} interested={interested}/>
+        </Grid2>
+      ))}
+    </Grid2>
   )
 }
 

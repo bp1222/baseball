@@ -24,14 +24,21 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
       .format("MMM DD")
       .toUpperCase()
   }
+  /*
+  <Grid2 container
+         flexGrow={1}
+         justifyContent={"flex-end"}
+         alignContent={"space-evenly"}
+         flexWrap={"wrap"}>
+  </Grid2>
+   */
 
   const renderScore = (name: string | undefined, score: number | undefined, scoreColor: Color) => {
     return (
-      <Grid2 container
+      <Grid2
              display={"flex"}
-             flexDirection={"row"}
              flexGrow={1}
-             flexWrap={"nowrap"}>
+             flexWrap={"wrap"}>
         <Grid2 fontSize={"x-small"}
                textAlign={"center"}
                borderRight={1}
@@ -82,7 +89,8 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
   const gameIsToday = dayjs(game.officialDate ?? "").isSame(interested ? dayjs() : selectedDate, "day")
 
   return (
-    <Grid2 display={"flex"}
+    <Grid2 container
+           display={"flex"}
            flexDirection={"column"}
            maxWidth={50}
            minWidth={50}

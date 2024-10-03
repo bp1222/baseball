@@ -4,6 +4,8 @@ import {GetSeriesHomeAway, Series, SeriesHomeAway, SeriesType} from "../../model
 import {FindTeam} from "../../utils/findTeam.ts";
 import {AppStateContext} from "../../state/Context.tsx";
 import {useContext} from "react";
+import ShortTeam from "./ShortTeam.tsx";
+import {GetTeamImage} from "../../utils/getTeamImage.tsx";
 
 type SeriesTeamProps = {
   series: Series
@@ -14,23 +16,9 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
   const {state} = useContext(AppStateContext)
   const homeaway = GetSeriesHomeAway(series, interested)
 
-  const getClubName = (name: string | undefined): string | undefined => {
-    if (name == "Diamondbacks") {
-      return "D-Backs"
-    }
-    return name
-  }
-
-  const getImage = (id: number | undefined) => <img
-    src = {"https://www.mlbstatic.com/team-logos/team-cap-on-light/" +id + ".svg"}
-    height = {24}
-    width = {24}
-  />
-
   if (!interested) {
     let home = FindTeam(state.teams, series.games[0].teams.home.team.id)
     let away = FindTeam(state.teams, series.games[0].teams.away.team.id)
-
     if (home == undefined) {
       home = series.games[0].teams.home.team
     }
@@ -40,30 +28,9 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
 
     return (
       <Grid2 container
-             display={"flex"}
-             flexDirection={"row"}
-             minWidth={120}
-             maxWidth={120}
-             paddingLeft={1}
-             paddingRight={3}
-             paddingTop={.5}
-             paddingBottom={.5}
-             justifyContent={"center"}
-             justifyItems={"center"}
-             alignItems={"center"}
-             alignContent={"center"}>
+             alignItems={"center"}>
         <Grid2 paddingRight={1}>
-          <Grid2 container
-                 justifyContent={"center"}
-                 alignItems={"center"}
-                 flexDirection={"column"}>
-            {getImage(series.games[0].teams.away.team.id)}
-            <Typography
-              width={"min-content"}
-              fontSize={"smaller"}>
-              {getClubName(away?.abbreviation)?.toUpperCase()}
-            </Typography>
-          </Grid2>
+          <ShortTeam team={away}/>
         </Grid2>
         <Grid2>
           <Typography fontSize={"larger"}
@@ -72,17 +39,7 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
           </Typography>
         </Grid2>
         <Grid2 paddingLeft={1}>
-          <Grid2 container
-                 justifyContent={"center"}
-                 alignItems={"center"}
-                 flexDirection={"column"}>
-            {getImage(series.games[0].teams.home.team.id)}
-            <Typography
-              textAlign={"center"}
-              fontSize={"smaller"}>
-              {getClubName(home?.abbreviation)?.toUpperCase()}
-            </Typography>
-          </Grid2>
+          <ShortTeam team={home}/>
         </Grid2>
       </Grid2>
     )
@@ -105,28 +62,13 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
       <Grid2 container
              display={"flex"}
              flexDirection={"column"}
-
-             minWidth={120}
-             maxWidth={120}
-
-             paddingLeft={1}
-             paddingRight={3}
-             paddingTop={.5}
-             paddingBottom={.5}
-
-             textAlign={"center"}
-
-             justifyContent={"center"}
-             justifyItems={"center"}
-             alignItems={"center"}
-             alignContent={"center"}>
+             alignItems={"center"}>
         <Grid2 marginBottom={-.5}>
-          {getImage(against?.id)}
+          {GetTeamImage(against?.id)}
         </Grid2>
         <Grid2>
           <Typography display={"inline"}
-                      fontSize={"xx-small"}
-                      overflow={"visible"}>
+                      fontSize={"xx-small"}>
             {homeaway == SeriesHomeAway.Home
               ? "vs "
               : homeaway == SeriesHomeAway.Away
@@ -142,10 +84,9 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
         </Grid2>
         <Grid2>
           <Typography
-            overflow={"visible"}
             fontSize={"smaller"}
             fontStyle={"bold"}>
-            {getClubName(against?.clubName ?? against.name)?.toUpperCase()}
+            {(against?.clubName ?? against.name)?.toUpperCase()}
           </Typography>
         </Grid2>
       </Grid2>
