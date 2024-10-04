@@ -19,7 +19,7 @@ export const Component = () => {
 
   useEffect(() => {
     if (dayJs().isBetween(dayJs(season?.regularSeasonStartDate), dayJs(season?.postSeasonEndDate))) {
-      setSelectedDate(dayJs("2024-10-10"))
+      setSelectedDate(dayJs())
     } else {
       if (dayJs().isBefore(dayJs(season?.regularSeasonStartDate))) {
         setSelectedDate(dayJs(season?.regularSeasonStartDate))

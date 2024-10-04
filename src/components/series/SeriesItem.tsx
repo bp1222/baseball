@@ -54,11 +54,11 @@ const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
         </Grid2>
       ) : ''}
 
-      <Grid2 size={1} alignContent={"center"}>
+      <Grid2 alignContent={"center"}
+        minWidth={120}
+        maxWidth={120}>
         <Grid2 container
                id={"series-item-teams"+series.pk}
-               minWidth={120}
-               maxWidth={120}
                paddingTop={1}
                paddingBottom={1}
                justifyContent={"center"}
@@ -73,7 +73,7 @@ const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
         </Grid2>
       </Grid2>
 
-      <Grid2 size={2} justifyContent={"flex-end"} alignContent={"center"}>
+      <Grid2 justifyContent={"flex-end"} alignContent={"center"}>
         <Grid2 container
                id={"series-game-pre-"+series.pk}
                justifyContent={"flex-end"}
