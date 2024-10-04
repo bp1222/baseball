@@ -73,7 +73,9 @@ const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
         </Grid2>
       </Grid2>
 
-      <Grid2 justifyContent={"flex-end"} alignContent={"center"}>
+      <Grid2 flexGrow={1}
+             justifyContent={"flex-end"}
+             alignContent={"center"}>
         <Grid2 container
                id={"series-game-pre-"+series.pk}
                justifyContent={"flex-end"}
