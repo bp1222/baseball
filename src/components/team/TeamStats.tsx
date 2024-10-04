@@ -4,7 +4,7 @@ import {useContext, useEffect, useState} from "react"
 import { useParams } from "react-router-dom"
 
 import { AppStateContext } from "../../state/Context.tsx"
-import {FindTeam} from "../../utils/findTeam.ts"
+import {FindTeam} from "../../utils/FindTeam.ts"
 import Standings from "../Standings.tsx"
 import TeamRanking from "./TeamRanking.tsx"
 import TeamSeriesRecord from "./TeamSeriesRecord.tsx"

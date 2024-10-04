@@ -1,7 +1,7 @@
 import {Team} from "@bp1222/stats-api"
 import {Grid2, Typography} from "@mui/material"
 
-import {GetTeamImage} from "../../utils/getTeamImage.tsx"
+import {GetTeamImage} from "../../utils/GetTeamImage.tsx"
 
 type ShortTeamProps = {
   team: Team

@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom"
 
 import { AppStateContext } from "../../state/Context.tsx"
 import dayjs from "../../utils/dayjs.ts"
-import { FindTeam } from "../../utils/findTeam.ts"
+import { FindTeam } from "../../utils/FindTeam.ts"
 
 type TeamDailyTally = {
   teamId: number,
