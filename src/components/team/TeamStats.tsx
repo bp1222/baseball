@@ -1,17 +1,17 @@
-import {CircularProgress, Paper, Stack, TableContainer, Typography} from "@mui/material"
-import {Suspense, useContext, useEffect, useState} from "react"
-import { AppStateContext } from "../../state/Context.tsx"
-import { MlbApi, TeamRecord, DivisionStandings } from "@bp1222/stats-api"
+import { DivisionStandings,MlbApi, TeamRecord } from "@bp1222/stats-api"
+import {Box} from "@mui/material"
+import {useContext, useEffect, useState} from "react"
 import { useParams } from "react-router-dom"
 
+import { AppStateContext } from "../../state/Context.tsx"
+import {FindTeam} from "../../utils/findTeam.ts"
 import Standings from "../Standings.tsx"
-import {FindTeam} from "../../utils/findTeam.ts";
-
 import TeamRanking from "./TeamRanking.tsx"
+import TeamSeriesRecord from "./TeamSeriesRecord.tsx"
+
+const api = new MlbApi()
 
 const TeamStats = () => {
-  const api = new MlbApi()
-
   const { state } = useContext(AppStateContext)
   const [standings, setStandings] = useState<DivisionStandings[]>([])
   const { seasonId, teamId } = useParams()
@@ -37,7 +37,9 @@ const TeamStats = () => {
   const divisionStandings = standings
     .filter((s) => s.division?.id == team?.division?.id)
     .flatMap((s) => s.teamRecords)
-    .sort((a, b) => parseFloat(a.divisionRank) > parseFloat(b.divisionRank!) ? 1 : -1)
+    .sort((a, b) => a.divisionRank
+    ? (parseFloat(a.divisionRank) > parseFloat(b.divisionRank!) ? 1 : -1)
+    : (parseFloat(a.leagueRank) > parseFloat(b.leagueRank!) ? 1 : -1))
 
   // Data for League Standings if they're in the same league
   const leagueStandings: TeamRecord[] = standings
@@ -58,34 +60,12 @@ const TeamStats = () => {
     })
 
   return (
-      <Stack width={1} height={1} direction={"column"}>
-        <Stack direction={{ xs: "column", sm: "row" }}>
-          <Standings standings={divisionStandings} league={false} />
-          <Standings standings={leagueStandings} league={true} />
-        </Stack>
-
-        <TableContainer
-            component={Paper}
-            elevation={2}
-            sx={{
-              marginTop: 3,
-            }}
-        >
-          <Typography
-              marginTop={1}
-              fontWeight={"bold"}
-              textAlign={"center"}
-              fontSize={"larger"}
-              color={"primary.main"}
-          >
-            Games Behind
-          </Typography>
-
-          <Suspense fallback={<CircularProgress />}>
-            <TeamRanking />
-          </Suspense>
-        </TableContainer>
-      </Stack>
+    <Box marginTop={1}>
+      <TeamSeriesRecord team={team!} />
+      {team?.division != undefined ? <Standings standings={divisionStandings} league={false} divisionName={team.division.name ?? "Division"} /> : <></>}
+      <Standings standings={leagueStandings} league={true} leagueName={team?.league?.name ?? "League"}/>
+      <TeamRanking />
+    </Box>
   )
 }
 

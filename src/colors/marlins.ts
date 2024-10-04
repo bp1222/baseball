@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const marlins = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const marlins = createTheme({
       main: "#EF3340",
     },
   },
-});
+})
 
-export default marlins;
+export default marlins

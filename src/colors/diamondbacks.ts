@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const diamondbacks = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const diamondbacks = createTheme({
       main: "#E3D4AD",
     },
   },
-});
+})
 
-export default diamondbacks;
+export default diamondbacks

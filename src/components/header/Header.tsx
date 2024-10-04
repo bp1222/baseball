@@ -1,7 +1,8 @@
-import { AppBar, Grid2, Toolbar } from "@mui/material";
-import TeamPicker from "./TeamPicker.tsx";
-import SeasonPicker from "./SeasonPicker.tsx";
-import HeaderName from "./HeaderName.tsx";
+import { AppBar, Grid2, Toolbar } from "@mui/material"
+
+import HeaderName from "./HeaderName.tsx"
+import SeasonPicker from "./SeasonPicker.tsx"
+import TeamPicker from "./TeamPicker.tsx"
 
 const Header = () => {
   return (
@@ -33,7 +34,7 @@ const Header = () => {
         </Grid2>
       </Toolbar>
     </AppBar>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

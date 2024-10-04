@@ -1,27 +1,28 @@
-import {useContext, useState} from "react";
-import { Team } from "@bp1222/stats-api";
-import {MenuItem, Button, Menu, Typography, Box} from "@mui/material";
-import { AppStateContext } from "../../state/Context.tsx";
-import { useNavigate, useParams } from "react-router-dom";
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import { Team } from "@bp1222/stats-api"
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
+import {Box, Menu, MenuItem, Typography} from "@mui/material"
+import {useContext, useState} from "react"
+import { useNavigate, useParams } from "react-router-dom"
+
+import { AppStateContext } from "../../state/Context.tsx"
 
 const TeamPicker = () => {
-  const { state } = useContext(AppStateContext);
-  const { seasonId, teamId} = useParams();
-  const navigate = useNavigate();
+  const { state } = useContext(AppStateContext)
+  const { seasonId, teamId} = useParams()
+  const navigate = useNavigate()
 
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   const handleTeamSelect = (team: Team|null) => {
-    setAnchorEl(null);
+    setAnchorEl(null)
     if (team == null) {
-      navigate(seasonId + "/");
+      navigate(seasonId + "/")
     } else {
-      navigate(seasonId + "/" + team.id);
+      navigate(seasonId + "/" + team.id)
     }
-  };
+  }
 
-  const team = state.teams?.find((t) => t.id == parseInt(teamId ?? ""));
+  const team = state.teams?.find((t) => t.id == parseInt(teamId ?? ""))
 
   return (
     <Box display={"flex"}
@@ -49,7 +50,7 @@ const TeamPicker = () => {
         ))}
       </Menu>
     </Box>
-  );
-};
+  )
+}
 
-export default TeamPicker;
+export default TeamPicker

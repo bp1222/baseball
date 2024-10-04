@@ -1,9 +1,9 @@
-import dayjs from "dayjs"
-import utc from "dayjs/plugin/utc"
-import timezone from "dayjs/plugin/timezone"
-import isBetween from "dayjs/plugin/isBetween"
-
 import "dayjs/locale/en"
+
+import dayjs from "dayjs"
+import isBetween from "dayjs/plugin/isBetween"
+import timezone from "dayjs/plugin/timezone"
+import utc from "dayjs/plugin/utc"
 
 dayjs.extend(utc)
 dayjs.extend(timezone)

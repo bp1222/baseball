@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const guardians = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const guardians = createTheme({
       main: "#0C2340",
     },
   },
-});
+})
 
-export default guardians;
+export default guardians

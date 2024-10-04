@@ -1,11 +1,12 @@
-import {Grid2, Typography} from "@mui/material"
 import { Team } from "@bp1222/stats-api"
+import {Grid2, Typography} from "@mui/material"
+import {useContext} from "react"
+
 import {GetSeriesHomeAway, Series, SeriesHomeAway, SeriesType} from "../../models/Series.ts"
-import {FindTeam} from "../../utils/findTeam.ts";
-import {AppStateContext} from "../../state/Context.tsx";
-import {useContext} from "react";
-import ShortTeam from "./ShortTeam.tsx";
-import {GetTeamImage} from "../../utils/getTeamImage.tsx";
+import {AppStateContext} from "../../state/Context.tsx"
+import {FindTeam} from "../../utils/findTeam.ts"
+import {GetTeamImage} from "../../utils/getTeamImage.tsx"
+import ShortTeam from "./ShortTeam.tsx"
 
 type SeriesTeamProps = {
   series: Series

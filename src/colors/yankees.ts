@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const yankees = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const yankees = createTheme({
       main: "#FFFFFF",
     },
   },
-});
+})
 
-export default yankees;
+export default yankees

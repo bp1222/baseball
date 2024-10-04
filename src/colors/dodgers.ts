@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const dodgers = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const dodgers = createTheme({
       main: "#FFFFFF",
     },
   },
-});
+})
 
-export default dodgers;
+export default dodgers

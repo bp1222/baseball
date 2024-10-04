@@ -1,19 +1,18 @@
-import {Box, CircularProgress, Grid} from "@mui/material"
-import {AppStateContext} from "../state/Context.tsx"
+import {Box, CircularProgress} from "@mui/material"
 import {useContext, useEffect, useState} from "react"
-import {Series, SeriesType} from "../models/Series.ts"
-import SeriesItem from "./series";
 
-import dayJs from "../utils/dayjs.ts";
-import SeriesList from "./series/SeriesList.tsx";
+import {Series, SeriesType} from "../models/Series.ts"
+import {AppStateContext} from "../state/Context.tsx"
+import dayJs from "../utils/dayjs.ts"
+import SeriesList from "./series/SeriesList.tsx"
 
 type CurrentSeriesProps = {
   selectedDate: dayJs.Dayjs
 }
 
 const CurrentSeries = ({selectedDate} : CurrentSeriesProps) => {
-  const {state} = useContext(AppStateContext);
-  const [currentSeries, setCurrentSeries] = useState<Series[] | null>(null);
+  const {state} = useContext(AppStateContext)
+  const [currentSeries, setCurrentSeries] = useState<Series[] | null>(null)
 
   useEffect(() => {
     if (state.seasonSeries?.length??0 > 0) {
@@ -41,7 +40,7 @@ const CurrentSeries = ({selectedDate} : CurrentSeriesProps) => {
       <Box display={"flex"} justifyContent={"center"} marginTop={2}>
         <CircularProgress/>
       </Box>
-    );
+    )
   }
 
   if (currentSeries.length == 0) {
@@ -49,12 +48,12 @@ const CurrentSeries = ({selectedDate} : CurrentSeriesProps) => {
       <Box display={"flex"} justifyContent={"center"}>
         No Games on This Date
       </Box>
-    );
+    )
   } else {
     return (
       <SeriesList series={currentSeries} selectedDate={selectedDate}/>
     )
   }
-};
+}
 
 export default CurrentSeries

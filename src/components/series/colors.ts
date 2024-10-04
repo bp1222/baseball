@@ -1,5 +1,4 @@
-import {GameResult, SeriesResult, SeriesType} from "../../models/Series.ts";
-import {Color, darken} from "@mui/material";
+import {Color} from "@mui/material"
 import {
   amber,
   blue,
@@ -9,11 +8,11 @@ import {
   lightBlue,
   lightGreen,
   orange,
-  pink,
   purple,
   red
-} from "@mui/material/colors";
-import {getPickersOutlinedInputUtilityClass} from "@mui/x-date-pickers";
+} from "@mui/material/colors"
+
+import {GameResult, SeriesResult, SeriesType} from "../../models/Series.ts"
 
 export const OppositeSeriesResult = (result: SeriesResult): SeriesResult => {
   switch (result) {

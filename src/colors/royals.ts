@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const royals = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const royals = createTheme({
       main: "#BD9B60",
     },
   },
-});
+})
 
-export default royals;
+export default royals

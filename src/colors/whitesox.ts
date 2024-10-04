@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const whitesox = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const whitesox = createTheme({
       main: "#C4CED4",
     },
   },
-});
+})
 
-export default whitesox;
+export default whitesox

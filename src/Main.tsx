@@ -1,7 +1,8 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { createHashRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
-import { AppStateProvider } from "./state/Context.tsx";
+import { StrictMode } from "react"
+import { createRoot } from "react-dom/client"
+import { createHashRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom"
+
+import { AppStateProvider } from "./state/Context.tsx"
 
 const applicationRoutes = createHashRouter(
   createRoutesFromElements(
@@ -20,4 +21,4 @@ createRoot(document.getElementById("root")!).render(
       <RouterProvider router={applicationRoutes} />
     </AppStateProvider>
   </StrictMode>,
-);
+)

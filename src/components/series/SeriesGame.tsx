@@ -1,9 +1,9 @@
-import {Box, Color, Grid2, Stack, Typography} from "@mui/material"
-import {GameResult} from "../../models/Series.ts"
 import {Game, GameStatusCode, Team} from "@bp1222/stats-api"
-import {DefaultGameResultColor, GameResultColor} from "./colors.ts";
+import { Color, Grid2, Typography} from "@mui/material"
 
+import {GameResult} from "../../models/Series.ts"
 import dayjs from "../../utils/dayjs.ts"
+import {DefaultGameResultColor, GameResultColor} from "./colors.ts"
 
 type SeriesGameProps = {
   result: GameResult

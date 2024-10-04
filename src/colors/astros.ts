@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const astros = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const astros = createTheme({
       main: "#EB6E1F",
     },
   },
-});
+})
 
-export default astros;
+export default astros

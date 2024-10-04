@@ -1,8 +1,9 @@
-import {Grid2} from "@mui/material";
-import SeriesItem from "./SeriesItem.tsx";
-import {Series} from "../../models/Series.ts";
-import dayjs from "../../utils/dayjs.ts";
-import {Team} from "@bp1222/stats-api";
+import {Team} from "@bp1222/stats-api"
+import {Grid2} from "@mui/material"
+
+import {Series} from "../../models/Series.ts"
+import dayjs from "../../utils/dayjs.ts"
+import SeriesItem from "./SeriesItem.tsx"
 
 type SeriesListProps = {
   series: Series[]
@@ -27,4 +28,4 @@ const SeriesList = ({series, selectedDate, interested}: SeriesListProps) => {
   )
 }
 
-export default SeriesList;
+export default SeriesList

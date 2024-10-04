@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material"
 import { blueGrey } from "@mui/material/colors"
+
 import { SeriesType } from "../../models/Series.ts"
 
 type SeriesBadgeProps = {

@@ -1,12 +1,13 @@
-import {Box, Menu, MenuItem, Typography} from "@mui/material";
-import { Season } from "@bp1222/stats-api";
-import {useContext, useEffect, useState} from "react";
-import { AppStateContext } from "../../state/Context.tsx";
-import {useParams, useNavigate} from "react-router-dom";
+import { Season } from "@bp1222/stats-api"
+import {Box, Menu, MenuItem, Typography} from "@mui/material"
+import {useContext, useEffect, useState} from "react"
+import {useNavigate,useParams} from "react-router-dom"
+
+import { AppStateContext } from "../../state/Context.tsx"
 
 const SeasonPicker = () => {
-  const { state } = useContext(AppStateContext);
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const { state } = useContext(AppStateContext)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [seasons, setSeasons] = useState<Season[]>([])
   const {seasonId} = useParams()
   const navigate = useNavigate()
@@ -16,9 +17,9 @@ const SeasonPicker = () => {
   }, [state.seasons])
 
   const handleSeasonSelect = (season: Season) => {
-    setAnchorEl(null);
+    setAnchorEl(null)
     navigate("/" + season.seasonId)
-  };
+  }
 
   return (
     <Box display={"flex"}
@@ -42,7 +43,7 @@ const SeasonPicker = () => {
         ))}
       </Menu>
     </Box>
-  );
-};
+  )
+}
 
-export default SeasonPicker;
+export default SeasonPicker

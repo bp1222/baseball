@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const athletics = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const athletics = createTheme({
       main: "#EFB21E",
     },
   },
-});
+})
 
-export default athletics;
+export default athletics

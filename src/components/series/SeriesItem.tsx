@@ -1,19 +1,20 @@
-import {Box, Grid2} from "@mui/material"
+import { Team } from "@bp1222/stats-api"
+import { Grid2} from "@mui/material"
+import { useContext } from "react"
+
 import {
   GetSeriesGameResult,
   GetSeriesResult,
   Series,
 } from "../../models/Series.ts"
-import { useContext } from "react"
 import { AppStateContext } from "../../state/Context.tsx"
-import { Team } from "@bp1222/stats-api"
+import dayjs from "../../utils/dayjs.ts"
+import {FindTeam} from "../../utils/findTeam.ts"
+import {DefaultSeriesResultColor, GetSeriesColors} from "./colors.ts"
 import {ResultBadge} from "./ResultBadge.tsx"
-import {SeriesTeams} from "./SeriesTeams.tsx"
+import {SeriesBadge} from "./SeriesBadge.tsx"
 import {SeriesGame} from "./SeriesGame.tsx"
-import {FindTeam} from "../../utils/findTeam.ts";
-import {DefaultSeriesResultColor, GetSeriesColors} from "./colors.ts";
-import dayjs from "../../utils/dayjs.ts";
-import {SeriesBadge} from "./SeriesBadge.tsx";
+import {SeriesTeams} from "./SeriesTeams.tsx"
 
 type SeriesItemProps = {
   series: Series
@@ -44,7 +45,7 @@ const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
       {interested ? (
         <Grid2 position={"absolute"}
                marginTop={-1}
-               marginLeft={-2}>
+               marginLeft={-1.5}>
           <ResultBadge result={seriesResult} type={series.type} />
         </Grid2>
       ) : ''}

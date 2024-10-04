@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const twins = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const twins = createTheme({
       main: "#D31145",
     },
   },
-});
+})
 
-export default twins;
+export default twins

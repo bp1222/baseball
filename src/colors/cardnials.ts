@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const cardnials = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const cardnials = createTheme({
       main: "#0C2340",
     },
   },
-});
+})
 
-export default cardnials;
+export default cardnials

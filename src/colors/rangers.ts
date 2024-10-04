@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const rangers = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const rangers = createTheme({
       main: "#C0111F",
     },
   },
-});
+})
 
-export default rangers;
+export default rangers

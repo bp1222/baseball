@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const rockies = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const rockies = createTheme({
       main: "#C4CED4",
     },
   },
-});
+})
 
-export default rockies;
+export default rockies

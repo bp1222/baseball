@@ -1,12 +1,12 @@
-import {useContext, useEffect, useMemo, useState} from "react";
-import { AppStateContext } from "../../state/Context.tsx";
-import { useParams } from "react-router-dom";
-import {GameType, GameStatusCode, Team} from "@bp1222/stats-api";
+import {GameStatusCode, GameType, Team} from "@bp1222/stats-api"
+import {Grid2, Paper, TableContainer, Typography} from "@mui/material"
 import { LineChart, LineSeriesType } from "@mui/x-charts"
-import { Box } from "@mui/system";
-import { CircularProgress } from "@mui/material";
-import { FindTeam } from "../../utils/findTeam.ts";
-import dayjs from "../../utils/dayjs.ts";
+import {useContext, useMemo} from "react"
+import { useParams } from "react-router-dom"
+
+import { AppStateContext } from "../../state/Context.tsx"
+import dayjs from "../../utils/dayjs.ts"
+import { FindTeam } from "../../utils/findTeam.ts"
 
 type TeamDailyTally = {
   teamId: number,
@@ -19,12 +19,11 @@ type DailyTally = {
 }
 
 const TeamRanking = () => {
-  const { state } = useContext(AppStateContext);
-  const { teamId } = useParams();
-
-  const team = FindTeam(state.teams, parseInt(teamId ?? ""))
+  const { state } = useContext(AppStateContext)
+  const { teamId } = useParams()
 
   const standings = useMemo(() => {
+    const team = FindTeam(state.teams, parseInt(teamId ?? ""))
     if (state.teams == undefined || state.seasonSeries == undefined || team == undefined) return
 
     const runningTallies: TeamDailyTally[] = []
@@ -128,16 +127,10 @@ const TeamRanking = () => {
     })
 
     return dailyTallies
-  }, [state.teams, state.seasonSeries, team])
+  }, [state.teams, state.seasonSeries, teamId])
 
   if ((standings?.length ?? 0) <= 0) {
-    return (
-      <Box display={"flex"}
-           justifyContent={"center"}
-           marginBottom={1}>
-        <CircularProgress/>
-      </Box>
-    );
+    return
   }
 
   const getSeries = (): LineSeriesType[] => {
@@ -158,34 +151,51 @@ const TeamRanking = () => {
   }
 
   return (
-    <LineChart height={500}
-               margin={{ top: 25, right: 25 }}
-               series={getSeries()}
-               grid={{ horizontal: true, vertical: true}}
-               slotProps={{
-                 legend: {
-                   hidden: true,
-                 }
-               }}
-               yAxis={[
-                  {
-                    label: 'Games Back',
-                    scaleType: 'linear',
-                    reverse: true,
-                  }
-               ]}
-               xAxis={[{
-                 label: 'Day',
-                 scaleType: 'band',
-                 data: standings?.map((t) => t.date.toISOString()),
-                 tickInterval: (date, index) => dayjs(date).get("date") == 1 || index == 0,
-                 tickLabelInterval: (date, index) => dayjs(date).get("date") == 1 || index == 0,
-                 valueFormatter: (date, context) =>
-                   context.location === 'tick'
-                     ? dayjs(date).format("MMM")
-                     : dayjs(date).format("MMMM DD")
-               }]}/>
-  );
-};
+    <Grid2 display={"flex"} flexDirection={"column"}>
+      <TableContainer
+        component={Paper}
+        elevation={2}
+      >
+        <Typography
+          marginTop={1}
+          fontWeight={"bold"}
+          textAlign={"center"}
+          fontSize={"larger"}
+          color={"primary.main"}
+        >
+          Games Behind
+        </Typography>
 
-export default TeamRanking;
+        <LineChart height={500}
+                   margin={{ top: 25, right: 25 }}
+                   series={getSeries()}
+                   grid={{ horizontal: true, vertical: true}}
+                   slotProps={{
+                     legend: {
+                       hidden: true,
+                     }
+                   }}
+                   yAxis={[
+                     {
+                       label: 'Games Back',
+                       scaleType: 'linear',
+                       reverse: true,
+                     }
+                   ]}
+                   xAxis={[{
+                     label: 'Day',
+                     scaleType: 'band',
+                     data: standings?.map((t) => t.date.toISOString()),
+                     tickInterval: (date ) => dayjs(date).get("date") == 1,
+                     tickLabelInterval: (date) => dayjs(date).get("date") == 1,
+                     valueFormatter: (date, context) =>
+                       context.location === 'tick'
+                         ? dayjs(date).format("MMM")
+                         : dayjs(date).format("MMMM DD")
+                   }]}/>
+      </TableContainer>
+    </Grid2>
+  )
+}
+
+export default TeamRanking

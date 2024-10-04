@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const reds = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const reds = createTheme({
       main: "#000000",
     },
   },
-});
+})
 
-export default reds;
+export default reds

@@ -1,2 +1,2 @@
-export {default} from "./SeriesItem"
 export * from "./colors"
+export {default} from "./SeriesItem"

@@ -1,6 +1,7 @@
-import { SeriesResult, SeriesType } from "../../models/Series.ts"
 import { Typography } from "@mui/material"
-import {GetBadgeColors} from "./colors.ts";
+
+import { SeriesResult, SeriesType } from "../../models/Series.ts"
+import {GetBadgeColors} from "./colors.ts"
 
 type ResultBadgeProps = {
   result: SeriesResult

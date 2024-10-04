@@ -1,6 +1,7 @@
-import {Grid2, Typography} from "@mui/material";
-import {GetTeamImage} from "../../utils/getTeamImage.tsx";
-import {Team} from "@bp1222/stats-api";
+import {Team} from "@bp1222/stats-api"
+import {Grid2, Typography} from "@mui/material"
+
+import {GetTeamImage} from "../../utils/getTeamImage.tsx"
 
 type ShortTeamProps = {
   team: Team
@@ -24,4 +25,4 @@ const ShortTeam = ({team} : ShortTeamProps) => {
   )
 }
 
-export default ShortTeam;
+export default ShortTeam

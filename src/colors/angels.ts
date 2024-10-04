@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const angels = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const angels = createTheme({
       main: "#003263",
     },
   },
-});
+})
 
-export default angels;
+export default angels

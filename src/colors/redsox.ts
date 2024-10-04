@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const redsox = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const redsox = createTheme({
       main: "#0D2B56",
     },
   },
-});
+})
 
-export default redsox;
+export default redsox

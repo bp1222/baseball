@@ -1,5 +1,5 @@
-import SportsBaseball from "@mui/icons-material/SportsBaseball";
-import {Box, Typography} from "@mui/material";
+import SportsBaseball from "@mui/icons-material/SportsBaseball"
+import {Box, Typography} from "@mui/material"
 
 const HeaderName = () => {
   return (

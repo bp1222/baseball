@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const bluejays = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const bluejays = createTheme({
       main: "#E8291C",
     },
   },
-});
+})
 
-export default bluejays;
+export default bluejays

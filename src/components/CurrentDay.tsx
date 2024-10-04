@@ -1,14 +1,14 @@
-import {AppStateContext} from "../state/Context.tsx"
-import {lazy, Suspense, useContext, useEffect, useState} from "react"
-import {useParams} from "react-router-dom"
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
+import ChevronRightIcon from "@mui/icons-material/ChevronRight"
 import {Box} from "@mui/material"
 import {LocalizationProvider} from "@mui/x-date-pickers"
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs"
 import {DatePicker} from "@mui/x-date-pickers/DatePicker"
+import {lazy, Suspense, useContext, useEffect, useState} from "react"
+import {useParams} from "react-router-dom"
 
+import {AppStateContext} from "../state/Context.tsx"
 import dayJs from "../utils/dayjs.ts"
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const CurrentSeries = lazy(() => import("./CurrentSeries.tsx"))
 

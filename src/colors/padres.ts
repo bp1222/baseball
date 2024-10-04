@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const padres = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const padres = createTheme({
       main: "#FEC325",
     },
   },
-});
+})
 
-export default padres;
+export default padres

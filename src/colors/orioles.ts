@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const orioles = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const orioles = createTheme({
       main: "#000000",
     },
   },
-});
+})
 
-export default orioles;
+export default orioles

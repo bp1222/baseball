@@ -1,5 +1,6 @@
-import { Dispatch } from "react"
 import {Season, Team} from "@bp1222/stats-api"
+import { Dispatch } from "react"
+
 import {Series} from "../models/Series.ts"
 
 export enum AppStateAction {

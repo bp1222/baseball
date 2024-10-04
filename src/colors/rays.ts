@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from "@mui/material"
 
 const rays = createTheme({
   palette: {
@@ -9,6 +9,6 @@ const rays = createTheme({
       main: "#8FBCE6",
     },
   },
-});
+})
 
-export default rays;
+export default rays

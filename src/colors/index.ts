@@ -1,129 +1,130 @@
-import { Theme, createTheme } from "@mui/material";
-import phillies from "./phillies";
-import athletics from "./athletics";
-import pirates from "./pirates";
-import padres from "./padres";
-import mariners from "./mariners";
-import giants from "./giants";
-import cardnials from "./cardnials";
-import rays from "./rays";
-import rangers from "./rangers";
-import bluejays from "./bluejays";
-import twins from "./twins";
-import braves from "./braves";
-import whitesox from "./whitesox";
-import marlins from "./marlins";
-import yankees from "./yankees";
-import brewers from "./brewers";
-import angels from "./angels";
-import diamondbacks from "./diamondbacks";
-import orioles from "./orioles";
-import redsox from "./redsox";
-import reds from "./reds";
-import cubs from "./cubs";
-import guardians from "./guardians";
-import rockies from "./rockies";
-import tigers from "./tigers";
-import astros from "./astros";
-import royals from "./royals";
-import dodgers from "./dodgers";
-import nationals from "./nationals";
-import mets from "./mets";
+import { createTheme,Theme } from "@mui/material"
+
+import angels from "./angels"
+import astros from "./astros"
+import athletics from "./athletics"
+import bluejays from "./bluejays"
+import braves from "./braves"
+import brewers from "./brewers"
+import cardnials from "./cardnials"
+import cubs from "./cubs"
+import diamondbacks from "./diamondbacks"
+import dodgers from "./dodgers"
+import giants from "./giants"
+import guardians from "./guardians"
+import mariners from "./mariners"
+import marlins from "./marlins"
+import mets from "./mets"
+import nationals from "./nationals"
+import orioles from "./orioles"
+import padres from "./padres"
+import phillies from "./phillies"
+import pirates from "./pirates"
+import rangers from "./rangers"
+import rays from "./rays"
+import reds from "./reds"
+import redsox from "./redsox"
+import rockies from "./rockies"
+import royals from "./royals"
+import tigers from "./tigers"
+import twins from "./twins"
+import whitesox from "./whitesox"
+import yankees from "./yankees"
 
 const GetTheme = (teamId: number | undefined): Theme => {
-  let t: Theme | undefined = undefined;
+  let t: Theme | undefined = undefined
 
   switch (teamId) {
     case 108:
-      t = angels;
-      break;
+      t = angels
+      break
     case 109:
-      t = diamondbacks;
-      break;
+      t = diamondbacks
+      break
     case 110:
-      t = orioles;
-      break;
+      t = orioles
+      break
     case 111:
-      t = redsox;
-      break;
+      t = redsox
+      break
     case 112:
-      t = cubs;
-      break;
+      t = cubs
+      break
     case 113:
-      t = reds;
-      break;
+      t = reds
+      break
     case 114:
-      t = guardians;
-      break;
+      t = guardians
+      break
     case 115:
-      t = rockies;
-      break;
+      t = rockies
+      break
     case 116:
-      t = tigers;
-      break;
+      t = tigers
+      break
     case 117:
-      t = astros;
-      break;
+      t = astros
+      break
     case 118:
-      t = royals;
-      break;
+      t = royals
+      break
     case 119:
-      t = dodgers;
-      break;
+      t = dodgers
+      break
     case 120:
-      t = nationals;
-      break;
+      t = nationals
+      break
     case 121:
-      t = mets;
-      break;
+      t = mets
+      break
     case 133:
-      t = athletics;
-      break;
+      t = athletics
+      break
     case 134:
-      t = pirates;
-      break;
+      t = pirates
+      break
     case 135:
-      t = padres;
-      break;
+      t = padres
+      break
     case 136:
-      t = mariners;
-      break;
+      t = mariners
+      break
     case 137:
-      t = giants;
-      break;
+      t = giants
+      break
     case 138:
-      t = cardnials;
-      break;
+      t = cardnials
+      break
     case 139:
-      t = rays;
-      break;
+      t = rays
+      break
     case 140:
-      t = rangers;
-      break;
+      t = rangers
+      break
     case 141:
-      t = bluejays;
-      break;
+      t = bluejays
+      break
     case 142:
-      t = twins;
-      break;
+      t = twins
+      break
     case 143:
-      t = phillies;
-      break;
+      t = phillies
+      break
     case 144:
-      t = braves;
-      break;
+      t = braves
+      break
     case 145:
-      t = whitesox;
-      break;
+      t = whitesox
+      break
     case 146:
-      t = marlins;
-      break;
+      t = marlins
+      break
     case 147:
-      t = yankees;
-      break;
+      t = yankees
+      break
     case 158:
-      t = brewers;
-      break;
+      t = brewers
+      break
   }
 
   return createTheme(
@@ -142,7 +143,7 @@ const GetTheme = (teamId: number | undefined): Theme => {
       },
     },
     t ? t : [],
-  );
-};
+  )
+}
 
-export default GetTheme;
+export default GetTheme
