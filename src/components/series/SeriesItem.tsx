@@ -9,7 +9,7 @@ import {
 } from "../../models/Series.ts"
 import { AppStateContext } from "../../state/Context.tsx"
 import dayjs from "../../utils/dayjs.ts"
-import {FindTeam} from "../../utils/findTeam.ts"
+import {FindTeam} from "../../utils/FindTeam.ts"
 import {DefaultSeriesResultColor, GetSeriesColors} from "./colors.ts"
 import {ResultBadge} from "./ResultBadge.tsx"
 import {SeriesBadge} from "./SeriesBadge.tsx"
@@ -34,59 +34,60 @@ const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
 
   return (
     <Grid2 container
+           id={"series-item-"+series.pk}
+           maxWidth={400}
            flexGrow={1}
+           flexDirection={"row"}
+           flexWrap={"nowrap"}
            border={1}
            borderRadius={1}
            borderColor={border}
            bgcolor={background}
-           maxWidth={400}
-           flexWrap={"nowrap"}
-           fontSize={"small"}>
+           fontSize={"small"}
+           columns={3}>
+
       {interested ? (
         <Grid2 position={"absolute"}
                marginTop={-1}
-               marginLeft={-1.5}>
+               marginLeft={-1}>
           <ResultBadge result={seriesResult} type={series.type} />
         </Grid2>
       ) : ''}
-      <Grid2 container
-             minWidth={120}
-             maxWidth={120}
-             flexDirection={"column"}
 
-             paddingTop={1}
-             paddingBottom={1}
-
-             justifyContent={"center"}
-             justifyItems={"center"}
-             alignContent={"center"}
-             alignItems={"center"}
-      >
-        <Grid2 marginBottom={-1}>
-        <SeriesTeams series={series}
-                     interested={interested}/>
-        </Grid2>
-        <Grid2>
-          <SeriesBadge type={series.type}/>
+      <Grid2 size={1} alignContent={"center"}>
+        <Grid2 container
+               id={"series-item-teams"+series.pk}
+               minWidth={120}
+               maxWidth={120}
+               paddingTop={1}
+               paddingBottom={1}
+               justifyContent={"center"}
+        >
+          <Grid2>
+            <SeriesTeams series={series}
+                         interested={interested}/>
+          </Grid2>
+          <Grid2>
+            <SeriesBadge type={series.type}/>
+          </Grid2>
         </Grid2>
       </Grid2>
-      <Grid2 container
-             display={"flex"}
-             flexGrow={1}
-             flexDirection={"row"}
-             justifyContent={"flex-end"}
-             alignContent={"center"}
-             flexWrap={"wrap"}
-             >
-        {series.games.map((g) => (
-          <SeriesGame key={g.gamePk}
-                      result={GetSeriesGameResult(g, interested)}
-                      game={g}
-                      home={FindTeam(state.teams, g.teams?.home?.team?.id)!}
-                      away={FindTeam(state.teams, g.teams?.away?.team?.id)!}
-                      interested={interested}
-                      selectedDate={selectedDate}/>
-        ))}
+
+      <Grid2 size={2} justifyContent={"flex-end"} alignContent={"center"}>
+        <Grid2 container
+               id={"series-game-pre-"+series.pk}
+               justifyContent={"flex-end"}
+               >
+          {series.games.map((g) => (
+            <SeriesGame key={g.gamePk}
+                        result={GetSeriesGameResult(g, interested)}
+                        game={g}
+                        home={FindTeam(state.teams, g.teams?.home?.team?.id)!}
+                        away={FindTeam(state.teams, g.teams?.away?.team?.id)!}
+                        interested={interested}
+                        selectedDate={selectedDate}/>
+          ))}
+        </Grid2>
       </Grid2>
     </Grid2>
   )

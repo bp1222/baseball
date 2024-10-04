@@ -54,11 +54,11 @@ export const Component = () => {
   return (
     <ThemeProvider theme={GetTheme(parseInt(teamId ?? '0'))}>
       <CssBaseline />
-      <Header/>
       <Container maxWidth={"lg"}>
+        <Header/>
         <Outlet />
+        <Footer/>
       </Container>
-      <Footer/>
     </ThemeProvider>
   )
 }

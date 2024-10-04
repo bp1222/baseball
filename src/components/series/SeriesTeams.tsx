@@ -4,8 +4,8 @@ import {useContext} from "react"
 
 import {GetSeriesHomeAway, Series, SeriesHomeAway, SeriesType} from "../../models/Series.ts"
 import {AppStateContext} from "../../state/Context.tsx"
-import {FindTeam} from "../../utils/findTeam.ts"
-import {GetTeamImage} from "../../utils/getTeamImage.tsx"
+import {FindTeam} from "../../utils/FindTeam.ts"
+import {GetTeamImage} from "../../utils/GetTeamImage.tsx"
 import ShortTeam from "./ShortTeam.tsx"
 
 type SeriesTeamProps = {
@@ -29,6 +29,7 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
 
     return (
       <Grid2 container
+             flexDirection={"row"}
              alignItems={"center"}>
         <Grid2 paddingRight={1}>
           <ShortTeam team={away}/>
@@ -61,7 +62,6 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
 
     return (
       <Grid2 container
-             display={"flex"}
              flexDirection={"column"}
              alignItems={"center"}>
         <Grid2 marginBottom={-.5}>

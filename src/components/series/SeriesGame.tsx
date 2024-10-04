@@ -1,5 +1,5 @@
 import {Game, GameStatusCode, Team} from "@bp1222/stats-api"
-import { Color, Grid2, Typography} from "@mui/material"
+import {Box, Color, Grid2} from "@mui/material"
 
 import {GameResult} from "../../models/Series.ts"
 import dayjs from "../../utils/dayjs.ts"
@@ -24,14 +24,6 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
       .format("MMM DD")
       .toUpperCase()
   }
-  /*
-  <Grid2 container
-         flexGrow={1}
-         justifyContent={"flex-end"}
-         alignContent={"space-evenly"}
-         flexWrap={"wrap"}>
-  </Grid2>
-   */
 
   const renderScore = (name: string | undefined, score: number | undefined, scoreColor: Color) => {
     return (
@@ -97,20 +89,19 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
            marginTop={0.75}
            marginBottom={0.75}
            marginRight={1}
-           border={1}
+           border={.75}
            borderRadius={.5}
            borderColor={gameIsToday ? "black" : gameTileColor[200]}
            bgcolor={gameTileColor[50]}>
-      <Typography flexGrow={1}
+      <Box flexGrow={1}
                   fontSize={"smaller"}
                   textAlign={"center"}
-                  border={gameIsToday ?  1 : 0}
                   color={"Background"}
                   paddingLeft={0.2}
                   paddingRight={0.2}
                   bgcolor={gameTileColor[300]}>
         {getDay()}
-      </Typography>
+      </Box>
       {renderScore(away?.abbreviation, game.teams?.away?.score, game.teams?.away?.isWinner ? winnerColor : loserColor)}
       {renderScore(home?.abbreviation, game.teams?.home?.score, game.teams?.home?.isWinner ? winnerColor : loserColor)}
     </Grid2>

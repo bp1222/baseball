@@ -1,10 +1,9 @@
-import {Box, Button, Grid2, Stack} from "@mui/material"
+import {Box, Button, Grid2} from "@mui/material"
 import { grey } from "@mui/material/colors"
 import {useState} from "react"
 
 import TeamSeries from "./TeamSeries.tsx"
 import TeamStats from "./TeamStats.tsx"
-import SeriesList from "../series/SeriesList.tsx";
 
 enum Tab {
   Schedule,
@@ -46,9 +45,8 @@ export const Component = () => {
 
   return (
     <Grid2 container
-           display={"flex"}
-           flexGrow={1}
            flexDirection={"column"}>
+
       <Grid2 container
              display={{sm: "flex", lg: "none"}}
              flexGrow={1}
@@ -60,16 +58,19 @@ export const Component = () => {
         {makeButton("schedule", Tab.Schedule)}
         {makeButton("stats", Tab.Stats)}
       </Grid2>
+
       <Grid2 container
-             flexGrow={1}
              justifyContent={"center"}
              columns={{xs: 1, lg: 3}}>
-        <Grid2 display={{xs: isStatsTab ? "none" : "block", lg: "block"}} size={2}>
+
+        <Grid2 display={{xs: isStatsTab ? "none" : "", lg: "block"}} size={2}>
           <TeamSeries />
         </Grid2>
-        <Grid2 display={{xs: isStatsTab ? "block" : "none", lg: "block"}} size={1} maxWidth={450}>
+
+        <Grid2 paddingLeft={{xs: 0, lg: 1}} display={{xs: isStatsTab ? "block" : "none", lg: "block"}} size={1} maxWidth={450}>
           <TeamStats />
         </Grid2>
+
       </Grid2>
     </Grid2>
   )

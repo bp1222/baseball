@@ -60,7 +60,7 @@ const TeamStats = () => {
     })
 
   return (
-    <Box marginTop={1}>
+    <Box>
       <TeamSeriesRecord team={team!} />
       {team?.division != undefined ? <Standings standings={divisionStandings} league={false} divisionName={team.division.name ?? "Division"} /> : <></>}
       <Standings standings={leagueStandings} league={true} leagueName={team?.league?.name ?? "League"}/>

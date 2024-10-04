@@ -14,14 +14,16 @@ type SeriesListProps = {
 const SeriesList = ({series, selectedDate, interested}: SeriesListProps) => {
   return (
     <Grid2 container
+           flexDirection={"row"}
            justifyContent={"center"}
+           spacing={1.5}
            columns={2}>
       {series?.map((s) => (
-        <Grid2 size={1}
-               display={"flex"}
+        <Grid2 display={"flex"}
+               id={"pre-series-item-"+s.pk}
                justifyContent={"center"}
-               padding={1}>
-          <SeriesItem key={s.pk} series={s} selectedDate={selectedDate} interested={interested}/>
+               size={1}>
+            <SeriesItem key={s.pk} series={s} selectedDate={selectedDate} interested={interested}/>
         </Grid2>
       ))}
     </Grid2>
