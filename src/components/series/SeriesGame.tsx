@@ -1,5 +1,8 @@
-import {Game, GameStatusCode, Team} from "@bp1222/stats-api"
+import {Game, GameStatusCode, Linescore, MlbApi, Team} from "@bp1222/stats-api"
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import {Box, Color, Grid2} from "@mui/material"
+import {useEffect, useState} from "react"
 
 import {GameResult} from "../../models/Series.ts"
 import dayjs from "../../utils/dayjs.ts"
@@ -18,7 +21,18 @@ type SeriesGameProps = {
   selectedDate?: dayjs.Dayjs
 }
 
+const mlbApi = new MlbApi()
+
 export const SeriesGame = ({ result, game, home, away, interested, selectedDate }: SeriesGameProps) => {
+  const [linescore, setLinescore] = useState<Linescore>()
+
+  useEffect(() => {
+    mlbApi.getLinescore({gamePk: game.gamePk}).then((linescore) => {
+      console.log('here')
+      setLinescore(linescore)
+    })
+  }, [game])
+
   const getDay = (): string => {
     return dayjs(game.officialDate ?? "")
       .format("MMM DD")
@@ -27,13 +41,10 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
 
   const renderScore = (name: string | undefined, score: number | undefined, scoreColor: Color) => {
     return (
-      <Grid2
-             display={"flex"}
-             flexGrow={1}
-             flexWrap={"wrap"}>
-        <Grid2 fontSize={"x-small"}
-               textAlign={"center"}
-               borderRight={1}
+      <Grid2 container
+             fontSize={"x-small"}
+             textAlign={"center"}>
+        <Grid2 borderRight={1}
                borderBottom={1}
                borderColor={scoreColor[100]}
                bgcolor={scoreColor[50]}
@@ -42,9 +53,7 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
                paddingTop={0.1}>
           {name}
         </Grid2>
-        <Grid2 fontSize={"x-small"}
-               textAlign={"center"}
-               borderBottom={1}
+        <Grid2 borderBottom={1}
                borderColor={scoreColor[100]}
                bgcolor={scoreColor[50]}
                color={scoreColor[700]}
@@ -56,6 +65,35 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
     )
   }
 
+  const renderLinescore = () => {
+    switch (game.status.codedGameState) {
+      case GameStatusCode.Scheduled:
+      case GameStatusCode.Pregame:
+        return (
+          <Box fontSize={"xx-small"}
+               textAlign={"center"}
+               color={"text.secondary"}>
+            {dayjs(game.gameDate).format("h:mm A")}
+          </Box>
+        )
+      case GameStatusCode.InProgress:
+      case GameStatusCode.GameOver:
+        return (
+          <Box display={"flex"}
+               alignItems={"center"}
+               justifyContent={"space-evenly"}
+               fontSize={"xx-small"}
+               textAlign={"center"}
+               color={"text.secondary"}>
+            {linescore?.isTopInning ?
+              <ArrowDropUpIcon sx={{width: ".6em", height: ".6em"}} /> :
+              <ArrowDropDownIcon/>
+            } {linescore?.currentInningOrdinal}
+          </Box>
+        )
+    }
+    return <></>
+  }
   const winnerColor = interested
     ? GameResultColor[result]
     : game.status.codedGameState == GameStatusCode.Final
@@ -91,19 +129,27 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
            marginRight={1}
            border={.75}
            borderRadius={.5}
+           maxHeight={"fit-content"}
            borderColor={gameIsToday ? "black" : gameTileColor[200]}
            bgcolor={gameTileColor[50]}>
       <Box flexGrow={1}
-                  fontSize={"smaller"}
-                  textAlign={"center"}
-                  color={"Background"}
-                  paddingLeft={0.2}
-                  paddingRight={0.2}
-                  bgcolor={gameTileColor[300]}>
+           fontSize={"smaller"}
+           textAlign={"center"}
+           color={"Background"}
+           paddingLeft={0.2}
+           paddingRight={0.2}
+           bgcolor={gameTileColor[300]}>
         {getDay()}
       </Box>
-      {renderScore(away?.abbreviation, game.teams?.away?.score, game.teams?.away?.isWinner ? winnerColor : loserColor)}
-      {renderScore(home?.abbreviation, game.teams?.home?.score, game.teams?.home?.isWinner ? winnerColor : loserColor)}
+      <Grid2>
+        {renderScore(away?.abbreviation, game.teams?.away?.score, game.teams?.away?.isWinner ? winnerColor : loserColor)}
+      </Grid2>
+      <Grid2>
+        {renderScore(home?.abbreviation, game.teams?.home?.score, game.teams?.home?.isWinner ? winnerColor : loserColor)}
+      </Grid2>
+      <Grid2>
+        {renderLinescore()}
+      </Grid2>
     </Grid2>
   )
 }

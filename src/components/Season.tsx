@@ -23,7 +23,7 @@ export const Component = () => {
       fields: ["date","gamePk","dates","games","gameType","gameDate",
         "officialDate","status","codedGameState","teams","away","home",
         "score","team","name","id","isWinner","seriesNumber",
-        "gamesInSeries","seriesGameNumber","division","seriesNumber","league"],
+        "gamesInSeries","seriesGameNumber","division","seriesNumber","league","link"],
       hydrate: "team(league)"
     }).then((schedule) => {
       dispatch({
