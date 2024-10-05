@@ -92,7 +92,7 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
                color={"text.secondary"}>
             {linescore?.isTopInning ?
               <ArrowDropUpIcon sx={{width: ".6em", height: ".6em"}} /> :
-              <ArrowDropDownIcon/>
+              <ArrowDropDownIcon sx={{width: ".6em", height: ".6em"}} />
             } {linescore?.currentInningOrdinal}
           </Box>
         )
