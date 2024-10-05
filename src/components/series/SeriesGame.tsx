@@ -28,7 +28,6 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
 
   useEffect(() => {
     mlbApi.getLinescore({gamePk: game.gamePk}).then((linescore) => {
-      console.log('here')
       setLinescore(linescore)
     })
   }, [game])
@@ -69,6 +68,12 @@ export const SeriesGame = ({ result, game, home, away, interested, selectedDate 
     switch (game.status.codedGameState) {
       case GameStatusCode.Scheduled:
       case GameStatusCode.Pregame:
+
+        // This seems to be a special date for games that don't have a scheduled time yet
+        if (dayjs(game.gameDate).utc().format("h:mm A") == "7:33 AM") {
+          return <></>
+        }
+
         return (
           <Box fontSize={"xx-small"}
                textAlign={"center"}
