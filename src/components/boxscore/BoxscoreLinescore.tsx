@@ -17,7 +17,7 @@ const BoxscoreLinescore = ({ game, linescore }: BoxscoreLinescoreProps) => {
     return (
       <TableRow>
         <TableCell>{team?.abbreviation}</TableCell>
-        {Array.from({length: Math.max((linescore?.innings?.length??0), 9)}, (_, index) => {
+        {Array.from({length: Math.max((linescore?.innings?.length??0), (linescore?.scheduledInnings??9))}, (_, index) => {
             switch (game.status.codedGameState) {
               case GameStatusCode.Scheduled:
               case GameStatusCode.Pregame:
@@ -34,7 +34,7 @@ const BoxscoreLinescore = ({ game, linescore }: BoxscoreLinescoreProps) => {
                     && linescore?.teams?.away?.runs != undefined
                     && linescore?.teams?.home?.runs != undefined
                     && game.teams.home.team.id == team?.id
-                    && index+1 < (game.scheduledInnings??9)
+                    && index+1 < (game.scheduledInnings??(linescore?.scheduledInnings??9))
                     && index+1 == linescore.innings.length
                     && linescore.teams.home.runs > linescore.teams.away.runs
                       ? 'X' : (teamInnings?.[index]?.runs ?? 0)}
@@ -59,6 +59,7 @@ const BoxscoreLinescore = ({ game, linescore }: BoxscoreLinescoreProps) => {
     )
   }
 
+  console.log(linescore, game)
   return (
     <TableContainer component={Paper} elevation={0}>
       <Grid2 container
@@ -72,7 +73,7 @@ const BoxscoreLinescore = ({ game, linescore }: BoxscoreLinescoreProps) => {
               <TableRow>
                 <TableCell/>
 
-                {Array.from({length: Math.max((linescore?.innings?.length??0), 9)}, (_, index) => (
+                {Array.from({length: Math.max((linescore?.innings?.length??0), (linescore?.scheduledInnings??9))}, (_, index) => (
                   <TableCell key={game.gamePk + '-linescore-' + index}>
                     {index + 1}
                   </TableCell>

@@ -54,7 +54,7 @@ const GameStatusLine = ({ game, linescore }: GameStatusLineProps) => {
                fontSize={"xx-small"}
                textAlign={"center"}
                color={"text.secondary"}>
-            F{(linescore?.innings?.length??0) > 9 ? "/" + linescore?.innings?.length : ""}
+            F{(linescore?.innings?.length??0) != (linescore?.scheduledInnings??9) ? "/" + linescore?.innings?.length : ""}
           </Box>
         </Grid2>
       )
