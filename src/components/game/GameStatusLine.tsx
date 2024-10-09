@@ -20,55 +20,47 @@ const GameStatusLine = ({ game, linescore }: GameStatusLineProps) => {
       }
 
       return (
-        <Grid2>
-          <Box fontSize={"xx-small"}
-               textAlign={"center"}
-               color={"text.secondary"}>
-            {dayjs(game.gameDate).format("h:mm A")}
-          </Box>
-        </Grid2>
+        <Box fontSize={"xx-small"}
+             textAlign={"center"}
+             color={"text.secondary"}>
+          {dayjs(game.gameDate).format("h:mm A")}
+        </Box>
       )
     case GameStatusCode.InProgress:
     case GameStatusCode.GameOver:
       return (
-        <Grid2>
-          <Box display={"flex"}
-               alignItems={"center"}
-               justifyContent={"space-evenly"}
-               fontSize={"xx-small"}
-               textAlign={"center"}
-               color={"text.secondary"}>
-            {linescore?.isTopInning ?
-              <ArrowDropUpIcon sx={{width: ".6em", height: ".6em"}} /> :
-              <ArrowDropDownIcon sx={{width: ".6em", height: ".6em"}} />
-            } {linescore?.currentInningOrdinal}
-          </Box>
-        </Grid2>
+        <Box display={"flex"}
+             alignItems={"center"}
+             justifyContent={"space-evenly"}
+             fontSize={"xx-small"}
+             textAlign={"center"}
+             color={"text.secondary"}>
+          {linescore?.isTopInning ?
+            <ArrowDropUpIcon sx={{width: ".6em", height: ".6em"}} /> :
+            <ArrowDropDownIcon sx={{width: ".6em", height: ".6em"}} />
+          } {linescore?.currentInningOrdinal}
+        </Box>
       )
     case GameStatusCode.Final:
       return (
-        <Grid2>
-          <Box display={"flex"}
-               alignItems={"center"}
-               justifyContent={"space-evenly"}
-               fontSize={"xx-small"}
-               textAlign={"center"}
-               color={"text.secondary"}>
-            F{(linescore?.innings?.length??0) != (linescore?.scheduledInnings??9) ? "/" + linescore?.innings?.length : ""}
-          </Box>
-        </Grid2>
+        <Box display={"flex"}
+             alignItems={"center"}
+             justifyContent={"space-evenly"}
+             fontSize={"xx-small"}
+             textAlign={"center"}
+             color={"text.secondary"}>
+          F{((linescore?.innings?.length??9) != (linescore?.scheduledInnings??9)) ? "/" + linescore?.innings?.length : ""}
+        </Box>
       )
     case GameStatusCode.Canceled:
       return (
-        <Grid2>
-          <Box display={"flex"}
-               alignItems={"center"}
-               justifyContent={"space-evenly"}
-               fontSize={"xx-small"}
-               textAlign={"center"}>
-            Cancelled
-          </Box>
-        </Grid2>
+        <Box display={"flex"}
+             alignItems={"center"}
+             justifyContent={"space-evenly"}
+             fontSize={"xx-small"}
+             textAlign={"center"}>
+          Cancelled
+        </Box>
       )
   }
 }
