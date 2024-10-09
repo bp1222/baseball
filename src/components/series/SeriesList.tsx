@@ -20,10 +20,10 @@ const SeriesList = ({series, selectedDate, interested}: SeriesListProps) => {
            columns={2}>
       {series?.map((s) => (
         <Grid2 display={"flex"}
-               id={"pre-series-item-"+s.pk}
+               key={s.pk}
                justifyContent={"center"}
                size={1}>
-            <SeriesItem key={s.pk} series={s} selectedDate={selectedDate} interested={interested}/>
+            <SeriesItem series={s} selectedDate={selectedDate} interested={interested}/>
         </Grid2>
       ))}
     </Grid2>

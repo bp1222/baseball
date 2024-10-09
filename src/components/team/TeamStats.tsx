@@ -1,9 +1,9 @@
-import { DivisionStandings,MlbApi, TeamRecord } from "@bp1222/stats-api"
+import {DivisionStandings,MlbApi} from "@bp1222/stats-api"
 import {Box} from "@mui/material"
 import {useContext, useEffect, useState} from "react"
 import { useParams } from "react-router-dom"
 
-import { AppStateContext } from "../../state/Context.tsx"
+import {AppStateContext} from "../../state/Context.tsx"
 import {FindTeam} from "../../utils/FindTeam.ts"
 import Standings from "../Standings.tsx"
 import TeamRanking from "./TeamRanking.tsx"
@@ -42,7 +42,7 @@ const TeamStats = () => {
     : (parseFloat(a.leagueRank) > parseFloat(b.leagueRank!) ? 1 : -1))
 
   // Data for League Standings if they're in the same league
-  const leagueStandings: TeamRecord[] = standings
+  const leagueStandings = standings
     .filter((s) => s.league?.id == team?.league?.id)
     .flatMap((s) => s.teamRecords)
     .sort((a, b) => {

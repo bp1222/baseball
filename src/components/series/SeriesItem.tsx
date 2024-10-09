@@ -10,10 +10,10 @@ import {
 import { AppStateContext } from "../../state/Context.tsx"
 import dayjs from "../../utils/dayjs.ts"
 import {FindTeam} from "../../utils/FindTeam.ts"
+import {GameItem} from "../game/GameItem.tsx"
 import {DefaultSeriesResultColor, GetSeriesColors} from "./colors.ts"
 import {ResultBadge} from "./ResultBadge.tsx"
 import {SeriesBadge} from "./SeriesBadge.tsx"
-import {SeriesGame} from "./SeriesGame.tsx"
 import {SeriesTeams} from "./SeriesTeams.tsx"
 
 type SeriesItemProps = {
@@ -34,7 +34,6 @@ const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
 
   return (
     <Grid2 container
-           id={"series-item-"+series.pk}
            maxWidth={400}
            flexGrow={1}
            flexDirection={"row"}
@@ -58,7 +57,6 @@ const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
         minWidth={120}
         maxWidth={120}>
         <Grid2 container
-               id={"series-item-teams"+series.pk}
                paddingTop={1}
                paddingBottom={1}
                justifyContent={"center"}
@@ -77,17 +75,16 @@ const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
              justifyContent={"flex-end"}
              alignContent={"center"}>
         <Grid2 container
-               id={"series-game-pre-"+series.pk}
                justifyContent={"flex-end"}
                >
           {series.games.map((g) => (
-            <SeriesGame key={g.gamePk}
-                        result={GetSeriesGameResult(g, interested)}
-                        game={g}
-                        home={FindTeam(state.teams, g.teams?.home?.team?.id)!}
-                        away={FindTeam(state.teams, g.teams?.away?.team?.id)!}
-                        interested={interested}
-                        selectedDate={selectedDate}/>
+            <GameItem key={g.gamePk}
+                      result={GetSeriesGameResult(g, interested)}
+                      game={g}
+                      home={FindTeam(state.teams, g.teams?.home?.team?.id)!}
+                      away={FindTeam(state.teams, g.teams?.away?.team?.id)!}
+                      interested={interested}
+                      selectedDate={selectedDate}/>
           ))}
         </Grid2>
       </Grid2>

@@ -1,4 +1,4 @@
-import { TeamRecord } from "@bp1222/stats-api"
+import { Record } from "@bp1222/stats-api"
 import { Paper,
   Table,
   TableBody,
@@ -10,13 +10,13 @@ import { Paper,
 import LabelPaper from "../utils/LabelPaper.tsx"
 
 interface StandingsProps {
-  standings: TeamRecord[] | undefined
+  standings: Record[] | undefined
   league: boolean
   leagueName?: string
   divisionName?: string
 }
 
-const DivisionLetter: Record<number, string> = {
+const DivisionLetter: {[key: number]: string} = {
   200: "W", // AL West
   201: "E", // AL East
   202: "C", // AL Central
@@ -28,29 +28,6 @@ const DivisionLetter: Record<number, string> = {
 const Standings = ({ standings, league, leagueName, divisionName }: StandingsProps) => {
   if (standings == undefined) return
 
-  const teamStanding = (record: TeamRecord, showDivision: boolean, clinchedLeague: boolean) => {
-    const playoffIndicator = record.clinched ? (clinchedLeague ? ' - z' : (record.divisionChamp ? ' - y' : ' - w')) : null
-    return (
-      <TableRow key={record.team?.id}>
-        <TableCell width={1} style={{whiteSpace: 'nowrap'}} align="left">
-          {(showDivision && record.team.division?.id
-              ? DivisionLetter[record.team.division.id] + " - "
-              : ''
-          ) + record.team?.clubName}{playoffIndicator}
-        </TableCell>
-        <TableCell align="right">{record.wins}</TableCell>
-        <TableCell align="right">{record.losses}</TableCell>
-        <TableCell align="right">{record.winningPercentage}</TableCell>
-        {league
-          ? <TableCell align="right">{record.wildCardGamesBack}</TableCell>
-          : <TableCell align="right">{record.gamesBack}</TableCell>}
-        {league
-          ? <TableCell align="right">{record.wildCardEliminationNumber}</TableCell>
-          : <TableCell align="right">{record.eliminationNumber}</TableCell>}
-      </TableRow>
-    )
-  }
-
   return (
     <LabelPaper label={league ? leagueName + " Standings" : divisionName + " Standings"}>
       <TableContainer
@@ -60,7 +37,7 @@ const Standings = ({ standings, league, leagueName, divisionName }: StandingsPro
           maxHeight: 425,
         }}
       >
-        <Table>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell width={1} style={{whiteSpace: 'nowrap'}} align="left">Team</TableCell>
@@ -83,7 +60,28 @@ const Standings = ({ standings, league, leagueName, divisionName }: StandingsPro
                   clinchedLeague = true
                 }
               }
-              return teamStanding(s, league && idx <= 2, clinchedLeague)
+              const playoffIndicator = s.clinched
+                ? (clinchedLeague ? ' - z' : (s.divisionChamp ? ' - y' : ' - w'))
+                : null
+              return (
+                <TableRow key={s.team?.id}>
+                  <TableCell width={1} style={{whiteSpace: 'nowrap'}} align="left">
+                    {(league && idx<=2 && s.team.division?.id
+                        ? DivisionLetter[s.team.division.id] + " - "
+                        : ''
+                    ) + s.team?.clubName}{playoffIndicator}
+                  </TableCell>
+                  <TableCell align="right">{s.wins}</TableCell>
+                  <TableCell align="right">{s.losses}</TableCell>
+                  <TableCell align="right">{s.winningPercentage}</TableCell>
+                  {league
+                    ? <TableCell align="right">{s.wildCardGamesBack}</TableCell>
+                    : <TableCell align="right">{s.gamesBack}</TableCell>}
+                  {league
+                    ? <TableCell align="right">{s.wildCardEliminationNumber}</TableCell>
+                    : <TableCell align="right">{s.eliminationNumber}</TableCell>}
+                </TableRow>
+              )
             })}
           </TableBody>
         </Table>
