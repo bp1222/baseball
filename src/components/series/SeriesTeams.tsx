@@ -1,8 +1,15 @@
-import { Team } from "@bp1222/stats-api"
+import {Team} from "@bp1222/stats-api"
 import {Grid2, Typography} from "@mui/material"
 import {useContext} from "react"
 
-import {GetSeriesHomeAway, Series, SeriesHomeAway, SeriesType} from "../../models/Series.ts"
+import {
+  GetSeriesHomeAway,
+  GetSeriesResult,
+  Series,
+  SeriesHomeAway,
+  SeriesResult,
+  SeriesType
+} from "../../models/Series.ts"
 import {AppStateContext} from "../../state/Context.tsx"
 import {FindTeam} from "../../utils/FindTeam.ts"
 import {GetTeamImage} from "../../utils/GetTeamImage.tsx"
@@ -17,22 +24,20 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
   const {state} = useContext(AppStateContext)
   const homeaway = GetSeriesHomeAway(series, interested)
 
+  const isPlayoffs = [SeriesType.WildCard, SeriesType.Division, SeriesType.League, SeriesType.World].indexOf(series.type) >= 0
+  const homeLoss = [SeriesResult.Loss, SeriesResult.Swept].indexOf(GetSeriesResult(series, series.games[0].teams.home.team)) >= 0
+  const awayLoss = [SeriesResult.Loss, SeriesResult.Swept].indexOf(GetSeriesResult(series, series.games[0].teams.away.team)) >= 0
+
   if (!interested) {
-    let home = FindTeam(state.teams, series.games[0].teams.home.team.id)
-    let away = FindTeam(state.teams, series.games[0].teams.away.team.id)
-    if (home == undefined) {
-      home = series.games[0].teams.home.team
-    }
-    if (away == undefined) {
-      away = series.games[0].teams.away.team
-    }
+    const home = FindTeam(state.teams, series.games[0].teams.home.team.id)
+    const away = FindTeam(state.teams, series.games[0].teams.away.team.id)
 
     return (
       <Grid2 container
              flexDirection={"row"}
              alignItems={"center"}>
         <Grid2 paddingRight={1}>
-          <ShortTeam team={away}/>
+          <ShortTeam team={away} dead={isPlayoffs ? awayLoss : false} />
         </Grid2>
         <Grid2>
           <Typography fontSize={"larger"}
@@ -41,7 +46,7 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
           </Typography>
         </Grid2>
         <Grid2 paddingLeft={1}>
-          <ShortTeam team={home}/>
+          <ShortTeam team={home} dead={isPlayoffs ? homeLoss : false} />
         </Grid2>
       </Grid2>
     )

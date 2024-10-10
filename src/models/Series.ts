@@ -3,6 +3,12 @@ import {
   GameType, Team,
 } from "@bp1222/stats-api"
 
+export enum SeriesWinner {
+  Unknown,
+  Home,
+  Away,
+}
+
 export enum SeriesResult {
   Win,
   Loss,
@@ -47,6 +53,7 @@ export type Series = {
   startDate: string
   endDate: string
   games: Game[]
+  winner: SeriesWinner
 }
 
 export const GetSeriesHomeAway = (series: Series, team?: Team): SeriesHomeAway => {
@@ -127,32 +134,20 @@ export const GetSeriesGameResult = (game: Game, team?: Team): GameResult => {
 }
 
 export const GetSeriesResult = (series: Series, team?: Team): SeriesResult => {
-  let wins = 0
-  let losses = 0
-
   if (team == undefined) {
     return SeriesResult.Unplayed
   }
 
-  series.games.forEach((game) => {
-    if (game.teams == undefined) {
-      throw new Error("Game has no teams")
-    }
+  // games where home wins
+  const wins = series.games.filter((game) =>
+    [GameStatusCode.Final, GameStatusCode.GameOver].indexOf(game.status.codedGameState!) > -1 &&
+    ((game.teams?.home.team.id == team.id && game.teams.home.isWinner) ||
+      (game.teams?.away.team.id == team.id && game.teams.away.isWinner))).length
 
-    if (game.teams.home.team.id == team.id) {
-      if (game.teams.home.isWinner) {
-        wins++
-      } else if (game.teams.away.isWinner) {
-        losses++
-      }
-    } else if (game.teams.away.team.id == team.id) {
-      if (game.teams.away.isWinner) {
-        wins++
-      } else if (game.teams.home.isWinner) {
-        losses++
-      }
-    }
-  })
+  const losses = series.games.filter((game) =>
+    [GameStatusCode.Final, GameStatusCode.GameOver].indexOf(game.status.codedGameState!) > -1 &&
+    ((game.teams?.home.team.id == team.id && !game.teams.home.isWinner) ||
+      (game.teams?.away.team.id == team.id && !game.teams.away.isWinner))).length
 
   if (losses != 0 || wins != 0) {
     const playedGames = losses + wins
@@ -193,6 +188,7 @@ const GenerateSeasonSeries = (schedule: Game[]): Series[] => {
       startDate: "",
       endDate: "",
       games: [],
+      winner: SeriesWinner.Unknown,
     }
   }
 

@@ -1,7 +1,7 @@
 import {Game, GameStatusCode, Linescore} from "@bp1222/stats-api"
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
-import {Box, Grid2} from "@mui/material"
+import {Box} from "@mui/material"
 
 import dayjs from "../../utils/dayjs.ts"
 

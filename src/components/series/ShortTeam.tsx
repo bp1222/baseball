@@ -4,17 +4,20 @@ import {Grid2, Typography} from "@mui/material"
 import {GetTeamImage} from "../../utils/GetTeamImage.tsx"
 
 type ShortTeamProps = {
-  team: Team
+  team: Team | undefined
+  dead?: boolean
 }
 
-const ShortTeam = ({team} : ShortTeamProps) => {
+const ShortTeam = ({team, dead} : ShortTeamProps) => {
+  if (team == undefined) return
+
   return (
     <Grid2>
       <Grid2 container
              justifyContent={"center"}
              alignItems={"center"}
              flexDirection={"column"}>
-        {GetTeamImage(team.id)}
+        {GetTeamImage(team.id, dead)}
         <Typography
           width={"min-content"}
           fontSize={"smaller"}>

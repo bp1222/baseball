@@ -34,6 +34,7 @@ const SeriesItem = ({ series, interested, selectedDate }: SeriesItemProps) => {
 
   return (
     <Grid2 container
+           id={series.pk}
            maxWidth={400}
            flexGrow={1}
            flexDirection={"row"}
