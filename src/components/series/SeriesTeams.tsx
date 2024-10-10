@@ -4,7 +4,7 @@ import {useContext} from "react"
 
 import {
   GetSeriesHomeAway,
-  GetSeriesResult,
+  GetSeriesResult, GetSeriesWins,
   Series,
   SeriesHomeAway,
   SeriesResult,
@@ -24,31 +24,38 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
   const {state} = useContext(AppStateContext)
   const homeaway = GetSeriesHomeAway(series, interested)
 
-  const isPlayoffs = [SeriesType.WildCard, SeriesType.Division, SeriesType.League, SeriesType.World].indexOf(series.type) >= 0
-  const homeLoss = [SeriesResult.Loss, SeriesResult.Swept].indexOf(GetSeriesResult(series, series.games[0].teams.home.team)) >= 0
-  const awayLoss = [SeriesResult.Loss, SeriesResult.Swept].indexOf(GetSeriesResult(series, series.games[0].teams.away.team)) >= 0
-
   if (!interested) {
-    const home = FindTeam(state.teams, series.games[0].teams.home.team.id)
-    const away = FindTeam(state.teams, series.games[0].teams.away.team.id)
+    const home = FindTeam(state.teams, series.games[0].teams.home.team.id) ?? series.games[0].teams.home.team
+    const away = FindTeam(state.teams, series.games[0].teams.away.team.id) ?? series.games[0].teams.away.team
+
+    const isPlayoffs = [SeriesType.WildCard, SeriesType.Division, SeriesType.League, SeriesType.World].indexOf(series.type) >= 0
+    const homeLoss = [SeriesResult.Loss, SeriesResult.Swept].indexOf(GetSeriesResult(series, series.games[0].teams.home.team)) >= 0
+    const awayLoss = [SeriesResult.Loss, SeriesResult.Swept].indexOf(GetSeriesResult(series, series.games[0].teams.away.team)) >= 0
 
     return (
-      <Grid2 container
-             flexDirection={"row"}
-             alignItems={"center"}>
-        <Grid2 paddingRight={1}>
-          <ShortTeam team={away} dead={isPlayoffs ? awayLoss : false} />
+      <>
+        <Grid2 container
+               flexDirection={"row"}
+               alignItems={"center"}>
+          <Grid2 paddingRight={1}>
+            <ShortTeam team={away} dead={isPlayoffs ? awayLoss : false} />
+          </Grid2>
+          <Grid2>
+            <Typography fontSize={"larger"}
+                        fontWeight={"bold"}>
+              @
+            </Typography>
+          </Grid2>
+          <Grid2 paddingLeft={1}>
+            <ShortTeam team={home} dead={isPlayoffs ? homeLoss : false} />
+          </Grid2>
         </Grid2>
-        <Grid2>
-          <Typography fontSize={"larger"}
-                      fontWeight={"bold"}>
-            @
+        {isPlayoffs ? <Grid2>
+          <Typography textAlign={"center"}>
+          {GetSeriesWins(series, away)} - {GetSeriesWins(series, home)}
           </Typography>
-        </Grid2>
-        <Grid2 paddingLeft={1}>
-          <ShortTeam team={home} dead={isPlayoffs ? homeLoss : false} />
-        </Grid2>
-      </Grid2>
+        </Grid2> : <></>}
+      </>
     )
   } else {
     let against: Team | undefined

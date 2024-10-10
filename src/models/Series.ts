@@ -133,21 +133,32 @@ export const GetSeriesGameResult = (game: Game, team?: Team): GameResult => {
   return GameResult.Unplayed
 }
 
+export const GetSeriesWins = (series: Series, team?: Team): number => {
+  if (team == undefined) return 0
+
+  return series.games.filter((game) =>
+    [GameStatusCode.Final, GameStatusCode.GameOver].indexOf(game.status.codedGameState!) > -1 &&
+    ((game.teams?.home.team.id == team.id && game.teams.home.isWinner) ||
+      (game.teams?.away.team.id == team.id && game.teams.away.isWinner))).length
+}
+
+export const GetSeriesLosses = (series: Series, team?: Team): number => {
+  if (team == undefined) return 0
+
+  return series.games.filter((game) =>
+    [GameStatusCode.Final, GameStatusCode.GameOver].indexOf(game.status.codedGameState!) > -1 &&
+    ((game.teams?.home.team.id == team.id && !game.teams.home.isWinner) ||
+      (game.teams?.away.team.id == team.id && !game.teams.away.isWinner))).length
+}
+
 export const GetSeriesResult = (series: Series, team?: Team): SeriesResult => {
   if (team == undefined) {
     return SeriesResult.Unplayed
   }
 
   // games where home wins
-  const wins = series.games.filter((game) =>
-    [GameStatusCode.Final, GameStatusCode.GameOver].indexOf(game.status.codedGameState!) > -1 &&
-    ((game.teams?.home.team.id == team.id && game.teams.home.isWinner) ||
-      (game.teams?.away.team.id == team.id && game.teams.away.isWinner))).length
-
-  const losses = series.games.filter((game) =>
-    [GameStatusCode.Final, GameStatusCode.GameOver].indexOf(game.status.codedGameState!) > -1 &&
-    ((game.teams?.home.team.id == team.id && !game.teams.home.isWinner) ||
-      (game.teams?.away.team.id == team.id && !game.teams.away.isWinner))).length
+  const wins = GetSeriesWins(series, team)
+  const losses = GetSeriesLosses(series, team)
 
   if (losses != 0 || wins != 0) {
     const playedGames = losses + wins
