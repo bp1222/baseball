@@ -59,7 +59,6 @@ const BoxscoreLinescore = ({ game, linescore }: BoxscoreLinescoreProps) => {
     )
   }
 
-  console.log(linescore, game)
   return (
     <TableContainer component={Paper} elevation={0}>
       <Grid2 container
