@@ -24,7 +24,7 @@ export const Component = () => {
       if (dayJs().isBefore(dayJs(season?.regularSeasonStartDate))) {
         setSelectedDate(dayJs(season?.regularSeasonStartDate))
       } else {
-        setSelectedDate(dayJs(season?.postSeasonEndDate))
+        setSelectedDate(dayJs(season?.postSeasonEndDate ?? season?.seasonEndDate))
       }
     }
   }, [season])

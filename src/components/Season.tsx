@@ -19,7 +19,7 @@ export const Component = () => {
       sportId: 1,
       gameTypes: [GameType.Regular, GameType.WildCardSeries, GameType.DivisionSeries, GameType.LeagueChampionshipSeries, GameType.WorldSeries],
       startDate: season.regularSeasonStartDate,
-      endDate: season.postSeasonEndDate,
+      endDate: season.postSeasonEndDate ?? season.seasonEndDate,
       fields: ["date","gamePk","dates","games","gameType","gameDate",
         "officialDate","status","codedGameState","teams","away","home",
         "score","team","name","id","isWinner","seriesNumber",
