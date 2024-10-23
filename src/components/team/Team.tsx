@@ -70,7 +70,6 @@ export const Component = () => {
         <Grid2 paddingLeft={{xs: 0, lg: 1}} display={{xs: isStatsTab ? "block" : "none", lg: "block"}} size={1} maxWidth={450}>
           <TeamStats />
         </Grid2>
-
       </Grid2>
     </Grid2>
   )

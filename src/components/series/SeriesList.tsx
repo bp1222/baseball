@@ -17,10 +17,12 @@ const SeriesList = ({series, selectedDate, interested}: SeriesListProps) => {
            flexDirection={"row"}
            justifyContent={"center"}
            spacing={1.5}
-           columns={2}>
+           columns={2}
+    >
       {series?.map((s) => (
-        <Grid2 display={"flex"}
+        <Grid2 container
                key={s.pk}
+               flexGrow={1}
                justifyContent={"center"}
                size={1}>
             <SeriesItem series={s} selectedDate={selectedDate} interested={interested}/>

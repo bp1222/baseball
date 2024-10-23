@@ -1,6 +1,6 @@
 import {Game, Linescore, MlbApi, Team} from "@bp1222/stats-api"
 import {Box, CircularProgress, Grid2, Modal} from "@mui/material"
-import {lazy, Suspense, useEffect, useState} from "react"
+import {lazy, useEffect, useState, Suspense} from "react"
 
 import {GameResult} from "../../models/Series.ts"
 import dayjs from "../../utils/dayjs.ts"
@@ -49,14 +49,13 @@ export const GameItem = ({ result, game, interested, selectedDate }: SeriesGameP
   const gameIsToday = dayjs(game.officialDate ?? "").isSame(interested ? dayjs() : selectedDate, "day")
 
   const [modelPopup, setModelPopup] = useState(false)
-  const modelOpen = () => setModelPopup(true)
-  const modelClose = () => setModelPopup(false)
 
   return (
     <>
       <Modal open={modelPopup}
              disableAutoFocus={true}
-             onClose={modelClose}>
+             onClick={(e) => e.stopPropagation()}
+             onClose={() => setModelPopup(false)}>
         <Box
           position={'absolute'}
           top={'50%'}
@@ -78,7 +77,7 @@ export const GameItem = ({ result, game, interested, selectedDate }: SeriesGameP
       </Modal>
       <Grid2 container
              display={"flex"}
-             onClick={modelOpen}
+             onClick={(e) => {setModelPopup(true); e.stopPropagation()}}
              sx={{cursor: "pointer"}}
              flexDirection={"column"}
              maxWidth={50}

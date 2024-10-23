@@ -3,12 +3,6 @@ import {
   GameType, Team,
 } from "@bp1222/stats-api"
 
-export enum SeriesWinner {
-  Unknown,
-  Home,
-  Away,
-}
-
 export enum SeriesResult {
   Win,
   Loss,
@@ -53,7 +47,6 @@ export type Series = {
   startDate: string
   endDate: string
   games: Game[]
-  winner: SeriesWinner
 }
 
 export const GetSeriesHomeAway = (series: Series, team?: Team): SeriesHomeAway => {
@@ -199,7 +192,6 @@ const GenerateSeasonSeries = (schedule: Game[]): Series[] => {
       startDate: "",
       endDate: "",
       games: [],
-      winner: SeriesWinner.Unknown,
     }
   }
 
