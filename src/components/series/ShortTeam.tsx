@@ -1,5 +1,5 @@
 import {Team} from "@bp1222/stats-api"
-import {Grid2, Typography} from "@mui/material"
+import {Grid2, Tooltip, Typography} from "@mui/material"
 
 import {GetTeamImage} from "../../utils/GetTeamImage.tsx"
 
@@ -17,12 +17,17 @@ const ShortTeam = ({team, dead} : ShortTeamProps) => {
              justifyContent={"center"}
              alignItems={"center"}
              flexDirection={"column"}>
-        {GetTeamImage(team.id, dead)}
-        <Typography
-          width={"min-content"}
-          fontSize={"smaller"}>
-          {team.abbreviation?.toUpperCase() ?? "TBD"}
-        </Typography>
+        <Tooltip title={team.name}
+                 enterDelay={500}
+                 enterNextDelay={500}
+                 leaveDelay={200}>
+          <Typography
+            width={"min-content"}
+            fontSize={"smaller"}>
+            {GetTeamImage(team.id, dead)}
+            {team.abbreviation?.toUpperCase() ?? "TBD"}
+          </Typography>
+        </Tooltip>
       </Grid2>
     </Grid2>
   )
