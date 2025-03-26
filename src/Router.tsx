@@ -1,8 +1,8 @@
-import {createBrowserRouter} from "react-router-dom"
+import {createHashRouter} from "react-router-dom"
 
 import {App} from "@/App.tsx"
 
-export const ApplicationRouter = createBrowserRouter([
+export const ApplicationRouter = createHashRouter([
   {
     path: "/",
     element: <App/>,
