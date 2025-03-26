@@ -21,9 +21,9 @@ type DailyTally = {
 export const TeamRanking = () => {
   const {state} = useContext(AppStateContext)
   const {teamId} = useParams()
-  const team = GetTeam(state.teams, parseInt(teamId ?? ""))
 
   const standings = useMemo(() => {
+    const team = GetTeam(state.teams, parseInt(teamId ?? ""))
     if (state.teams == undefined || state.seasonSeries == undefined || team == undefined) return
 
     const runningTallies: TeamDailyTally[] = []
