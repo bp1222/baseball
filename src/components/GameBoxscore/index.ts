@@ -1,0 +1,1 @@
+export {GameBoxscore as default} from "./GameBoxscore"

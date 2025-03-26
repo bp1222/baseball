@@ -1,0 +1,1 @@
+export {Team as Component} from "./Team"
