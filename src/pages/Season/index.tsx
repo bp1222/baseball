@@ -1,0 +1,1 @@
+export {Season as Component} from "./Season"
