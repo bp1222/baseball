@@ -17,7 +17,7 @@ export const Team = ({ gameTeam }: BoxscoreTeamProps) => {
              flexDirection={"row"}
              alignItems={"center"}
       >
-        {GetTeamImage(gameTeam.team.id)}
+        {GetTeamImage(gameTeam.team)}
         <Typography
           paddingLeft={1}
           fontSize={"larger"}

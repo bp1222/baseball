@@ -73,7 +73,7 @@ export const CurrentDay = () => {
           <DatePicker label="Select Date"
                       views={["month", "day"]}
                       value={selectedDate}
-                      minDate={dayJs(season?.regularSeasonStartDate)}
+                      minDate={dayJs(season?.seasonStartDate)}
                       maxDate={dayJs(season?.postSeasonEndDate)}
                       onChange={(date, context) => {
                         if (context.validationError) return

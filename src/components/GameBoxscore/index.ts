@@ -1,1 +1,1 @@
-export {GameBoxscore as default} from "./GameBoxscore"
+export {GameBoxscore} from "./GameBoxscore"

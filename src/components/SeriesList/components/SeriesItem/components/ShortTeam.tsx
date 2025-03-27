@@ -8,7 +8,7 @@ type ShortTeamProps = {
   dead?: boolean
 }
 
-const ShortTeam = ({team, dead} : ShortTeamProps) => {
+const ShortTeam = ({team, dead}: ShortTeamProps) => {
   if (team == undefined) return
 
   return (
@@ -24,7 +24,7 @@ const ShortTeam = ({team, dead} : ShortTeamProps) => {
           <Typography
             width={"min-content"}
             fontSize={"smaller"}>
-            {GetTeamImage(team.id, dead)}
+            {GetTeamImage(team, dead)}
             {team.abbreviation?.toUpperCase() ?? "TBD"}
           </Typography>
         </Tooltip>

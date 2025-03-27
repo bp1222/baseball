@@ -22,7 +22,7 @@ type SeriesTeamProps = {
   interested?: Team
 }
 
-export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
+export const SeriesTeams = ({series, interested}: SeriesTeamProps) => {
   const {state} = useContext(AppStateContext)
   const homeaway = GetSeriesHomeAway(series, interested)
 
@@ -40,7 +40,7 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
                flexDirection={"row"}
                alignItems={"center"}>
           <Grid2 paddingRight={1}>
-            <ShortTeam team={away} dead={isPlayoffs ? awayLoss : false} />
+            <ShortTeam team={away} dead={isPlayoffs ? awayLoss : false}/>
           </Grid2>
           <Grid2>
             <Typography fontSize={"larger"}
@@ -49,12 +49,12 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
             </Typography>
           </Grid2>
           <Grid2 paddingLeft={1}>
-            <ShortTeam team={home} dead={isPlayoffs ? homeLoss : false} />
+            <ShortTeam team={home} dead={isPlayoffs ? homeLoss : false}/>
           </Grid2>
         </Grid2>
         {isPlayoffs ? <Grid2>
           <Typography textAlign={"center"}>
-          {GetSeriesWins(series, away)} - {GetSeriesWins(series, home)}
+            {GetSeriesWins(series, away)} - {GetSeriesWins(series, home)}
           </Typography>
         </Grid2> : <></>}
       </>
@@ -79,7 +79,7 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
              flexDirection={"column"}
              alignItems={"center"}>
         <Grid2 marginBottom={-.5}>
-          {GetTeamImage(against?.id)}
+          {GetTeamImage(against)}
         </Grid2>
         <Grid2>
           <Typography display={"inline"}
@@ -89,7 +89,7 @@ export const SeriesTeams = ({ series, interested }: SeriesTeamProps) => {
               : homeaway == SeriesHomeAway.Away
                 ? "@ "
                 : [SeriesType.WildCard, SeriesType.Division, SeriesType.League, SeriesType.World].indexOf(series.type) > 0
-                  ? (series.games[0].teams.away.team.id == interested.id ? "@ ": "vs ") : "against "}
+                  ? (series.games[0].teams.away.team.id == interested.id ? "@ " : "vs ") : "against "}
           </Typography>
           <Typography display={"inline"}
                       fontSize={"x-small"}
