@@ -1,15 +1,26 @@
-import {Game, Linescore as apiLinescore} from "@bp1222/stats-api"
+import {Boxscore, Game} from "@bp1222/stats-api"
 import {Grid2, Typography} from "@mui/material"
+import {useEffect, useState} from "react"
 
-import {Linescore} from "./components/Linescore"
+import {getGameBoxscore} from "@/services/MlbAPI"
+
+import {GameLinescore} from "./components/GameLinescore.tsx"
 import {Team} from "./components/Team"
 
 type GameBoxscoreProps = {
   game: Game
-  linescore?: apiLinescore
 }
 
-export const GameBoxscore = ({game, linescore}: GameBoxscoreProps) => {
+export const GameBoxscore = ({game}: GameBoxscoreProps) => {
+  const [boxscore, setBoxscore] = useState<Boxscore>()
+
+  useEffect(() => {
+    getGameBoxscore(game.gamePk).then((boxscore) => {
+      setBoxscore(boxscore)
+    })
+  }, [game])
+
+  console.log(boxscore)
   return (
     <Grid2 container
            id={game.gamePk + '-boxscore'}
@@ -33,7 +44,11 @@ export const GameBoxscore = ({game, linescore}: GameBoxscoreProps) => {
         <Team gameTeam={game?.teams?.home}/>
       </Grid2>
 
-      <Linescore game={game} linescore={linescore}/>
+      <GameLinescore game={game}/>
+
+      <Grid2 container>
+
+      </Grid2>
     </Grid2>
   )
 }

@@ -1,6 +1,11 @@
 import {Game, GameType, GetTeamsRequest, MlbApi, Season} from "@bp1222/stats-api";
+import memoize from "@/utils/memoize.ts";
 
 const api = new MlbApi()
+
+export const getSeasons = () => {
+  return api.getAllSeasons({sportId: 1})
+}
 
 export const getTeamsForSeason = (seasonId: GetTeamsRequest['season']) => {
   return api.getTeams({
@@ -14,7 +19,7 @@ export const getSeasonSchedule = (season: Season) => {
   return api.getSchedule({
     sportId: 1,
     gameTypes: [GameType.Regular, GameType.WildCardSeries, GameType.DivisionSeries, GameType.LeagueChampionshipSeries, GameType.WorldSeries],
-    startDate: season.regularSeasonStartDate,
+    startDate: season.seasonStartDate,
     endDate: season.postSeasonEndDate ?? season.seasonEndDate,
     fields: ["date", "gamePk", "dates", "games", "gameType", "gameDate",
       "officialDate", "status", "codedGameState", "teams", "away", "home",
@@ -24,6 +29,10 @@ export const getSeasonSchedule = (season: Season) => {
   })
 }
 
-export const getLinescoreForGame = (gamePk: Game['gamePk']) => {
-  return api.getLinescore({gamePk: gamePk})
-}
+export const getLinescoreForGame = memoize(async (gamePk: Game['gamePk']) => {
+  return await api.getLinescore({gamePk: gamePk})
+})
+
+export const getGameBoxscore = memoize((gamePk: Game['gamePk']) => {
+  return api.getBoxscore({gamePk: gamePk})
+})

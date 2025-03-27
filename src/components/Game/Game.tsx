@@ -1,16 +1,15 @@
-import {Game as apiGame, Linescore, Team} from "@bp1222/stats-api"
+import {Game as apiGame, Team} from "@bp1222/stats-api"
 import {Box, CircularProgress, Grid2, Modal} from "@mui/material"
-import {lazy, Suspense, useEffect, useState} from "react"
+import {lazy, Suspense, useState} from "react"
 
 import {DefaultGameResultColor, GameResultColor} from "@/colors"
-import {getLinescoreForGame} from "@/services/MlbAPI"
 import {GameResult} from "@/types/Series.ts"
 import dayjs from "@/utils/dayjs.ts"
 
 import {GameScore} from "./components/GameScore"
 import {GameStatusLine} from "./components/GameStatusLine"
 
-const BoxscoreContainer = lazy(() => import("@/components/GameBoxscore"))
+const BoxscoreContainer = lazy(() => import("@/components/GameBoxscore").then((module) => ({default: module.GameBoxscore})))
 
 type SeriesGameProps = {
   result: GameResult
@@ -25,19 +24,11 @@ type SeriesGameProps = {
   selectedDate?: dayjs.Dayjs
 }
 
-export const Game = ({ result, game, interested, selectedDate }: SeriesGameProps) => {
-  const [linescore, setLinescore] = useState<Linescore>()
-
-  useEffect(() => {
-    getLinescoreForGame(game.gamePk).then((linescore) => {
-      setLinescore(linescore)
-    })
-  }, [game])
-
+export const Game = ({result, game, interested, selectedDate}: SeriesGameProps) => {
   const getDay = (): string => {
     return dayjs(game.officialDate ?? "")
-      .format("MMM DD")
-      .toUpperCase()
+    .format("MMM DD")
+    .toUpperCase()
   }
 
   const gameTileColor = interested
@@ -71,13 +62,16 @@ export const Game = ({ result, game, interested, selectedDate }: SeriesGameProps
             transform: 'translate(-50%, -50%)',
           }}>
           <Suspense fallback={<CircularProgress/>}>
-            <BoxscoreContainer game={game} linescore={linescore} />
+            <BoxscoreContainer game={game}/>
           </Suspense>
         </Box>
       </Modal>
       <Grid2 container
              display={"flex"}
-             onClick={(e) => {setModelPopup(true); e.stopPropagation()}}
+             onClick={(e) => {
+               setModelPopup(true)
+               e.stopPropagation()
+             }}
              sx={{cursor: "pointer"}}
              flexDirection={"column"}
              maxWidth={50}
@@ -100,13 +94,15 @@ export const Game = ({ result, game, interested, selectedDate }: SeriesGameProps
           {getDay()}
         </Box>
         <Grid2>
-          <GameScore gameTeam={game.teams?.away} gameStatus={game.status.codedGameState!} result={result} color={interested!=undefined}/>
+          <GameScore gameTeam={game.teams?.away} gameStatus={game.status.codedGameState!} result={result}
+                     color={interested != undefined}/>
         </Grid2>
         <Grid2>
-          <GameScore gameTeam={game.teams?.home} gameStatus={game.status.codedGameState!} result={result} color={interested!=undefined}/>
+          <GameScore gameTeam={game.teams?.home} gameStatus={game.status.codedGameState!} result={result}
+                     color={interested != undefined}/>
         </Grid2>
         <Grid2>
-          <GameStatusLine game={game} linescore={linescore}/>
+          <GameStatusLine game={game}/>
         </Grid2>
       </Grid2>
     </>

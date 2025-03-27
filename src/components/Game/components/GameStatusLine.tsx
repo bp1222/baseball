@@ -2,15 +2,26 @@ import {Game, GameStatusCode, Linescore} from "@bp1222/stats-api"
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
 import {Box} from "@mui/material"
+import {useEffect, useState} from "react"
 
+import {getLinescoreForGame} from "@/services/MlbAPI"
 import dayjs from "@/utils/dayjs.ts"
 
 type GameStatusLineProps = {
   game: Game
-  linescore?: Linescore
 }
 
-export const GameStatusLine = ({ game, linescore }: GameStatusLineProps) => {
+export const GameStatusLine = ({game}: GameStatusLineProps) => {
+  const [linescore, setLinescore] = useState<Linescore>()
+
+  useEffect(() => {
+    if (game.status.codedGameState && [GameStatusCode.InProgress, GameStatusCode.GameOver, GameStatusCode.Final].indexOf(game.status.codedGameState) > -1) {
+      getLinescoreForGame(game.gamePk).then((linescore) => {
+        setLinescore(linescore)
+      })
+    }
+  }, [game])
+
   switch (game.status.codedGameState) {
     case GameStatusCode.Scheduled:
     case GameStatusCode.Pregame:
@@ -36,8 +47,8 @@ export const GameStatusLine = ({ game, linescore }: GameStatusLineProps) => {
              textAlign={"center"}
              color={"text.secondary"}>
           {linescore?.isTopInning ?
-            <ArrowDropUpIcon sx={{width: ".6em", height: ".6em"}} /> :
-            <ArrowDropDownIcon sx={{width: ".6em", height: ".6em"}} />
+            <ArrowDropUpIcon sx={{width: ".6em", height: ".6em"}}/> :
+            <ArrowDropDownIcon sx={{width: ".6em", height: ".6em"}}/>
           } {linescore?.currentInningOrdinal}
         </Box>
       )
@@ -49,7 +60,7 @@ export const GameStatusLine = ({ game, linescore }: GameStatusLineProps) => {
              fontSize={"xx-small"}
              textAlign={"center"}
              color={"text.secondary"}>
-          F{((linescore?.innings?.length??9) != (linescore?.scheduledInnings??9)) ? "/" + linescore?.innings?.length : ""}
+          F{((linescore?.innings?.length ?? 9) != (linescore?.scheduledInnings ?? 9)) ? "/" + linescore?.innings?.length : ""}
         </Box>
       )
     case GameStatusCode.Canceled:

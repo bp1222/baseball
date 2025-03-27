@@ -1,22 +1,30 @@
-import {Game, GameStatusCode, Linescore as apiLinescore, LinescoreTeam, Team} from "@bp1222/stats-api"
+import {Game, GameStatusCode, Linescore, LinescoreTeam, Team} from "@bp1222/stats-api"
 import {Grid2, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material"
-import {useContext} from "react"
+import {useContext, useEffect, useState} from "react"
 
+import {getLinescoreForGame} from "@/services/MlbAPI"
 import {AppStateContext} from "@/state"
 import {GetTeam} from "@/utils/GetTeam.ts"
 
 type BoxscoreLinescoreProps = {
   game: Game
-  linescore?: apiLinescore
 }
 
-export const Linescore = ({ game, linescore }: BoxscoreLinescoreProps) => {
+export const GameLinescore = ({game}: BoxscoreLinescoreProps) => {
   const {state} = useContext(AppStateContext)
+  const [linescore, setLinescore] = useState<Linescore>()
+
+  useEffect(() => {
+    getLinescoreForGame(game.gamePk).then((linescore) => {
+      setLinescore(linescore)
+    })
+  }, [game])
+
   const teamRow = (team: Team | undefined, linescoreTeam: LinescoreTeam | undefined, teamInnings: LinescoreTeam[] | undefined) => {
     return (
       <TableRow>
         <TableCell>{team?.abbreviation}</TableCell>
-        {Array.from({length: Math.max((linescore?.innings?.length??0), (linescore?.scheduledInnings??9))}, (_, index) => {
+        {Array.from({length: Math.max((linescore?.innings?.length ?? 0), (linescore?.scheduledInnings ?? 9))}, (_, index) => {
             switch (game.status.codedGameState) {
               case GameStatusCode.Scheduled:
               case GameStatusCode.Pregame:
@@ -33,8 +41,8 @@ export const Linescore = ({ game, linescore }: BoxscoreLinescoreProps) => {
                     && linescore?.teams?.away?.runs != undefined
                     && linescore?.teams?.home?.runs != undefined
                     && game.teams.home.team.id == team?.id
-                    && index+1 < (game.scheduledInnings??(linescore?.scheduledInnings??9))
-                    && index+1 == linescore.innings.length
+                    && index + 1 < (game.scheduledInnings ?? (linescore?.scheduledInnings ?? 9))
+                    && index + 1 == linescore.innings.length
                     && linescore.teams.home.runs > linescore.teams.away.runs
                       ? 'X' : (teamInnings?.[index]?.runs ?? 0)}
                   </TableCell>
@@ -43,7 +51,7 @@ export const Linescore = ({ game, linescore }: BoxscoreLinescoreProps) => {
           }
         )}
 
-        <TableCell />
+        <TableCell/>
 
         <TableCell>
           {linescoreTeam?.runs ?? 0}
@@ -71,13 +79,13 @@ export const Linescore = ({ game, linescore }: BoxscoreLinescoreProps) => {
               <TableRow>
                 <TableCell/>
 
-                {Array.from({length: Math.max((linescore?.innings?.length??0), (linescore?.scheduledInnings??9))}, (_, index) => (
+                {Array.from({length: Math.max((linescore?.innings?.length ?? 0), (linescore?.scheduledInnings ?? 9))}, (_, index) => (
                   <TableCell key={game.gamePk + '-linescore-' + index}>
                     {index + 1}
                   </TableCell>
                 ))}
 
-                <TableCell />
+                <TableCell/>
 
                 <TableCell>
                   R
