@@ -1,26 +1,23 @@
-import {createHashRouter} from "react-router-dom"
+import {lazy} from "react"
+import {HashRouter, Route, Routes} from "react-router-dom"
 
 import {App} from "@/App.tsx"
 
-export const ApplicationRouter = createHashRouter([
-  {
-    path: "/",
-    element: <App/>,
-    children: [
-      {
-        lazy: () => import("@/pages/Season"),
-        path: ":seasonId",
-        children: [
-          {
-            index: true,
-            lazy: () => import("@/pages/CurrentDay"),
-          },
-          {
-            path: ":teamId",
-            lazy: () => import("@/pages/Team"),
-          }
-        ],
-      }
-    ],
-  },
-])
+const Season = lazy(() => import("@/pages/Season.tsx"))
+const CurrentDay = lazy(() => import("@/pages/CurrentDay.tsx"))
+const Team = lazy(() => import("@/pages/Team.tsx"))
+
+export const ApplicationRouter = () => {
+  return (
+    <HashRouter>
+      <Routes>
+        <Route path={"/"} element={<App/>}>
+          <Route path={":seasonId"} element={<Season/>}>
+            <Route index element={<CurrentDay/>}/>
+            <Route path={":teamId"} element={<Team/>}/>
+          </Route>
+        </Route>
+      </Routes>
+    </HashRouter>
+  )
+}

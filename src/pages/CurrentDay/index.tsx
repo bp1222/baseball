@@ -1,1 +1,0 @@
-export {CurrentDay as Component} from "./CurrentDay"
