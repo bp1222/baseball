@@ -1,7 +1,7 @@
 import {Color} from "@mui/material"
 import {blue, deepOrange, grey, lightBlue, lightGreen, orange, purple, red} from "@mui/material/colors"
 
-import {GameResult} from "@/types/Series.ts"
+import {GameResult} from "@/types/Series/GameResult.ts"
 
 export const OppositeGameResult = (result: GameResult): GameResult => {
   switch (result) {

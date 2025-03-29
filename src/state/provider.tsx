@@ -19,7 +19,7 @@ export function AppStateProvider({children}: PropsWithChildren) {
           .reverse() ?? [],
       })
     })
-  }, [dispatch])
+  }, [])
 
   return (
     <AppStateContext.Provider value={{state, dispatch}}>

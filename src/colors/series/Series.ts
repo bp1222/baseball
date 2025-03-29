@@ -1,7 +1,8 @@
 import {amber, blue, brown, grey, lightGreen, purple, red} from "@mui/material/colors"
 
-import {ResultColors} from "@/types/ResultColors"
-import {SeriesResult, SeriesType} from "@/types/Series"
+import {ResultColors} from "@/types/ResultColors.ts"
+import {SeriesResult} from "@/types/Series/SeriesResult.ts"
+import {SeriesType} from "@/types/Series/SeriesType.ts"
 
 export const OppositeSeriesResult = (result: SeriesResult): SeriesResult => {
   switch (result) {

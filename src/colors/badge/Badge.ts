@@ -1,11 +1,12 @@
 import {amber, blue, brown, grey, lightBlue, lightGreen, red} from "@mui/material/colors"
 
-import {ResultColors} from "@/types/ResultColors"
-import {SeriesResult, SeriesType} from "@/types/Series"
+import {ResultColors} from "@/types/ResultColors.ts"
+import {SeriesResult} from "@/types/Series/SeriesResult.ts"
+import {SeriesType} from "@/types/Series/SeriesType.ts"
 
 export const GetBadgeColors = (type: SeriesType, result: SeriesResult): ResultColors => {
   return type == SeriesType.World && result == SeriesResult.Win
-    ? { background: amber[400], border: amber[700] }
+    ? {background: amber[400], border: amber[700]}
     : BadgeResultColor[result]
 }
 
