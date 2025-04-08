@@ -31,6 +31,9 @@ export const Footer = () => {
           <Typography paddingTop={1} align={"center"}>
             <Link to={"https://github.com/bp1222/baseball"}><GitHubIcon fontSize={"small"} sx={{color: "black"}}/></Link>
           </Typography>
+          <Typography fontSize={8} align={"center"}>
+            {GIT_COMMIT_HASH}
+          </Typography>
         </Stack>
       </Box>
     </Box>

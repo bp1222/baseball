@@ -17,7 +17,7 @@
     "react-router-dom": "^7.4.0"
   },
   "devDependencies": {
-    "@bp1222/stats-api": "^0.2.5",
+    "@bp1222/stats-api": "^0.3.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@eslint/js": "^9.23.0",
@@ -25,6 +25,7 @@
     "@mui/material": "^6.4.8",
     "@mui/x-charts": "^7.28.0",
     "@mui/x-date-pickers": "^7.28.0",
+    "@types/node": "^22.13.14",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
     "dayjs": "^1.11.13",

@@ -4,7 +4,7 @@ import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
 import {Box} from "@mui/material"
 import {useEffect, useState} from "react"
 
-import {getLinescoreForGame} from "@/services/MlbAPI"
+import {getGameLinescore} from "@/services/MlbAPI"
 import dayjs from "@/utils/dayjs.ts"
 
 type GameStatusLineProps = {
@@ -16,7 +16,7 @@ export const GameStatusLine = ({game}: GameStatusLineProps) => {
 
   useEffect(() => {
     if (game.status.codedGameState && [GameStatusCode.InProgress, GameStatusCode.GameOver, GameStatusCode.Final].indexOf(game.status.codedGameState) > -1) {
-      getLinescoreForGame(game.gamePk).then((linescore) => {
+      getGameLinescore(game.gamePk).then((linescore) => {
         setLinescore(linescore)
       })
     }

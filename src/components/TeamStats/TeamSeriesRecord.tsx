@@ -98,7 +98,7 @@ export const TeamSeriesRecord = ({team}: TeamSeriesRecordProps) => {
         {isNaN(seriesPct) ? <></> :
           <Grid2 size={1} paddingBottom={1}>
             <Typography fontSize={"smaller"} display={"inline"}
-                        fontWeight={"bold"}>{seriesPct.toFixed(3).substring(1)}</Typography>
+                        fontWeight={"bold"}>{seriesPct === 1 ? seriesPct.toFixed(3) : seriesPct.toFixed(3).substring(1)}</Typography>
             <Typography fontSize={"smaller"} display={"inline"}> Series Winning Percentage</Typography>
           </Grid2>
         }
