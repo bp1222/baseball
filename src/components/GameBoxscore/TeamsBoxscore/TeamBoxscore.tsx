@@ -17,9 +17,9 @@ export const TeamBoxscore = ({boxscore}: TeamBoxscoreProps) => {
     return (
       <TableRow>
         <TableCell>
-          <Typography noWrap fontSize={"small"}>
+          <Typography noWrap fontSize={"small"} marginLeft={indent}>
             {b.person.boxscoreName}
-            <Typography fontSize={"x-small"} display={"inline"}>
+            <Typography fontSize={"x-small"} display={"inline"} marginLeft={1}>
               {b.position.abbreviation}
             </Typography>
           </Typography>
