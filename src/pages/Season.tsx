@@ -25,6 +25,7 @@ const Season = () => {
   }, [dispatch, season])
 
   useEffect(() => {
+    // @ts-expect-error - @types/node ruins the correct return of setInterval
     refreshIntervalRef.current = setInterval(() => {
       refreshData()
     }, 1000 * 60) // 1 minute

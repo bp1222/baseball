@@ -24,13 +24,13 @@ export const getSeasonSchedule = (season: Season) => {
     fields: ["date", "gamePk", "dates", "games", "gameType", "gameDate",
       "officialDate", "status", "codedGameState", "teams", "away", "home",
       "score", "team", "name", "id", "isWinner", "seriesNumber",
-      "gamesInSeries", "seriesGameNumber", "division", "seriesNumber", "league", "link"],
+      "gamesInSeries", "seriesGameNumber", "division", "seriesNumber", "league", "link", "clubName"],
     hydrate: "team(league)"
   })
 }
 
-export const getLinescoreForGame = memoize(async (gamePk: Game['gamePk']) => {
-  return await api.getLinescore({gamePk: gamePk})
+export const getGameLinescore= memoize((gamePk: Game['gamePk']) => {
+  return api.getLinescore({gamePk: gamePk})
 })
 
 export const getGameBoxscore = memoize((gamePk: Game['gamePk']) => {

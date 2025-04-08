@@ -1,21 +1,21 @@
 import {Game, GameStatusCode, Linescore, LinescoreTeam, Team} from "@bp1222/stats-api"
-import {Grid2, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material"
+import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material"
 import {useContext, useEffect, useState} from "react"
 
-import {getLinescoreForGame} from "@/services/MlbAPI"
+import {getGameLinescore} from "@/services/MlbAPI"
 import {AppStateContext} from "@/state/context.ts"
 import {GetTeam} from "@/utils/GetTeam.ts"
 
-type BoxscoreLinescoreProps = {
+type GameLinescoreProps = {
   game: Game
 }
 
-export const GameLinescore = ({game}: BoxscoreLinescoreProps) => {
+export const GameLinescore = ({game}: GameLinescoreProps) => {
   const {state} = useContext(AppStateContext)
   const [linescore, setLinescore] = useState<Linescore>()
 
   useEffect(() => {
-    getLinescoreForGame(game.gamePk).then((linescore) => {
+    getGameLinescore(game.gamePk).then((linescore) => {
       setLinescore(linescore)
     })
   }, [game])
@@ -67,44 +67,36 @@ export const GameLinescore = ({game}: BoxscoreLinescoreProps) => {
   }
 
   return (
-    <TableContainer component={Paper} elevation={0}>
-      <Grid2 container
-             id={game.gamePk + '-boxscore-linescore'}
-             flexDirection={"row"}
-             justifyContent={"center"}
-             flexGrow={1}>
-        <Grid2 maxWidth={400}>
-          <Table padding={"checkbox"}>
-            <TableHead>
-              <TableRow>
-                <TableCell/>
+    <TableContainer component={Paper} elevation={1}>
+      <Table padding={"checkbox"}>
+        <TableHead>
+          <TableRow>
+            <TableCell/>
 
-                {Array.from({length: Math.max((linescore?.innings?.length ?? 0), (linescore?.scheduledInnings ?? 9))}, (_, index) => (
-                  <TableCell key={game.gamePk + '-linescore-' + index}>
-                    {index + 1}
-                  </TableCell>
-                ))}
+            {Array.from({length: Math.max((linescore?.innings?.length ?? 0), (linescore?.scheduledInnings ?? 9))}, (_, index) => (
+              <TableCell key={game.gamePk + '-linescore-' + index}>
+                {index + 1}
+              </TableCell>
+            ))}
 
-                <TableCell/>
+            <TableCell/>
 
-                <TableCell>
-                  R
-                </TableCell>
-                <TableCell>
-                  H
-                </TableCell>
-                <TableCell>
-                  E
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {teamRow(GetTeam(state.teams, game.teams.away.team.id), linescore?.teams?.away, linescore?.innings?.flatMap((inning) => inning.away!))}
-              {teamRow(GetTeam(state.teams, game.teams.home.team.id), linescore?.teams?.home, linescore?.innings?.flatMap((inning) => inning.home!))}
-            </TableBody>
-          </Table>
-        </Grid2>
-      </Grid2>
+            <TableCell>
+              R
+            </TableCell>
+            <TableCell>
+              H
+            </TableCell>
+            <TableCell>
+              E
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {teamRow(GetTeam(state.teams, game.teams.away.team.id), linescore?.teams?.away, linescore?.innings?.flatMap((inning) => inning.away!))}
+          {teamRow(GetTeam(state.teams, game.teams.home.team.id), linescore?.teams?.home, linescore?.innings?.flatMap((inning) => inning.home!))}
+        </TableBody>
+      </Table>
     </TableContainer>
   )
 }

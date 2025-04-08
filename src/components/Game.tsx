@@ -1,6 +1,6 @@
 import {Game as apiGame, Team} from "@bp1222/stats-api"
 import {Box, CircularProgress, Grid2, Modal} from "@mui/material"
-import {lazy, Suspense, useState} from "react"
+import {Fragment, lazy, Suspense, useState} from "react"
 
 import {DefaultGameResultColor, GameResultColor} from "@/colors"
 import {GameResult} from "@/types/Series/GameResult.ts"
@@ -42,29 +42,32 @@ export const Game = ({result, game, interested, selectedDate}: SeriesGameProps) 
   const [modelPopup, setModelPopup] = useState(false)
 
   return (
-    <>
+    <Fragment>
       <Modal open={modelPopup}
              disableAutoFocus={true}
              onClick={(e) => e.stopPropagation()}
              onClose={() => setModelPopup(false)}>
-        <Box
-          position={'absolute'}
-          top={'50%'}
-          left={'50%'}
-          width={{xs: "80%", md: "60%"}}
-          bgcolor={'Background'}
-          border={'2px solid #000'}
-          borderRadius={3}
-          paddingY={2}
-          paddingX={2}
-          aria-selected={false}
-          sx={{
-            transform: 'translate(-50%, -50%)',
-          }}>
+        <Grid2 container
+               flexDirection={"column"}
+               flexWrap={"nowrap"}
+               justifyContent={"flex-start"}
+               alignItems={"center"}
+               margin={"auto"}
+               marginTop={"4vh"}
+               minHeight={"70vh"}
+               maxHeight={"90vh"}
+               width={"95vw"}
+               maxWidth={850}
+               bgcolor={"Background"}
+               padding={2}
+               overflow={"auto"}
+               border={"2px solid black"}
+               borderRadius={2}
+        >
           <Suspense fallback={<CircularProgress/>}>
             <GameBoxscore game={game}/>
           </Suspense>
-        </Box>
+        </Grid2>
       </Modal>
       <Grid2 container
              display={"flex"}
@@ -105,6 +108,6 @@ export const Game = ({result, game, interested, selectedDate}: SeriesGameProps) 
           <GameStatusLine game={game}/>
         </Grid2>
       </Grid2>
-    </>
+    </Fragment>
   )
 }

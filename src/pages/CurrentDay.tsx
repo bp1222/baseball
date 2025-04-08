@@ -46,6 +46,21 @@ const CurrentDay = () => {
               return a.games[0].teams.home.team.league?.id < b?.games[0]?.teams?.home?.team?.league?.id ? -1 : 1
             }
           }
+
+          if (!selectedDate.isBefore(dayJs(), 'day')) {
+            const aGame = a.games.find((g) => selectedDate.format("YYYY-MM-DD") == dayJs(g.gameDate).format("YYYY-MM-DD"))
+            const bGame = b.games.find((g) => selectedDate.format("YYYY-MM-DD") == dayJs(g.gameDate).format("YYYY-MM-DD"))
+
+            if (aGame && bGame) {
+              if (aGame.gameDate < bGame.gameDate) {
+                return -1
+              }
+              if (aGame.gameDate > bGame.gameDate) {
+                return 1
+              }
+            }
+          }
+
           return a.games[0].teams.home.team.name.localeCompare(b.games[0].teams.home.team.name)
         }) ?? []
       )

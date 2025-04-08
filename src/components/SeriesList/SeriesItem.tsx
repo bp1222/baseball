@@ -75,8 +75,7 @@ export const SeriesItem = ({series, interested, selectedDate}: SeriesItemProps) 
              justifyContent={"flex-end"}
              alignContent={"center"}>
         <Grid2 container
-               justifyContent={"flex-end"}
-        >
+               justifyContent={"flex-end"}>
           {series.games.map((g) => (
             <Game key={g.gamePk}
                   result={GetGameResult(g, interested)}
