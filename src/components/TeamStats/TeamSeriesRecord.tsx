@@ -1,10 +1,12 @@
-import {GameStatusCode, Team} from "@bp1222/stats-api"
+import {Team} from "@bp1222/stats-api"
 import {Grid2, Typography} from "@mui/material"
 import {useContext} from "react"
 
 import {AppStateContext} from "@/state/context.ts"
+import {SeriesResult} from "@/types/Series/SeriesResult.ts"
 import {SeriesType} from "@/types/Series/SeriesType.ts"
 import LabelPaper from "@/utils/LabelPaper.tsx"
+import {GetSeriesResult} from "@/utils/Series/GetSeriesResult.ts"
 
 type TeamSeriesRecordProps = {
   team: Team
@@ -13,46 +15,22 @@ type TeamSeriesRecordProps = {
 export const TeamSeriesRecord = ({team}: TeamSeriesRecordProps) => {
   const {state} = useContext(AppStateContext)
 
-  const regularSeasonSeries = state.seasonSeries
+  const regularSeasonSeriesResults = state.seasonSeries
   ?.filter((s) => s.type == SeriesType.Regular)
   ?.filter((s) => s.games
     .some((g) => g.teams.away.team.id == team?.id || g.teams.home.team.id == team?.id)
-  )
+  ).map((s) => GetSeriesResult(s, team))
 
-  const seriesWins = regularSeasonSeries
-  ?.filter((s) =>
-    s.games.filter((g) => g.status.codedGameState == GameStatusCode.Final).length > Math.ceil(s.games.length / 2) &&
-    s.games.filter((g) =>
-      g.teams.away.team.id == team?.id && g.teams.away.isWinner ||
-      g.teams.home.team.id == team?.id && g.teams.home.isWinner
-    ).length > Math.ceil(s.games.length / 2))
-    .length ?? 0
-
-  const seriesLosses = regularSeasonSeries
-  ?.filter((s) =>
-    s.games.filter((g) => g.status.codedGameState == GameStatusCode.Final).length > Math.ceil(s.games.length / 2) &&
-    s.games.filter((g) =>
-      g.teams.away.team.id == team?.id && g.teams.away.isWinner ||
-      g.teams.home.team.id == team?.id && g.teams.home.isWinner
-    ).length < Math.ceil(s.games.length / 2))
-    .length ?? 0
-
-  const seriesTies = regularSeasonSeries
-  ?.filter((s) =>
-    s.games.filter((g) => g.status.codedGameState == GameStatusCode.Final).length > Math.ceil(s.games.length / 2) &&
-    s.games.filter((g) =>
-      g.teams.away.team.id == team?.id && g.teams.away.isWinner ||
-      g.teams.home.team.id == team?.id && g.teams.home.isWinner
-    ).length == Math.ceil(s.games.length / 2))
-    .length ?? 0
+  const seriesWins = regularSeasonSeriesResults?.filter((s) => s == SeriesResult.Win || s == SeriesResult.Sweep).length ?? 0
+  const seriesLosses = regularSeasonSeriesResults?.filter((s) => s == SeriesResult.Loss || s == SeriesResult.Swept).length ?? 0
+  const seriesTies = regularSeasonSeriesResults?.filter((s) => s == SeriesResult.Tie).length ?? 0
 
   const seriesPct = ((seriesWins + (.5 * seriesTies)) / (seriesWins + seriesLosses + seriesTies))
   return (
     <LabelPaper label={"Series Record"}>
       <Grid2 container
              display={"flex"}
-             flexDirection={"column"}
-      >
+             flexDirection={"column"}>
         <Grid2 container
                display={"flex"}
                flexDirection={"row"}
