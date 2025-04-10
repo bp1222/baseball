@@ -75,6 +75,7 @@ export const Game = ({result, game, interested, selectedDate}: SeriesGameProps) 
                setModelPopup(true)
                e.stopPropagation()
              }}
+             id={game.gamePk + '-game'}
              sx={{cursor: "pointer"}}
              flexDirection={"column"}
              maxWidth={50}

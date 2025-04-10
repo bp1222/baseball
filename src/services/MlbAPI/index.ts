@@ -1,7 +1,10 @@
 import {Game, GameType, GetTeamsRequest, MlbApi, Season} from "@bp1222/stats-api";
 import memoize from "@/utils/memoize.ts";
 
-const api = new MlbApi()
+const api = new MlbApi().withPreMiddleware(async (ctx) => {
+  ctx.init.cache = "no-cache"
+  return ctx
+})
 
 export const getSeasons = () => {
   return api.getAllSeasons({sportId: 1})
@@ -24,7 +27,8 @@ export const getSeasonSchedule = (season: Season) => {
     fields: ["date", "gamePk", "dates", "games", "gameType", "gameDate",
       "officialDate", "status", "codedGameState", "teams", "away", "home",
       "score", "team", "name", "id", "isWinner", "seriesNumber",
-      "gamesInSeries", "seriesGameNumber", "division", "seriesNumber", "league", "link", "clubName"],
+      "gamesInSeries", "seriesGameNumber", "division", "seriesNumber", "league", "link",
+      "clubName", "leagueRecord", "wins", "losses"],
     hydrate: "team(league)"
   })
 }
