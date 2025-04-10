@@ -19,12 +19,12 @@ export const GameBoxscore = ({game}: GameBoxscoreProps) => {
                alignItems={"center"}
                paddingTop={2}
                paddingBottom={2}>
-          <Team gameTeam={game?.teams?.away}/>
+          <Team gameTeam={game.teams.away}/>
           <Typography fontSize={"larger"}
                       paddingX={2}>
             @
           </Typography>
-          <Team gameTeam={game?.teams?.home}/>
+          <Team gameTeam={game.teams.home}/>
         </Grid2>
       </Grid2>
 

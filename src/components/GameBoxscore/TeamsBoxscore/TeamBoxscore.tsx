@@ -7,7 +7,6 @@ type TeamBoxscoreProps = {
 }
 
 export const TeamBoxscore = ({boxscore}: TeamBoxscoreProps) => {
-  console.log(boxscore)
   const batters = Object.values(boxscore.players!).filter((p) => p.battingOrder != undefined).sort((a, b) => {
     return a.battingOrder! - b.battingOrder!
   })
@@ -15,13 +14,13 @@ export const TeamBoxscore = ({boxscore}: TeamBoxscoreProps) => {
   const getBatter = (b: Player) => {
     const indent = b.battingOrder! % 100
     return (
-      <TableRow>
+      <TableRow key={boxscore.team.id + '-batter-' + b.person.id}>
         <TableCell>
-          <Typography noWrap fontSize={"small"} marginLeft={indent}>
+          <Typography fontSize={"small"} marginLeft={indent} display={"inline"}>
             {b.person.boxscoreName}
-            <Typography fontSize={"x-small"} display={"inline"} marginLeft={1}>
-              {b.position.abbreviation}
-            </Typography>
+          </Typography>
+          <Typography fontSize={"x-small"} marginLeft={1} display={"inline"}>
+            {b.position.abbreviation}
           </Typography>
         </TableCell>
         <TableCell align={"right"} padding={"checkbox"}>

@@ -12,6 +12,7 @@ export const Team = ({ gameTeam }: BoxscoreTeamProps) => {
     <Grid2 container
            flexDirection={"column"}
            alignItems={"center"}
+           textAlign={"center"}
     >
       <Grid2 container
              flexDirection={"row"}
@@ -28,6 +29,9 @@ export const Team = ({ gameTeam }: BoxscoreTeamProps) => {
       <Grid2>
         <Typography fontSize={"small"}>
           {gameTeam.team.name}
+        </Typography>
+        <Typography fontSize={"x-small"}>
+          {gameTeam.leagueRecord?.wins} - {gameTeam.leagueRecord?.losses}
         </Typography>
       </Grid2>
     </Grid2>

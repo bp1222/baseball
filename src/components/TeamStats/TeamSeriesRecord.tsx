@@ -21,29 +21,29 @@ export const TeamSeriesRecord = ({team}: TeamSeriesRecordProps) => {
 
   const seriesWins = regularSeasonSeries
   ?.filter((s) =>
-    s.games.filter((g) => g.status.codedGameState == GameStatusCode.Final).length > (s.games.length / 2) &&
+    s.games.filter((g) => g.status.codedGameState == GameStatusCode.Final).length > Math.ceil(s.games.length / 2) &&
     s.games.filter((g) =>
       g.teams.away.team.id == team?.id && g.teams.away.isWinner ||
       g.teams.home.team.id == team?.id && g.teams.home.isWinner
-    ).length > (s.games.length / 2))
+    ).length > Math.ceil(s.games.length / 2))
     .length ?? 0
 
   const seriesLosses = regularSeasonSeries
   ?.filter((s) =>
-    s.games.filter((g) => g.status.codedGameState == GameStatusCode.Final).length > (s.games.length / 2) &&
+    s.games.filter((g) => g.status.codedGameState == GameStatusCode.Final).length > Math.ceil(s.games.length / 2) &&
     s.games.filter((g) =>
       g.teams.away.team.id == team?.id && g.teams.away.isWinner ||
       g.teams.home.team.id == team?.id && g.teams.home.isWinner
-    ).length < (s.games.length / 2))
+    ).length < Math.ceil(s.games.length / 2))
     .length ?? 0
 
   const seriesTies = regularSeasonSeries
   ?.filter((s) =>
-    s.games.filter((g) => g.status.codedGameState == GameStatusCode.Final).length > (s.games.length / 2) &&
+    s.games.filter((g) => g.status.codedGameState == GameStatusCode.Final).length > Math.ceil(s.games.length / 2) &&
     s.games.filter((g) =>
       g.teams.away.team.id == team?.id && g.teams.away.isWinner ||
       g.teams.home.team.id == team?.id && g.teams.home.isWinner
-    ).length == (s.games.length / 2))
+    ).length == Math.ceil(s.games.length / 2))
     .length ?? 0
 
   const seriesPct = ((seriesWins + (.5 * seriesTies)) / (seriesWins + seriesLosses + seriesTies))
