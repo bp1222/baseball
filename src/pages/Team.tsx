@@ -48,7 +48,7 @@ const Team = () => {
            flexDirection={"column"}>
 
       <Grid2 container
-             display={{sm: "flex", lg: "none"}}
+             display={{sm: "flex", md: "none"}}
              flexGrow={1}
              flexDirection={"row"}
              justifyContent={"center"}
@@ -61,13 +61,13 @@ const Team = () => {
 
       <Grid2 container
              justifyContent={"center"}
-             columns={{xs: 1, lg: 3}}>
+             columns={{xs: 1, md: 3}}>
 
-        <Grid2 display={{xs: isStatsTab ? "none" : "", lg: "block"}} size={2}>
+        <Grid2 display={{xs: isStatsTab ? "none" : "", md: "block"}} size={2}>
           <TeamSeries/>
         </Grid2>
 
-        <Grid2 paddingLeft={{xs: 0, lg: 1}} display={{xs: isStatsTab ? "block" : "none", lg: "block"}} size={1}
+        <Grid2 paddingLeft={{xs: 0, md: 1}} display={{xs: isStatsTab ? "block" : "none", md: "block"}} size={1}
                maxWidth={450}>
           <TeamStats/>
         </Grid2>

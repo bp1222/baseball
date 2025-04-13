@@ -8,10 +8,8 @@ import img from "/assets/c.png"
 export const Footer = () => {
   return (
     <Box
-      display={"flex"}
       justifyContent={"center"}
-      justifyItems={"center"}
-    >
+      justifyItems={"center"}>
       <Box
         maxWidth={"fit-content"}
         paddingLeft={1}
@@ -22,8 +20,7 @@ export const Footer = () => {
         borderColor={grey[300]}
         borderRadius={2}
         bgcolor={grey[50]}
-        mt={4}
-      >
+        mt={4}>
         <Stack direction={"column"}>
           <Typography align={"center"}>
             Made in <img width={12} height={12} src={img} alt={"Colorado style C"}/>olorado

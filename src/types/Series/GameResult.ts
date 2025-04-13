@@ -4,7 +4,6 @@ export enum GameResult {
   Tie,
   Unplayed,
   InProgress,
-  GameOver,
   Canceled,
   Postponed
 }

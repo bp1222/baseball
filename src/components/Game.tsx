@@ -1,8 +1,9 @@
 import {Game as apiGame, Team} from "@bp1222/stats-api"
 import {Box, CircularProgress, Grid2, Modal} from "@mui/material"
-import {Fragment, lazy, Suspense, useState} from "react"
+import {Fragment, lazy, Suspense, useContext, useState} from "react"
 
 import {DefaultGameResultColor, GameResultColor} from "@/colors"
+import {AppStateContext} from "@/state/context.ts"
 import {GameResult} from "@/types/Series/GameResult.ts"
 import dayjs from "@/utils/dayjs.ts"
 
@@ -19,25 +20,18 @@ type SeriesGameProps = {
 
   // If we want to color the game box, or just the winners score
   interested?: Team
-
-  // For outlining a day
-  selectedDate?: dayjs.Dayjs
 }
 
-export const Game = ({result, game, interested, selectedDate}: SeriesGameProps) => {
-  const getDay = (): string => {
-    return dayjs(game.officialDate ?? "")
-    .format("MMM DD")
-    .toUpperCase()
-  }
+export const Game = ({result, game, interested}: SeriesGameProps) => {
+  const {state} = useContext(AppStateContext)
 
   const gameTileColor = interested
     ? GameResultColor[result]
-    : [GameResult.InProgress, GameResult.Canceled, GameResult.GameOver, GameResult.Tie].indexOf(result) > -1
+    : [GameResult.InProgress, GameResult.Canceled, GameResult.Tie].indexOf(result) > -1
       ? GameResultColor[result]
       : DefaultGameResultColor
 
-  const gameIsToday = dayjs(game.officialDate ?? "").isSame(interested ? dayjs() : selectedDate, "day")
+  const gameIsToday = dayjs(game.officialDate ?? "").isSame(interested ? dayjs() : state.selectedDate, "day")
 
   const [modelPopup, setModelPopup] = useState(false)
 
@@ -95,7 +89,9 @@ export const Game = ({result, game, interested, selectedDate}: SeriesGameProps) 
              paddingLeft={0.2}
              paddingRight={0.2}
              bgcolor={gameTileColor[300]}>
-          {getDay()}
+          {dayjs(game.officialDate ?? "")
+          .format("MMM DD")
+          .toUpperCase()}
         </Box>
         <Grid2>
           <GameScore gameTeam={game.teams?.away} gameStatus={game.status.codedGameState!} result={result}

@@ -18,6 +18,11 @@ export const reducer = (state: AppState, action: AppStateActions): AppState => {
         ...state,
         seasonSeries: action.series,
       }
+    case AppStateAction.SelectedDate:
+      return {
+        ...state,
+        selectedDate: action.selectedDate,
+      }
     default:
       return {
         ...state,

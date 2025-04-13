@@ -13,9 +13,7 @@ export const GetGameResult = (game: Game, team?: Team): GameResult => {
     case GameStatusCode.Postponed:
       return GameResult.Postponed
     case GameStatusCode.GameOver:
-      return GameResult.GameOver
     case GameStatusCode.InProgress:
-    case GameStatusCode.Pregame:
       return GameResult.InProgress
   }
 

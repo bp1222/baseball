@@ -15,7 +15,7 @@ const api = new MlbApi()
 const TeamStats = () => {
   const {state} = useContext(AppStateContext)
   const [standings, setStandings] = useState<DivisionStandings[]>([])
-  const { seasonId, teamId } = useParams()
+  const {seasonId, teamId} = useParams()
 
   const team = GetTeam(state.teams, parseInt(teamId ?? ""))
 
@@ -33,39 +33,47 @@ const TeamStats = () => {
     })
   }, [team, seasonId])
 
-  // Data for Division Standings
-
   const divisionStandings = standings
-    .filter((s) => s.division?.id == team?.division?.id)
-    .flatMap((s) => s.teamRecords)
-    .sort((a, b) => a.divisionRank
+  .filter((s) => s.division?.id == team?.division?.id)
+  .flatMap((s) => s.teamRecords)
+  .sort((a, b) => a.divisionRank
     ? (parseFloat(a.divisionRank) > parseFloat(b.divisionRank!) ? 1 : -1)
     : (parseFloat(a.leagueRank) > parseFloat(b.leagueRank!) ? 1 : -1))
 
-  // Data for League Standings if they're in the same league
-  const leagueStandings = standings
-    .filter((s) => s.league?.id == team?.league?.id)
-    .flatMap((s) => s.teamRecords)
-    .sort((a, b) => {
-      if (a.divisionChamp && b.divisionChamp) {
-        return parseFloat(a.leagueRank) > parseFloat(b.leagueRank!) ? 1 : -1
-      }
-
-      if (a.divisionChamp && !b.divisionChamp) return -1
-      if (!a.divisionChamp && b.divisionChamp) return 1
-
-      if (a.clinched && !b.clinched) return -1
-      if (!a.clinched && b.clinched) return 1
-
+  const preLeagueStandings = standings
+  .filter((s) => s.league?.id == team?.league?.id)
+  .flatMap((s) => s.teamRecords)
+  .sort((a, b) => {
+    if (a.divisionChamp && b.divisionChamp) {
       return parseFloat(a.leagueRank) > parseFloat(b.leagueRank!) ? 1 : -1
-    })
+    }
+
+    if (a.divisionChamp && !b.divisionChamp) return -1
+    if (!a.divisionChamp && b.divisionChamp) return 1
+
+    if (a.clinched && !b.clinched) return -1
+    if (!a.clinched && b.clinched) return 1
+
+    return parseFloat(a.leagueRank) > parseFloat(b.leagueRank!) ? 1 : -1
+  })
+  const found: number[] = []
+  const topThree = preLeagueStandings.filter((s) => {
+    if (found.includes(s.team.division!.id)) return false
+    found.push(s.team.division!.id)
+    return true
+  })
+  const finalLeagueStandings = [
+    topThree,
+    preLeagueStandings.filter((s) => !topThree.includes(s))
+  ].flat(Infinity)
 
   return (
     <Box>
-      <TeamSeriesRecord team={team!} />
-      {team?.division != undefined ? <Standings standings={divisionStandings} league={false} divisionName={team.division.name ?? "Division"} /> : <></>}
-      <Standings standings={leagueStandings} league={true} leagueName={team?.league?.name ?? "League"}/>
-      <TeamRanking />
+      <TeamSeriesRecord team={team!}/>
+      {team?.division != undefined ? <Standings standings={divisionStandings} league={false}
+                                                divisionName={team.division.name ?? "Division"}/> : <></>}
+      <Standings standings={finalLeagueStandings} league={true} leagueName={team?.league?.name ?? "League"}/>
+      <TeamRanking/>
     </Box>
   )
 }
