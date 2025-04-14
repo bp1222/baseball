@@ -38,7 +38,7 @@ const CurrentDay = () => {
         })
       }
     }
-  }, [season])
+  }, [dispatch, season])
 
   useEffect(() => {
     if (state.seasonSeries?.length ?? 0 > 0) {
