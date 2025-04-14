@@ -17,7 +17,7 @@
     "react-router-dom": "^7.4.0"
   },
   "devDependencies": {
-    "@bp1222/stats-api": "^0.3.1",
+    "@bp1222/stats-api": "^0.3.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@eslint/js": "^9.23.0",
