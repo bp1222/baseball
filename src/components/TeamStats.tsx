@@ -57,15 +57,12 @@ const TeamStats = () => {
     return parseFloat(a.leagueRank) > parseFloat(b.leagueRank!) ? 1 : -1
   })
   const found: number[] = []
-  const topThree = preLeagueStandings.filter((s) => {
+  const finalLeagueStandings= preLeagueStandings.filter((s) => {
     if (found.includes(s.team.division!.id)) return false
     found.push(s.team.division!.id)
     return true
   })
-  const finalLeagueStandings = [
-    topThree,
-    preLeagueStandings.filter((s) => !topThree.includes(s))
-  ].flat(Infinity)
+  finalLeagueStandings.push(...preLeagueStandings.filter((s) => !finalLeagueStandings.includes(s)))
 
   return (
     <Box>

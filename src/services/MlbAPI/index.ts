@@ -21,6 +21,7 @@ export const getTeamsForSeason = (seasonId: GetTeamsRequest['season']) => {
 export const getSeasonSchedule = (season: Season) => {
   return api.getSchedule({
     sportId: 1,
+    leagueIds: [103, 104],
     gameTypes: [GameType.Regular, GameType.WildCardSeries, GameType.DivisionSeries, GameType.LeagueChampionshipSeries, GameType.WorldSeries],
     startDate: season.seasonStartDate,
     endDate: season.postSeasonEndDate ?? season.seasonEndDate,

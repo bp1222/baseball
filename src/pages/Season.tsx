@@ -6,8 +6,8 @@ import {AppStateAction} from "@/state/actions.ts"
 import {AppStateContext} from "@/state/context.ts"
 import {GenerateSeasonSeries} from "@/utils/Series/GenerateSeasonSeries.ts"
 
-export {Season as default}
-const Season = () => {
+export {SeasonComponent as default}
+const SeasonComponent = () => {
   const {state, dispatch} = useContext(AppStateContext)
   const {seasonId} = useParams()
   const season = state.seasons?.find((s) => s.seasonId == seasonId)
