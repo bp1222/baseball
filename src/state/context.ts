@@ -1,13 +1,8 @@
 import {createContext} from "react"
 
-import {AppStateDispatch} from "./actions.ts"
-import {AppState} from "./state.ts"
+import {AppState, AppStateApi, AppStateUtil} from "./types.ts"
 
-export const AppStateContext = createContext<{
-  state: AppState;
-  dispatch: AppStateDispatch;
-}>({
-  state: {},
-  dispatch: () => null,
-})
+export const AppStateUtilContext = createContext<AppStateUtil>({} as AppStateUtil)
+export const AppStateApiContext = createContext<AppStateApi>({} as AppStateApi)
+export const AppStateContext = createContext<AppState>({} as AppState)
 

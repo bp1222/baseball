@@ -1,39 +1,55 @@
-import {Container, CssBaseline, ThemeProvider} from "@mui/material"
-import {useContext, useEffect} from "react"
+import {CircularProgress, Container, CssBaseline, ThemeProvider} from "@mui/material"
+import dayjs from "dayjs"
+import React, {useEffect, useLayoutEffect} from "react"
 import {Outlet, useNavigate, useParams} from "react-router-dom"
 
 import {GetTeamTheme} from "@/colors"
-import {Footer} from "@/components/Footer"
-import {Header} from "@/components/Header"
-import {getTeamsForSeason} from "@/services/MlbAPI"
-import {AppStateAction} from "@/state/actions.ts"
-import {AppStateContext} from "@/state/context.ts"
+import {Footer} from "@/components/Footer.tsx"
+import {Header} from "@/components/Header.tsx"
+import {getDivisions, getLeagues, getSeasons, getTeams} from "@/services/MlbAPI"
+import {useAppState, useAppStateApi, useAppStateUtil} from "@/state"
 
 export const App = () => {
-  const {dispatch} = useContext(AppStateContext)
-  const {seasonId, teamId} = useParams()
+  const {seasons, leagues, divisions, teams} = useAppState()
+  const {setSeasons, setLeagues, setDivisions, setTeams} = useAppStateApi()
+  const {getSeason} = useAppStateUtil()
+  const {seasonId, interestedTeamId} = useParams()
   const navigate = useNavigate()
+  const season = getSeason(seasonId)
+
+  useLayoutEffect(() => {
+    getSeasons().then((seasons) => {
+      setSeasons(
+        seasons.seasons
+        .filter((s) => parseInt(s.seasonId!) > 1921)
+        .reverse()
+      )
+    })
+  }, [setSeasons])
 
   useEffect(() => {
-    if (seasonId == null) {
-      navigate("/" + new Date().getFullYear())
-      return
+    if (season) {
+      getLeagues(season).then((leagues) => setLeagues(leagues))
+      getDivisions(season).then((divisions) => setDivisions(divisions))
+      getTeams(season).then((teams) => setTeams(teams))
     }
+  }, [season, setDivisions, setLeagues, setTeams])
 
-    getTeamsForSeason(seasonId).then((teams) => {
-      dispatch({
-        type: AppStateAction.Teams,
-        teams: teams.teams!.sort((a, b) => a.name?.localeCompare(b.name!) ?? 0),
-      })
-    })
-  }, [dispatch, navigate, seasonId])
+  if (seasonId == undefined) {
+    navigate("/" + dayjs().year())
+    return
+  }
 
   return (
-    <ThemeProvider theme={GetTeamTheme(parseInt(teamId ?? '0'))}>
+    <ThemeProvider theme={GetTeamTheme(parseInt(interestedTeamId ?? "0"))}>
       <CssBaseline/>
       <Header/>
       <Container maxWidth={"lg"}>
-        <Outlet/>
+        {seasons.length == 0 || teams.length == 0 || leagues.length == 0 || divisions.length == 0 ? (
+          <CircularProgress/>
+        ) : (
+          <Outlet/>
+        )}
       </Container>
       <Footer/>
     </ThemeProvider>

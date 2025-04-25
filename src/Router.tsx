@@ -14,7 +14,7 @@ export const ApplicationRouter = () => {
         <Route path={"/"} element={<App/>}>
           <Route path={":seasonId"} element={<Season/>}>
             <Route index element={<CurrentDay/>}/>
-            <Route path={":teamId"} element={<Team/>}/>
+            <Route path={":interestedTeamId"} element={<Team/>}/>
           </Route>
         </Route>
       </Routes>

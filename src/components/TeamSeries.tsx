@@ -1,36 +1,33 @@
 import {Box, CircularProgress} from "@mui/material"
-import {useContext, useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import {useParams} from "react-router-dom"
 
-import {AppStateContext} from "@/state/context.ts"
+import {useAppState} from "@/state"
 import {Series} from "@/types/Series"
-import {GetTeam} from "@/utils/GetTeam.ts"
 
 import {SeriesList} from "./SeriesList.tsx"
 
 export const TeamSeries = () => {
-  const {state} = useContext(AppStateContext)
+  const {seasonSeries} = useAppState()
   const [series, setSeries] = useState<Series[]>([])
-  const {teamId} = useParams()
-
-  const team = GetTeam(state.teams, parseInt(teamId ?? ""))
+  const {interestedTeamId} = useParams()
 
   useEffect(() => {
-    if (state.seasonSeries == undefined || team == undefined)
+    if (seasonSeries == undefined || interestedTeamId == undefined)
       return
 
-    setSeries(state.seasonSeries
+    setSeries(seasonSeries
       .filter((s) => s.games
-        .some((g) => g.teams.away.team.id == team.id || g.teams.home.team.id == team.id)
+        .some((g) => g.away.teamId == parseInt(interestedTeamId) || g.home.teamId == parseInt(interestedTeamId))
       )
     )
-  }, [state.seasonSeries, team])
+  }, [seasonSeries, interestedTeamId])
 
   return ((series?.length ?? 0) == 0) ? (
     <Box display={"flex"} justifyContent={"center"}>
       <CircularProgress/>
     </Box>
   ) : (
-    <SeriesList series={series} interested={team}/>
+    <SeriesList series={series}/>
   )
 }

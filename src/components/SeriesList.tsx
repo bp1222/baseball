@@ -1,5 +1,5 @@
-import {Team} from "@bp1222/stats-api"
-import {Grid2} from "@mui/material"
+import {Grid} from "@mui/material"
+import dayjs from "dayjs"
 
 import {Series} from "@/types/Series.ts"
 
@@ -7,23 +7,23 @@ import {SeriesItem} from "./SeriesList/SeriesItem.tsx"
 
 type SeriesListProps = {
   series: Series[]
-  interested?: Team
+  selectedDate?: dayjs.Dayjs
 }
 
-export const SeriesList = ({series, interested}: SeriesListProps) => {
+export const SeriesList = ({series, selectedDate}: SeriesListProps) => {
   return (
-    <Grid2 container
+    <Grid container
            spacing={1.5}
            columns={2}>
       {series?.map((s) => (
-        <Grid2 container
+        <Grid container
                key={s.pk}
                size={1}
                justifyContent={"center"}
                flexGrow={1}>
-          <SeriesItem series={s} interested={interested}/>
-        </Grid2>
+          <SeriesItem series={s} selectedDate={selectedDate}/>
+        </Grid>
       ))}
-    </Grid2>
+    </Grid>
   )
 }

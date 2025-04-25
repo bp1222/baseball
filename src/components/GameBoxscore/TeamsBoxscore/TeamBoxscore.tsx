@@ -1,26 +1,27 @@
-import {BoxscoreTeam, Player} from "@bp1222/stats-api"
 import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material"
 
+import {BoxscoreTeam} from "@/types/Boxscore.ts"
+import {Player} from "@/types/Player.ts"
 
 type TeamBoxscoreProps = {
   boxscore: BoxscoreTeam
 }
 
 export const TeamBoxscore = ({boxscore}: TeamBoxscoreProps) => {
-  const batters = Object.values(boxscore.players!).filter((p) => p.battingOrder != undefined).sort((a, b) => {
+  const batters = boxscore.players.filter((p) => p.battingOrder > 0).sort((a, b) => {
     return a.battingOrder! - b.battingOrder!
   })
 
   const getBatter = (b: Player) => {
     const indent = b.battingOrder! % 100
     return (
-      <TableRow key={boxscore.team.id + '-batter-' + b.person.id}>
+      <TableRow key={boxscore.teamId + '-batter-' + b.id}>
         <TableCell>
           <Typography fontSize={"small"} marginLeft={indent} display={"inline"}>
-            {b.person.boxscoreName}
+            {b.name}
           </Typography>
           <Typography fontSize={"x-small"} marginLeft={1} display={"inline"}>
-            {b.position.abbreviation}
+            {b.position}
           </Typography>
         </TableCell>
         <TableCell align={"right"} padding={"checkbox"}>
@@ -42,10 +43,10 @@ export const TeamBoxscore = ({boxscore}: TeamBoxscoreProps) => {
           {b.stats.batting.strikeOuts}
         </TableCell>
         <TableCell align={"right"} padding={"checkbox"}>
-          {b.seasonStats.batting.avg}
+          {b.stats.batting.avg}
         </TableCell>
         <TableCell align={"right"} padding={"checkbox"}>
-          {b.seasonStats.batting.ops}
+          {b.stats.batting.ops}
         </TableCell>
       </TableRow>
     )
