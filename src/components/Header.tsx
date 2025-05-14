@@ -1,4 +1,4 @@
-import {AppBar, Grid2, Toolbar} from "@mui/material"
+import {AppBar, Grid, Toolbar} from "@mui/material"
 
 import {HeaderName} from "./Header/HeaderName.tsx"
 import {SeasonPicker} from "./Header/SeasonPicker.tsx"
@@ -9,29 +9,26 @@ export const Header = () => {
     <AppBar position={"sticky"}
             sx={{marginBottom: 2}}>
       <Toolbar>
-        <Grid2 container
+        <Grid container
                size={"grow"}>
-          <Grid2 size={{xs: 2.5, sm: "grow"}}
-                 display={"flex"}
-                 alignItems={"center"}
-                 justifyContent={"flex-start"}>
+          <Grid container
+                 size={{xs: 2, sm: "grow"}}>
             <HeaderName/>
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={{xs: 3, sm: "grow"}}
-                 display={"flex"}
+          <Grid container
+                 size={{xs: 3, sm: "grow"}}
                  alignContent={"center"}
-                 justifyContent={{xs: "flex-start", sm: "center"}}>
+                 justifyContent={"center"}>
             <SeasonPicker/>
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={"grow"}
-                 display={"flex"}
-                 alignItems={"center"}
+          <Grid container
+                 size={"grow"}
                  justifyContent={"flex-end"}>
             <TeamPicker/>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Toolbar>
     </AppBar>
   )

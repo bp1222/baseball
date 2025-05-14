@@ -1,67 +1,58 @@
 import {ChevronLeft, ChevronRight} from "@mui/icons-material"
-import {Box, CircularProgress, Grid2} from "@mui/material"
+import {Box, CircularProgress, Grid} from "@mui/material"
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers"
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs"
-import {useContext, useEffect, useLayoutEffect, useState} from "react"
+import dayjs from "dayjs"
+import {useEffect, useState} from "react"
 import {useParams} from "react-router-dom"
 
 import {SeriesList} from "@/components/SeriesList.tsx"
-import {AppStateAction} from "@/state/actions.ts"
-import {AppStateContext} from "@/state/context.ts"
+import {useAppState, useAppStateUtil} from "@/state"
 import {Series} from "@/types/Series.ts"
 import {SeriesType} from "@/types/Series/SeriesType.ts"
-import dayJs from "@/utils/dayjs.ts"
 
 export {CurrentDay as default}
 const CurrentDay = () => {
-  const {state, dispatch} = useContext(AppStateContext)
+  const {seasons, seasonSeries} = useAppState()
+  const {getTeam} = useAppStateUtil()
   const {seasonId} = useParams()
-  const [currentSeries, setCurrentSeries] = useState<Series[] | null>(null)
-  const season = state.seasons?.find((s) => s.seasonId == seasonId)
+  const season = seasons.find((s) => s.seasonId == seasonId)
 
-  useLayoutEffect(() => {
-    if (dayJs().isBetween(dayJs(season?.regularSeasonStartDate), dayJs(season?.postSeasonEndDate))) {
-      dispatch({
-        type: AppStateAction.SelectedDate,
-        selectedDate: dayJs()
-      })
-    } else {
-      if (dayJs().isBefore(dayJs(season?.regularSeasonStartDate))) {
-        dispatch({
-          type: AppStateAction.SelectedDate,
-          selectedDate: dayJs(season?.regularSeasonStartDate)
-        })
-      } else {
-        dispatch({
-          type: AppStateAction.SelectedDate,
-          selectedDate: dayJs(season?.postSeasonEndDate ?? season?.seasonEndDate)
-        })
-      }
-    }
-  }, [dispatch, season])
+  const [currentSeries, setCurrentSeries] = useState<Series[]>([])
+  const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs>(
+    dayjs().isBetween(dayjs(season?.regularSeasonStartDate), dayjs(season?.postSeasonEndDate)) ?
+      dayjs() : (
+        dayjs().isBefore(dayjs(season?.regularSeasonStartDate)) ?
+          dayjs(season?.regularSeasonStartDate) :
+          dayjs(season?.postSeasonEndDate ?? season?.seasonEndDate)
+      )
+  )
 
   useEffect(() => {
-    if (state.seasonSeries?.length ?? 0 > 0) {
+    if (seasonSeries?.length ?? 0 > 0) {
       setCurrentSeries(
-        state.seasonSeries
-        ?.filter((s) => state.selectedDate?.isBetween(dayJs(s.startDate), dayJs(s.endDate), "day", "[]"))
+        seasonSeries
+        .filter((s) => selectedDate?.isBetween(dayjs(s.startDate), dayjs(s.endDate), "day", "[]"))
         .sort((a, b) => {
+          const aHome = getTeam(a.games[0].home.teamId)
+          const bHome = getTeam(b.games[0].home.teamId)
+
           if ([
             SeriesType.WildCard,
             SeriesType.Division,
             SeriesType.League,
             SeriesType.World].indexOf(a.type) >= 0) {
-            if (a.games[0].teams.home.team.league?.id && b.games[0].teams.home.team.league?.id) {
-              return a.games[0].teams.home.team.league?.id < b?.games[0]?.teams?.home?.team?.league?.id ? -1 : 1
+            if (aHome?.league && bHome?.league) {
+              return aHome.league < bHome.league ? -1 : 1
             }
           }
 
-          if (!state.selectedDate?.isBefore(dayJs(), 'day')) {
+          if (!selectedDate?.isBefore(dayjs(), 'day')) {
             const aGame = a.games.find(
-              (g) => state.selectedDate?.format("YYYY-MM-DD") == dayJs(g.gameDate).format("YYYY-MM-DD")
+              (g) => selectedDate?.isSame(dayjs(g.gameDate), "day")
             )
             const bGame = b.games.find(
-              (g) => state.selectedDate?.format("YYYY-MM-DD") == dayJs(g.gameDate).format("YYYY-MM-DD")
+              (g) => selectedDate?.isSame(dayjs(g.gameDate), "day")
             )
 
             if (aGame && bGame) {
@@ -74,56 +65,55 @@ const CurrentDay = () => {
             }
           }
 
-          return a.games[0].teams.home.team.name.localeCompare(b.games[0].teams.home.team.name)
-        }) ?? []
+          return aHome?.name.localeCompare(bHome?.name ?? "") ?? 0
+        })
       )
     }
-  }, [state.seasonSeries, state.selectedDate])
+  }, [getTeam, seasonSeries, selectedDate])
 
   return (
-    <Grid2 container
-           flexDirection={"column"}>
+    <Grid container
+          flexDirection={"column"}>
 
-      <Grid2 container
-             flexDirection={"row"}
-             justifyContent={"center"}
-             alignItems={"center"}
-             paddingTop={2}
-             paddingBottom={2}>
-        <ChevronLeft fontSize={"large"} onClick={() => dispatch({
-          type: AppStateAction.SelectedDate,
-          selectedDate: state.selectedDate?.subtract(1, "day")
-        })}/>
+      <Grid container
+            flexDirection={"row"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            paddingTop={2}
+            paddingBottom={2}>
+        <ChevronLeft fontSize={"large"} onClick={
+          () => setSelectedDate(selectedDate?.subtract(1, "day"))
+        }/>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker label="Select Date"
                       views={["month", "day"]}
-                      value={state.selectedDate}
-                      minDate={dayJs(season?.seasonStartDate)}
-                      maxDate={dayJs(season?.postSeasonEndDate)}
+                      value={selectedDate}
+                      minDate={dayjs(season?.seasonStartDate)}
+                      maxDate={dayjs(season?.postSeasonEndDate)}
+                      slotProps={{
+                        actionBar: { actions: ["today"] },
+                      }}
                       onChange={(date, context) => {
-                        if (context.validationError) return
-                        if (date) dispatch({
-                          type: AppStateAction.SelectedDate,
-                          selectedDate: date
-                        })
+                        if (!context.validationError && date) {
+                          setSelectedDate(date)
+                        }
                       }}/>
         </LocalizationProvider>
-        <ChevronRight fontSize={"large"} onClick={() => dispatch({
-          type: AppStateAction.SelectedDate,
-          selectedDate: state.selectedDate?.add(1, "day")
-        })}/>
-      </Grid2>
+        <ChevronRight fontSize={"large"} onClick={
+          () => setSelectedDate(selectedDate?.add(1, "day"))
+        }/>
+      </Grid>
 
-      <Grid2>
+      <Grid>
         {!currentSeries ? <CircularProgress/> :
           currentSeries.length == 0 ? (
             <Box display={"flex"} justifyContent={"center"}>
               No Games on This Date
             </Box>
           ) : (
-            <SeriesList series={currentSeries}/>
+            <SeriesList series={currentSeries} selectedDate={selectedDate}/>
           )}
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   )
 }

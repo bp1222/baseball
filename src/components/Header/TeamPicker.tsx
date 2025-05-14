@@ -1,54 +1,56 @@
-import {Team} from "@bp1222/stats-api"
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
-import {Box, Menu, MenuItem, Typography} from "@mui/material"
-import {useContext, useState} from "react"
+import {Button, Grid, Menu, MenuItem} from "@mui/material"
+import {useState} from "react"
 import {useNavigate, useParams} from "react-router-dom"
 
-import {AppStateContext} from "@/state/context.ts"
+import {useAppState} from "@/state"
 
 export const TeamPicker = () => {
-  const {state} = useContext(AppStateContext)
-  const {seasonId, teamId} = useParams()
-  const navigate = useNavigate()
-
+  const {teams} = useAppState()
+  const {seasonId, interestedTeamId} = useParams()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const isOpen = Boolean(anchorEl)
+  const navigate = useNavigate()
+  const interestedTeam = teams.find(t => t.id == parseInt(interestedTeamId??""))
 
-  const handleTeamSelect = (team: Team | null) => {
-    setAnchorEl(null)
-    if (team == null) {
-      navigate(seasonId + "/")
+  const setTeamId = (teamId: number | undefined) => {
+    if (teamId) {
+      navigate(`/${seasonId}/${teamId}`)
     } else {
-      navigate(seasonId + "/" + team.id)
+      navigate(`/${seasonId}`)
     }
   }
 
-  const team = state.teams?.find((t) => t.id == parseInt(teamId ?? ""))
-
   return (
-    <Box display={"flex"}
-         alignItems={"center"}
-         justifyContent={"flex-end"}>
-      <Typography textAlign={"center"}
-                  onClick={(event) => setAnchorEl(event.currentTarget)}
-                  sx={{cursor: "pointer", float: "right"}}
-                  textTransform={"uppercase"}
-                  paddingRight={1}>
-        {team?.name ? team.name : "Select Team"}
-      </Typography>
-      {teamId && <RemoveCircleIcon sx={{cursor: "pointer", float: "right"}}
-                                   fontSize={"small"}
-                                   onClick={() => handleTeamSelect(null)}/>}
-
-      <Menu open={anchorEl != null}
-            anchorEl={anchorEl}
+    <Grid container
+           alignItems={"center"}
+    >
+      <Grid>
+        <Button variant={"text"}
+                color={"inherit"}
+                size={"large"}
+                sx={{alignItems: "flex-start"}}
+                endIcon={interestedTeam ? <RemoveCircleIcon onClick={(e) => {
+                  e.stopPropagation()
+                  setTeamId(undefined)
+                }}></RemoveCircleIcon> : undefined}
+                onClick={(event) => setAnchorEl(event.currentTarget)}>
+          {interestedTeam?.name ?? "Select Team"}
+        </Button>
+      </Grid>
+      <Menu anchorEl={anchorEl}
+            open={isOpen}
             onClose={() => setAnchorEl(null)}>
-        {state.teams?.map((v) => (
-          <MenuItem key={v.teamCode}
-                    onClick={() => handleTeamSelect(v)}>
-            {v.name}
+        {teams?.map((t) => (
+          <MenuItem key={t.name}
+                    onClick={() => {
+                      setTeamId(t.id)
+                      setAnchorEl(null)
+                    }}>
+            {t.name}
           </MenuItem>
         ))}
       </Menu>
-    </Box>
+    </Grid>
   )
 }

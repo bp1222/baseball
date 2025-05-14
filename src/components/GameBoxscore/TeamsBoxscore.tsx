@@ -1,10 +1,13 @@
-import {Boxscore, Game} from "@bp1222/stats-api"
-import {Box, Button, Grid2} from "@mui/material"
+import {Box, Button, CircularProgress, Grid, ThemeProvider} from "@mui/material"
 import {grey} from "@mui/material/colors"
 import {Fragment, useEffect, useState} from "react"
 
+import {GetTeamTheme} from "@/colors"
 import {TeamBoxscore} from "@/components/GameBoxscore/TeamsBoxscore/TeamBoxscore.tsx"
 import {getGameBoxscore} from "@/services/MlbAPI"
+import {useAppStateApi, useAppStateUtil} from "@/state"
+import {Game} from "@/types/Game.ts"
+import {Team} from "@/types/Team.ts"
 
 type GameBoxscores = {
   game: Game
@@ -16,62 +19,69 @@ enum Tab {
 }
 
 export const TeamsBoxscore = ({game}: GameBoxscores) => {
-  const [boxscore, setBoxscore] = useState<Boxscore>()
+  const {setBoxscore} = useAppStateApi()
+  const {getTeam} = useAppStateUtil()
+
   const [tab, setTab] = useState<Tab>(Tab.Away)
 
   useEffect(() => {
-    getGameBoxscore(game.gamePk).then((boxscore) => {
-      setBoxscore(boxscore)
+    getGameBoxscore(game).then((boxscore) => {
+      setBoxscore(game.pk, boxscore)
     })
-  }, [game])
+  }, [game, setBoxscore])
 
-  const makeButton = (text: string, loc: Tab) => {
+  const makeButton = (team: Team, loc: Tab) => {
     const selected = tab == loc
+    const fontColor = selected ? "primary.main" : "black"
     const bgColor = selected ? "secondary.main" : grey[200]
 
     return (
-      <Button
-        onClick={() => {
-          setTab(loc)
-        }}
-        sx={{
-          border: 1,
-          borderColor: "secondary.dark",
-          borderRadius: 1,
-          margin: 2,
-          height: "1.5em",
-          backgroundColor: bgColor,
-          fontWeight: selected ? "bold" : "",
-          ":hover": {
-            bgcolor: grey[400],
-          },
-        }}
-      >
-        <Box>
-          {text}
-        </Box>
-      </Button>
+      <ThemeProvider theme={GetTeamTheme(team.id)}>
+        <Button
+          onClick={() => {
+            setTab(loc)
+          }}
+          sx={{
+            border: 1,
+            borderColor: "secondary.dark",
+            borderRadius: 1,
+            margin: 2,
+            height: "1.5em",
+            color: fontColor,
+            backgroundColor: bgColor,
+            fontWeight: selected ? "bold" : "",
+            ":hover": {
+              bgcolor: "secondary.light",
+              fontColor: "primary.light",
+            },
+          }}
+        >
+          <Box>
+            {team.franchiseName}
+          </Box>
+        </Button>
+      </ThemeProvider>
     )
   }
 
-  if (boxscore == undefined || boxscore.teams == undefined) {
-    return <></>
+  if (game.boxscore == undefined) {
+    return <CircularProgress/>
   }
 
   return (
     <Fragment>
-      <Grid2 textAlign={"center"}>
-        {makeButton(game.teams.away.team.clubName!, Tab.Away)}
-        {makeButton(game.teams.home.team.clubName!, Tab.Home)}
-      </Grid2>
+      <Grid textAlign={"center"}>
+        {makeButton(getTeam(game.away.teamId)!, Tab.Away)}
+        {makeButton(getTeam(game.home.teamId)!, Tab.Home)}
+      </Grid>
 
-      <Grid2 display={tab == Tab.Home ? "none" : "block"}>
-        <TeamBoxscore boxscore={boxscore.teams.away}/>
-      </Grid2>
+      <Grid display={tab == Tab.Home ? "none" : "block"}>
+        <TeamBoxscore boxscore={game.boxscore.away}/>
+      </Grid>
 
-      <Grid2 display={tab == Tab.Home ? "block" : "none"}>
-        <TeamBoxscore boxscore={boxscore.teams.home}/>
-      </Grid2>
+      <Grid display={tab == Tab.Home ? "block" : "none"}>
+        <TeamBoxscore boxscore={game.boxscore.home}/>
+      </Grid>
     </Fragment>
   )
 }

@@ -29,24 +29,19 @@ export const ResultBadge = ({result, type}: ResultBadgeProps) => {
       break
   }
 
-  const {background, border} = GetBadgeColors(type, result)
-
   if (badge.length > 0) {
+    const {background, border} = GetBadgeColors(type, result)
     return (
       <Typography
-        minWidth={45}
-        maxWidth={45}
-        height={11}
+        width={47}
         bgcolor={background}
         color={"Background"}
         fontSize={"smaller"}
-        lineHeight={1}
-        letterSpacing={-0.5}
         textAlign={"center"}
+        lineHeight={1.2}
         border={2}
-        borderRadius={2}
-        borderColor={border}
-      >
+        borderRadius={1}
+        borderColor={border}>
         {badge.toUpperCase()}
       </Typography>
     )

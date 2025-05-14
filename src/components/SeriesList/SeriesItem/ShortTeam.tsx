@@ -1,10 +1,10 @@
-import {Team} from "@bp1222/stats-api"
-import {Grid2, Tooltip, Typography} from "@mui/material"
+import {Grid, Tooltip, Typography} from "@mui/material"
 
+import {Team} from "@/types/Team.ts"
 import {GetTeamImage} from "@/utils/GetTeamImage.tsx"
 
 type ShortTeamProps = {
-  team: Team | undefined
+  team?: Team
   dead?: boolean
 }
 
@@ -12,8 +12,8 @@ const ShortTeam = ({team, dead}: ShortTeamProps) => {
   if (team == undefined) return
 
   return (
-    <Grid2>
-      <Grid2 container
+    <Grid>
+      <Grid container
              justifyContent={"center"}
              alignItems={"center"}
              flexDirection={"column"}>
@@ -28,8 +28,8 @@ const ShortTeam = ({team, dead}: ShortTeamProps) => {
             {team.abbreviation?.toUpperCase() ?? "TBD"}
           </Typography>
         </Tooltip>
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   )
 }
 

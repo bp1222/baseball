@@ -1,42 +1,32 @@
-import {useContext, useEffect} from "react"
+import {Box, CircularProgress} from "@mui/material"
+import {useEffect} from "react"
 import {Outlet, useParams} from "react-router-dom"
 
 import {getSeasonSchedule} from "@/services/MlbAPI"
-import {AppStateAction} from "@/state/actions.ts"
-import {AppStateContext} from "@/state/context.ts"
-import {GenerateSeasonSeries} from "@/utils/Series/GenerateSeasonSeries.ts"
+import {useAppState, useAppStateApi, useAppStateUtil} from "@/state"
 
-export {SeasonComponent as default}
-const SeasonComponent = () => {
-  const {state, dispatch} = useContext(AppStateContext)
+export {Season as default}
+const Season = () => {
+  const {seasonSeries} = useAppState()
+  const {setSeasonSeries} = useAppStateApi()
+  const {getSeason} = useAppStateUtil()
   const {seasonId} = useParams()
-  const season = state.seasons?.find((s) => s.seasonId == seasonId)
+  const season = getSeason(seasonId)
 
   useEffect(() => {
-    if (season == undefined) return
-
-    const refreshData = () => {
-      getSeasonSchedule(season).then((schedule) => {
-        dispatch({
-          type: AppStateAction.SeasonSeries,
-          series: GenerateSeasonSeries(schedule.dates.flatMap((d) => d.games))
-        })
-      })
+    if (season) {
+      getSeasonSchedule(season).then((schedule) => setSeasonSeries(schedule))
     }
-
-    // Initial Load
-    refreshData()
-
-    const refreshIntervalRef = setInterval(() => {
-      refreshData()
-    }, 1000 * 60) // 1 minute
-
     return () => {
-      clearInterval(refreshIntervalRef)
+      setSeasonSeries([])
     }
-  }, [dispatch, season])
+  }, [setSeasonSeries, season])
 
-  return (
+  return seasonSeries.length == 0 ? (
+    <Box display={"flex"} justifyContent={"center"}>
+      <CircularProgress/>
+    </Box>
+  ) : (
     <Outlet/>
   )
 }

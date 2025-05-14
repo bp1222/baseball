@@ -1,11 +1,13 @@
-import {Game, GameStatusCode, Linescore} from "@bp1222/stats-api"
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
 import {Box} from "@mui/material"
+import dayjs from "dayjs"
 import {useEffect, useState} from "react"
 
 import {getGameLinescore} from "@/services/MlbAPI"
-import dayjs from "@/utils/dayjs.ts"
+import {Game} from "@/types/Game.ts"
+import {GameStatus} from "@/types/Game/GameStatus.ts"
+import {Linescore} from "@/types/Linescore.ts"
 
 type GameStatusLineProps = {
   game: Game
@@ -15,16 +17,15 @@ export const GameStatusLine = ({game}: GameStatusLineProps) => {
   const [linescore, setLinescore] = useState<Linescore>()
 
   useEffect(() => {
-    if (game.status.codedGameState && [GameStatusCode.InProgress, GameStatusCode.GameOver, GameStatusCode.Final].indexOf(game.status.codedGameState) > -1) {
-      getGameLinescore(game.gamePk).then((linescore) => {
+    if ([GameStatus.InProgress, GameStatus.Final].indexOf(game.gameStatus) > -1) {
+      getGameLinescore(game).then((linescore) => {
         setLinescore(linescore)
       })
     }
   }, [game])
 
-  switch (game.status.codedGameState) {
-    case GameStatusCode.Scheduled:
-    case GameStatusCode.Pregame:
+  switch (game.gameStatus) {
+    case GameStatus.Scheduled:
       // This seems to be a special date for games that don't have a scheduled time yet
       if (dayjs(game.gameDate).utc().format("h:mm A") == "7:33 AM") {
         return
@@ -37,8 +38,7 @@ export const GameStatusLine = ({game}: GameStatusLineProps) => {
           {dayjs(game.gameDate).format("h:mm A")}
         </Box>
       )
-    case GameStatusCode.InProgress:
-    case GameStatusCode.GameOver:
+    case GameStatus.InProgress:
       return (
         <Box display={"flex"}
              alignItems={"center"}
@@ -52,7 +52,7 @@ export const GameStatusLine = ({game}: GameStatusLineProps) => {
           } {linescore?.currentInningOrdinal}
         </Box>
       )
-    case GameStatusCode.Final:
+    case GameStatus.Final:
       return (
         <Box display={"flex"}
              alignItems={"center"}
@@ -63,7 +63,7 @@ export const GameStatusLine = ({game}: GameStatusLineProps) => {
           F{((linescore?.innings?.length ?? 9) != (linescore?.scheduledInnings ?? 9)) ? "/" + linescore?.innings?.length : ""}
         </Box>
       )
-    case GameStatusCode.Canceled:
+    case GameStatus.Postponed:
       return (
         <Box display={"flex"}
              alignItems={"center"}

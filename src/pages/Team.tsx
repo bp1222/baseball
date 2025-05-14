@@ -1,9 +1,12 @@
-import {Box, Button, Grid2} from "@mui/material"
+import {Box, Button, CircularProgress, Grid} from "@mui/material"
 import {grey} from "@mui/material/colors"
-import {useState} from "react"
+import {useEffect, useState} from "react"
+import {useParams} from "react-router-dom"
 
-import {TeamSeries} from "@/components/TeamSeries.tsx"
+import {SeriesList} from "@/components/SeriesList.tsx"
 import TeamStats from "@/components/TeamStats.tsx"
+import {useAppState} from "@/state"
+import {Series} from "@/types/Series.ts"
 
 enum Tab {
   Schedule,
@@ -12,8 +15,24 @@ enum Tab {
 
 export {Team as default}
 const Team = () => {
+  const {seasonSeries} = useAppState()
+  const {interestedTeamId} = useParams()
+
+  const [series, setSeries] = useState<Series[]>([])
+
   const [tab, setTab] = useState<Tab>(Tab.Schedule)
   const isStatsTab = tab == Tab.Stats
+
+  useEffect(() => {
+    if (seasonSeries == undefined || interestedTeamId == undefined)
+      return
+
+    setSeries(seasonSeries
+      .filter((s) => s.games
+        .some((g) => g.away.teamId == parseInt(interestedTeamId) || g.home.teamId == parseInt(interestedTeamId))
+      )
+    )
+  }, [seasonSeries, interestedTeamId])
 
   const makeButton = (text: string, loc: Tab) => {
     const selected = tab == loc
@@ -44,34 +63,40 @@ const Team = () => {
   }
 
   return (
-    <Grid2 container
-           flexDirection={"column"}>
+    <Grid container
+          flexDirection={"column"}>
 
-      <Grid2 container
-             display={{sm: "flex", md: "none"}}
-             flexGrow={1}
-             flexDirection={"row"}
-             justifyContent={"center"}
-             textAlign={"center"}
-             spacing={2}
-             paddingBottom={2}>
+      <Grid container
+            display={{sm: "flex", md: "none"}}
+            flexGrow={1}
+            flexDirection={"row"}
+            justifyContent={"center"}
+            textAlign={"center"}
+            spacing={2}
+            paddingBottom={2}>
         {makeButton("schedule", Tab.Schedule)}
         {makeButton("stats", Tab.Stats)}
-      </Grid2>
+      </Grid>
 
-      <Grid2 container
-             justifyContent={"center"}
-             columns={{xs: 1, md: 3}}>
+      {((series?.length ?? 0) == 0) ? (
+        <Box display={"flex"} justifyContent={"center"}>
+          <CircularProgress/>
+        </Box>
+      ) : (
+        <Grid container
+              justifyContent={"center"}
+              columns={{xs: 1, md: 3}}>
 
-        <Grid2 display={{xs: isStatsTab ? "none" : "", md: "block"}} size={2}>
-          <TeamSeries/>
-        </Grid2>
+          <Grid display={{xs: isStatsTab ? "none" : "", md: "block"}} size={2}>
+            <SeriesList series={series}/>
+          </Grid>
 
-        <Grid2 paddingLeft={{xs: 0, md: 1}} display={{xs: isStatsTab ? "block" : "none", md: "block"}} size={1}
-               maxWidth={450}>
-          <TeamStats/>
-        </Grid2>
-      </Grid2>
-    </Grid2>
+          <Grid paddingLeft={{xs: 0, md: 1}} display={{xs: isStatsTab ? "block" : "none", md: "block"}} size={1}
+                maxWidth={450}>
+            <TeamStats/>
+          </Grid>
+        </Grid>
+      )}
+    </Grid>
   )
 }

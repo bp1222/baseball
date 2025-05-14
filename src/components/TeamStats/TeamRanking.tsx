@@ -1,12 +1,13 @@
-import {GameStatusCode, GameType, Team} from "@bp1222/stats-api"
-import {Grid2, Paper, TableContainer, Typography} from "@mui/material"
+import {Grid, Paper, TableContainer, Typography} from "@mui/material"
 import {LineChart, LineSeriesType} from "@mui/x-charts"
-import {useContext, useMemo} from "react"
+import dayjs from "dayjs"
+import {useMemo} from "react"
 import {useParams} from "react-router-dom"
 
-import {AppStateContext} from "@/state/context.ts"
-import dayjs from "@/utils/dayjs.ts"
-import {GetTeam} from "@/utils/GetTeam.ts"
+import {useAppState, useAppStateUtil} from "@/state"
+import {GameStatus} from "@/types/Game/GameStatus.ts"
+import {GameType} from "@/types/Game/GameType.ts"
+import {Team} from "@/types/Team.ts"
 
 type TeamDailyTally = {
   teamId: number,
@@ -19,12 +20,13 @@ type DailyTally = {
 }
 
 export const TeamRanking = () => {
-  const {state} = useContext(AppStateContext)
-  const {teamId} = useParams()
+  const {teams, seasonSeries} = useAppState()
+  const {getTeam} = useAppStateUtil()
+  const {interestedTeamId} = useParams()
 
   const standings = useMemo(() => {
-    const team = GetTeam(state.teams, parseInt(teamId ?? ""))
-    if (state.teams == undefined || state.seasonSeries == undefined || team == undefined) return
+    const team = getTeam(parseInt(interestedTeamId ?? ""))
+    if (teams == undefined || seasonSeries == undefined || team == undefined) return
 
     const runningTallies: TeamDailyTally[] = []
 
@@ -33,8 +35,8 @@ export const TeamRanking = () => {
 
     const getEmptyDivisionTally = (): TeamDailyTally[] => {
       const retval: TeamDailyTally[] = []
-      state.teams!.forEach((t) => {
-        if (t.division?.id == team.division?.id) {
+      teams.forEach((t) => {
+        if (t.division == team.division) {
           retval.push({teamId: t.id, gameDifference: 0})
         }
       })
@@ -74,46 +76,39 @@ export const TeamRanking = () => {
       teamDailyTally.gameDifference = teamRunningTally.gameDifference
     }
 
-    state.seasonSeries
+    seasonSeries
     .flatMap((s) => s.games)
-
-    .sort((a, b) => a.officialDate.localeCompare(b.officialDate))
-
-    .filter((game) => game.gameType == GameType.Regular && game.status.codedGameState == GameStatusCode.Final)
-
+    .sort((a, b) => a.gameDate.diff(b.gameDate, "minute"))
+    .filter((game) => game.gameType == GameType.Regular && game.gameStatus == GameStatus.Final)
     .filter((game) => {
-      if (seenGames.indexOf(game.gamePk) > 0) {
+      if (seenGames.indexOf(game.pk) > 0) {
         return false
       }
-      seenGames.push(game.gamePk)
+      seenGames.push(game.pk)
       return true
     })
 
     .filter((game) => {
-      const awayTeam = GetTeam(state.teams, game.teams.away.team.id)
-      const homeTeam = GetTeam(state.teams, game.teams.home.team.id)
-
+      const awayTeam = getTeam(game.away.teamId)
+      const homeTeam = getTeam(game.home.teamId)
       if (awayTeam == undefined || homeTeam == undefined) return false
-
-      return awayTeam.division?.id == team.division?.id || homeTeam.division?.id == team.division?.id
+      return awayTeam.division == team.division || homeTeam.division == team.division
     })
 
     // Filter out games that are not regular season games
     // Tally up their records
     .forEach((game) => {
-      const awayTeam = GetTeam(state.teams, game.teams.away.team.id)
-      const homeTeam = GetTeam(state.teams, game.teams.home.team.id)
-
-      const day = dayjs(game.officialDate)
+      const awayTeam = getTeam(game.away.teamId)
+      const homeTeam = getTeam(game.home.teamId)
 
       // Tally if the away team was in this division
-      if (awayTeam!.division?.id == team.division?.id) {
-        tallyGame(day, awayTeam!, game.teams.away.isWinner)
+      if (awayTeam!.division == team.division) {
+        tallyGame(game.gameDate, awayTeam!, game.away.isWinner)
       }
 
       // Tally if the home team was in this division
-      if (homeTeam!.division?.id == team.division?.id) {
-        tallyGame(day, homeTeam!, game.teams.home.isWinner)
+      if (homeTeam!.division == team.division) {
+        tallyGame(game.gameDate, homeTeam!, game.home.isWinner)
       }
     })
 
@@ -127,7 +122,7 @@ export const TeamRanking = () => {
     })
 
     return dailyTallies
-  }, [state.teams, state.seasonSeries, teamId])
+  }, [teams, seasonSeries, interestedTeamId, getTeam])
 
   if ((standings?.length ?? 0) <= 0) {
     return
@@ -138,20 +133,20 @@ export const TeamRanking = () => {
     const teams = standings?.[0].teams.map((t) => t.teamId)
 
     teams?.forEach((teamId) => {
-      const team = GetTeam(state.teams, teamId)
+      const team = getTeam(teamId)
       ret.push({
         type: 'line',
         data: standings?.map((t) => t.teams.filter((team) => team.teamId == teamId).map((team) => team.gameDifference)[0]),
         label: team?.name,
         showMark: false,
-        curve: 'step',
+        curve: 'catmullRom',
       })
     })
     return ret
   }
 
   return (
-    <Grid2 display={"flex"} flexDirection={"column"}>
+    <Grid display={"flex"} flexDirection={"column"}>
       <TableContainer
         component={Paper}
         elevation={2}
@@ -165,16 +160,9 @@ export const TeamRanking = () => {
         >
           Games Behind
         </Typography>
-
         <LineChart height={500}
-                   margin={{top: 25, right: 25}}
                    series={getSeries()}
-                   grid={{horizontal: true, vertical: true}}
-                   slotProps={{
-                     legend: {
-                       hidden: true,
-                     }
-                   }}
+                   grid={{horizontal: true}}
                    yAxis={[
                      {
                        label: 'Games Back',
@@ -182,18 +170,22 @@ export const TeamRanking = () => {
                        reverse: true,
                      }
                    ]}
-                   xAxis={[{
-                     label: 'Day',
-                     scaleType: 'band',
-                     data: standings?.map((t) => t.date.toISOString()),
-                     tickInterval: (date) => dayjs(date).get("date") == 1,
-                     tickLabelInterval: (date) => dayjs(date).get("date") == 1,
-                     valueFormatter: (date, context) =>
-                       context.location === 'tick'
-                         ? dayjs(date).format("MMM")
-                         : dayjs(date).format("MMMM DD")
-                   }]}/>
+                   xAxis={[
+                     {
+                       label: 'Day',
+                       scaleType: 'band',
+                       data: standings?.map((t) => t.date),
+                       tickInterval: (date) => date?.get("date") == 1,
+                       tickLabelInterval: (date) => date?.get("date") == 1,
+                       valueFormatter: (date, context) =>
+                         context.location === 'tick'
+                           ? date.format("MMM")
+                           : date.format("MMMM DD")
+                     }
+                   ]}
+
+        />
       </TableContainer>
-    </Grid2>
+    </Grid>
   )
 }

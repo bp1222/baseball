@@ -31,7 +31,7 @@ import twins from "./twins"
 import whitesox from "./whitesox"
 import yankees from "./yankees"
 
-const teamColorMap: {[key: number]: Theme} = {
+const teamColorMap: Record<number, Theme> = {
   108: angels,
   109: diamondbacks,
   110: orioles,
@@ -67,21 +67,7 @@ const teamColorMap: {[key: number]: Theme} = {
 export const GetTeamTheme = (teamId: number): Theme => {
   const t: Theme = teamColorMap[teamId]
 
-  return createTheme(
-    {
-      components: {
-        MuiCssBaseline: {
-          styleOverrides: {
-            "body": {
-              backgroundColor: "#f7f7f7",
-            },
-            "*, *::before, *::after": {
-              boxSizing: "initial",
-            },
-          },
-        },
-      },
-    },
+  return createTheme({},
     t ? t : [],
   )
 }

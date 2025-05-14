@@ -1,10 +1,10 @@
-import {Game} from "@bp1222/stats-api"
-import {Grid2, Typography} from "@mui/material"
-import {Fragment} from "react"
+import {Grid, Typography} from "@mui/material"
 
+import {TeamsBoxscore} from "@/components/GameBoxscore/TeamsBoxscore.tsx"
+import {Game} from "@/types/Game.ts"
+
+import {BoxscoreTeam} from "./GameBoxscore/BoxscoreTeam.tsx"
 import {GameLinescore} from "./GameBoxscore/GameLinescore.tsx"
-import {Team} from "./GameBoxscore/Team.tsx"
-import {TeamsBoxscore} from "./GameBoxscore/TeamsBoxscore.tsx"
 
 type GameBoxscoreProps = {
   game: Game
@@ -12,29 +12,41 @@ type GameBoxscoreProps = {
 
 export const GameBoxscore = ({game}: GameBoxscoreProps) => {
   return (
-    <Fragment>
-      <Grid2>
-        <Grid2 container
-               id={game.gamePk + '-boxscore-teams'}
-               alignItems={"center"}
-               paddingTop={2}
-               paddingBottom={2}>
-          <Team gameTeam={game.teams.away}/>
-          <Typography fontSize={"larger"}
-                      paddingX={2}>
-            @
-          </Typography>
-          <Team gameTeam={game.teams.home}/>
-        </Grid2>
-      </Grid2>
+    <Grid container
+          flexDirection={"column"}
+          flexWrap={"nowrap"}
+          alignItems={"center"}
+          margin={"auto"}
+          marginTop={"4vh"}
+          minHeight={"70vh"}
+          maxHeight={"90vh"}
+          width={"95vw"}
+          maxWidth={850}
+          bgcolor={"Background"}
+          padding={2}
+          overflow={"auto"}
+          border={"2px solid black"}
+          borderRadius={2}>
+      <Grid container
+            id={game.pk + '-boxscore-teams'}
+            alignItems={"center"}
+            paddingTop={2}
+            paddingBottom={2}>
+        <BoxscoreTeam gameTeam={game.away}/>
+        <Typography fontSize={"larger"}
+                    paddingX={2}>
+          @
+        </Typography>
+        <BoxscoreTeam gameTeam={game.home}/>
+      </Grid>
 
-      <Grid2 width={"90%"} paddingY={2}>
+      <Grid width={"90%"} paddingY={2}>
         <GameLinescore game={game}/>
-      </Grid2>
+      </Grid>
 
-      <Grid2 width={"90%"}>
+      <Grid width={"90%"}>
         <TeamsBoxscore game={game}/>
-      </Grid2>
-    </Fragment>
+      </Grid>
+    </Grid>
   )
 }

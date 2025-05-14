@@ -1,5 +1,7 @@
 import {Game, GameStatusCode, GameTeam, GameType} from "@bp1222/stats-api"
+import dayjs from "dayjs"
 
+import {GameFromMLBGame} from "@/types/Game.ts"
 import {Series} from "@/types/Series.ts"
 import {SeriesType} from "@/types/Series/SeriesType.ts"
 
@@ -26,42 +28,37 @@ const gameToSeriesType = (game: Game): SeriesType => {
   }
 }
 
-const getCurrentSeries = (game: Game, seasonSeries: Series[]) => {
-  if (game.teams == undefined) {
-    throw new Error("Game has no teams")
-  }
-
-  // Get the existing series, or create a new one
-  // Existing series may be a home/away, so will need to check if the pk is based
-  // on either the most recent series being an alternate home/away.
-  // Also need to ensure they're the same type of series; regular season, playoffs, etc.
-  let currentSeries = seasonSeries.find((s) =>
-    (s.pk == seriesPk(game.teams.home, gameToSeriesType(game)) || s.pk == seriesPk(game.teams.away, gameToSeriesType(game)))
-    && s.type == gameToSeriesType(game))
-
-  if (!currentSeries) {
-    currentSeries = newSeries()
-    currentSeries.pk = seriesPk(game.teams.home, gameToSeriesType(game))
-    seasonSeries.push(currentSeries)
-  }
-
-  return currentSeries
-}
-
-const newSeries = () => {
-  return {
-    pk: "",
-    type: SeriesType.Unknown,
-    startDate: "",
-    endDate: "",
-    games: [],
-  }
-}
-
-export const GenerateSeasonSeries = (schedule: Game[]) => {
-  const seenGames: number[] = []
+export const SeriesFromMLBSchedule= (schedule: Game[]) => {
   const seasonSeries: Series[] = []
+  const seenGames: number[] = []
 
+  const getCurrentSeries = (game: Game) => {
+    if (game.teams == undefined) {
+      throw new Error("Game has no teams")
+    }
+
+    // Get the existing series, or create a new one
+    // Existing may be a home and away series, so will need to check if the pk is based
+    // on either the most recent series being an alternate home/away.
+    // Also need to ensure they're the same type of series; regular season, playoffs, etc.
+    let currentSeries = seasonSeries.find((s) =>
+      s.pk == seriesPk(game.teams.home, gameToSeriesType(game)) ||
+      s.pk == seriesPk(game.teams.away, gameToSeriesType(game)))
+
+
+    if (currentSeries == undefined) {
+      currentSeries = {
+        pk: seriesPk(game.teams.home, gameToSeriesType(game)),
+        type: SeriesType.Unknown,
+        games: [],
+      }
+      seasonSeries.push(currentSeries)
+    }
+
+    return currentSeries
+  }
+
+  seasonSeries.length = 0
   schedule.forEach((game: Game) => {
     if (game.gameType == GameType.SpringTraining || game.gameType == GameType.Exhibition) {
       return
@@ -88,21 +85,21 @@ export const GenerateSeasonSeries = (schedule: Game[]) => {
     // The first game will be recorded as a "Final" state, and the second game will also be recorded
     // But it will have a different series number associated.  Thus, we don't want to pull the series
     // of a previously seen game
-    const currentSeries = getCurrentSeries(game, seasonSeries)
+    const currentSeries = getCurrentSeries(game)
 
     // If this series has no games, set some defaults.  Why not just look if it's the first game in a series?
     // Because the 2021 Reds start the season on game 4 of a 6 game series.  Clearly a data problem with
     // MLB data, because it should be game 1 of 3.  WTF?!
     if (currentSeries.games.length == 0) {
-      currentSeries.startDate = game.gameDate!
       currentSeries.type = gameToSeriesType(game)
+      currentSeries.startDate = dayjs(game.gameDate)
     }
 
     // Always update, we don't know if the last game of a scheduled series may end up postponed.
-    currentSeries.endDate = game.gameDate!
+    currentSeries.endDate = dayjs(game.gameDate)
 
     // Store this game into the series.
-    currentSeries.games.push(game)
+    currentSeries.games.push(GameFromMLBGame(game))
   })
 
   return seasonSeries
