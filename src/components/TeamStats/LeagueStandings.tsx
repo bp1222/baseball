@@ -23,7 +23,7 @@ export const LeagueStandings = ({team, standings}: LeagueStandingsProps) => {
   // League standings always report the top 3 division leaders first.
   const found: number[] = []
   const finalLeagueStandings = orderedLeagueStandings.filter((s) => {
-    if (found.includes(s.division)) return false
+    if (s.division == undefined || found.includes(s.division)) return false
     found.push(s.division)
     return true
   })
