@@ -1,11 +1,9 @@
 import {DivisionStandingsList as MLBDivisionStandingsList} from "@bp1222/stats-api"
 
-import memoize from "@/utils/memoize.ts"
-
 export type DivisionRecord = {
   teamId: number
-  division: number
-  divisionRank: string
+  division?: number
+  divisionRank?: string
   leagueRank: string
   divisionChamp?: boolean
   leagueGamesBack?: string
@@ -27,14 +25,14 @@ export type Standings = {
   records: DivisionRecord[]
 }
 
-export const StandingsFromMLBDivisionStandingsList = memoize((standings: MLBDivisionStandingsList): Standings[] => {
+export const StandingsFromMLBDivisionStandingsList = (standings: MLBDivisionStandingsList): Standings[] => {
   return standings.records.map((standing): Standings => {
     return {
       league: standing.league.id,
-      division: standing.division.id,
+      division: standing.division?.id,
       records: standing.teamRecords.map((record): DivisionRecord => ({
         teamId: record.team.id,
-        division: standing.division.id,
+        division: standing.division?.id,
         divisionRank: record.divisionRank,
         leagueRank: record.leagueRank,
         divisionChamp: record.divisionChamp,
@@ -52,4 +50,4 @@ export const StandingsFromMLBDivisionStandingsList = memoize((standings: MLBDivi
       }))
     }
   })
-})
+}

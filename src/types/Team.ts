@@ -1,7 +1,5 @@
 import {Team as MLBTeam} from "@bp1222/stats-api"
 
-import memoize from "@/utils/memoize.ts"
-
 export type Team = {
   id: number
   name: string
@@ -9,10 +7,10 @@ export type Team = {
   teamName?: string
   abbreviation?: string
   league: number
-  division: number
+  division?: number
 }
 
-export const TeamFromMLBTeam = memoize((team: MLBTeam): Team => {
+export const TeamFromMLBTeam = (team: MLBTeam): Team => {
   return ({
     id: team.id,
     name: team.name,
@@ -20,8 +18,6 @@ export const TeamFromMLBTeam = memoize((team: MLBTeam): Team => {
     teamName: team.teamName,
     abbreviation: team.abbreviation,
     league: team.league!.id,
-    division: team.division!.id,
+    division: team.division?.id,
   })
-}, (team) => {
-  return `${team.id}-${team.season}`
-})
+}

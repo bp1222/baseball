@@ -29,11 +29,13 @@ const reducer = (state: AppState, action: AppStateActions): AppState => {
         ...state,
         divisions: action.divisions,
       }
-    case AppStateAction.Teams:
-      return {
+    case AppStateAction.Teams: {
+      const newState = {
         ...state,
         teams: action.teams,
       }
+      return newState
+    }
     case AppStateAction.Linescore:
       state.seasonSeries.forEach(s => s.games.map(g => g.pk == action.gameId ? UpdateGameFromLinescore(g, action.linescore) : g))
       return {

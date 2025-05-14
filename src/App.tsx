@@ -10,7 +10,7 @@ import {getDivisions, getLeagues, getSeasons, getTeams} from "@/services/MlbAPI"
 import {useAppState, useAppStateApi, useAppStateUtil} from "@/state"
 
 export const App = () => {
-  const {seasons, leagues, divisions, teams} = useAppState()
+  const {seasons, leagues, teams} = useAppState()
   const {setSeasons, setLeagues, setDivisions, setTeams} = useAppStateApi()
   const {getSeason} = useAppStateUtil()
   const {seasonId, interestedTeamId} = useParams()
@@ -29,9 +29,9 @@ export const App = () => {
 
   useEffect(() => {
     if (season) {
-      getLeagues(season).then((leagues) => setLeagues(leagues))
-      getDivisions(season).then((divisions) => setDivisions(divisions))
-      getTeams(season).then((teams) => setTeams(teams))
+      getLeagues(season).then((l) => setLeagues(l))
+      getDivisions(season).then((d) => setDivisions(d))
+      getTeams(season).then((t) => setTeams(t))
     }
   }, [season, setDivisions, setLeagues, setTeams])
 
@@ -45,7 +45,7 @@ export const App = () => {
       <CssBaseline/>
       <Header/>
       <Container maxWidth={"lg"}>
-        {seasons.length == 0 || teams.length == 0 || leagues.length == 0 || divisions.length == 0 ? (
+        {seasons.length == 0 || teams.length == 0 || leagues.length == 0 ? (
           <CircularProgress/>
         ) : (
           <Outlet/>
