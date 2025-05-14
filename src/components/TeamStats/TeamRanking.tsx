@@ -4,6 +4,7 @@ import dayjs from "dayjs"
 import {useMemo} from "react"
 import {useParams} from "react-router-dom"
 
+import {GetTeamTheme} from "@/colors"
 import {useAppState, useAppStateUtil} from "@/state"
 import {GameStatus} from "@/types/Game/GameStatus.ts"
 import {GameType} from "@/types/Game/GameType.ts"
@@ -140,6 +141,7 @@ export const TeamRanking = () => {
         label: team?.name,
         showMark: false,
         curve: 'catmullRom',
+        color: GetTeamTheme(team?.id ?? 0).palette.primary.main,
       })
     })
     return ret

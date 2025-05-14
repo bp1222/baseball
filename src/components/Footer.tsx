@@ -10,13 +10,13 @@ export const Footer = () => {
           justifyContent={"center"}>
       <Grid
         margin={1}
+        marginTop={4}
         paddingLeft={1}
         paddingRight={1}
         border={0.5}
         borderRadius={1}
         borderColor={"primary.main.dark"}
-        bgcolor={"primary.main.light"}
-        mt={4}>
+        bgcolor={"Background"}>
         <Grid>
           <Typography noWrap align={"center"}>
             Made in <img width={12} height={12} src={img} alt={"Colorado style C"}/>

@@ -63,40 +63,39 @@ const Team = () => {
   }
 
   return (
-    <Grid container
-          flexDirection={"column"}>
-
+    <Box>
       <Grid container
             display={{sm: "flex", md: "none"}}
             flexGrow={1}
             flexDirection={"row"}
-            justifyContent={"center"}
             textAlign={"center"}
+            justifyContent={"center"}
             spacing={2}
             paddingBottom={2}>
         {makeButton("schedule", Tab.Schedule)}
         {makeButton("stats", Tab.Stats)}
       </Grid>
 
-      {((series?.length ?? 0) == 0) ? (
-        <Box display={"flex"} justifyContent={"center"}>
+      <Grid container
+            justifyContent={"center"}>
+        {(series?.length ?? 0) == 0 ? (
           <CircularProgress/>
-        </Box>
-      ) : (
-        <Grid container
-              justifyContent={"center"}
-              columns={{xs: 1, md: 3}}>
+        ) : (
+          <Grid container
+                flexGrow={1}
+                columnSpacing={2}
+                columns={{xs: 1, md: 3}}>
 
-          <Grid display={{xs: isStatsTab ? "none" : "", md: "block"}} size={2}>
-            <SeriesList series={series}/>
-          </Grid>
+            <Grid display={{xs: isStatsTab ? "none" : "", md: "block"}} size={2}>
+              <SeriesList series={series}/>
+            </Grid>
 
-          <Grid paddingLeft={{xs: 0, md: 1}} display={{xs: isStatsTab ? "block" : "none", md: "block"}} size={1}
-                maxWidth={450}>
-            <TeamStats/>
+            <Grid display={{xs: isStatsTab ? "block" : "none", md: "block"}} size={1}>
+              <TeamStats/>
+            </Grid>
           </Grid>
-        </Grid>
-      )}
-    </Grid>
+        )}
+      </Grid>
+    </Box>
   )
 }

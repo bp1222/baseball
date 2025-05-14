@@ -1,4 +1,4 @@
-import {Box, CircularProgress} from "@mui/material"
+import {CircularProgress, Grid} from "@mui/material"
 import {useEffect, useState} from "react"
 import {useParams} from "react-router-dom"
 
@@ -28,18 +28,20 @@ const TeamStats = () => {
   }, [team, seasonId])
 
   return (
-    <Box>
+    <Grid container
+          justifyContent={"center"}
+          flexGrow={1}>
       {standings.length == 0 ? (
         <CircularProgress/>
       ) : (
-        <>
+        <Grid>
           <TeamSeriesRecord team={team}/>
           <DivisionStandings team={team} standings={standings}/>
           <LeagueStandings team={team} standings={standings}/>
           <TeamRanking/>
-        </>
+        </Grid>
       )}
-    </Box>
+    </Grid>
   )
 }
 
