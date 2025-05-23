@@ -30,7 +30,7 @@ export const OppositeSeriesResult = (result: SeriesResult): SeriesResult => {
 
 export const GetSeriesColors = (type: SeriesType, result: SeriesResult): ResultColors => {
   return type == SeriesType.World && result == SeriesResult.Win
-    ? {background: amber[300], border: amber[600]}
+    ? {background: amber[200], border: amber[500]}
     : SeriesResultColor[result]
 }
 

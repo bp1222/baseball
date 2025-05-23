@@ -2,27 +2,27 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
 import {Box} from "@mui/material"
 import dayjs from "dayjs"
-import {useEffect, useState} from "react"
+import {useEffect} from "react"
 
 import {getGameLinescore} from "@/services/MlbAPI"
+import {useAppStateApi} from "@/state"
 import {Game} from "@/types/Game.ts"
 import {GameStatus} from "@/types/Game/GameStatus.ts"
-import {Linescore} from "@/types/Linescore.ts"
 
 type GameStatusLineProps = {
   game: Game
 }
 
 export const GameStatusLine = ({game}: GameStatusLineProps) => {
-  const [linescore, setLinescore] = useState<Linescore>()
+  const {setLinescore} = useAppStateApi()
 
   useEffect(() => {
     if ([GameStatus.InProgress, GameStatus.Final].indexOf(game.gameStatus) > -1) {
       getGameLinescore(game).then((linescore) => {
-        setLinescore(linescore)
+        setLinescore(game.pk, linescore)
       })
     }
-  }, [game])
+  }, [game, setLinescore])
 
   switch (game.gameStatus) {
     case GameStatus.Scheduled:
@@ -46,10 +46,10 @@ export const GameStatusLine = ({game}: GameStatusLineProps) => {
              fontSize={"xx-small"}
              textAlign={"center"}
              color={"text.secondary"}>
-          {linescore?.isTopInning ?
+          {game.linescore?.isTopInning ?
             <ArrowDropUpIcon sx={{width: ".6em", height: ".6em"}}/> :
             <ArrowDropDownIcon sx={{width: ".6em", height: ".6em"}}/>
-          } {linescore?.currentInningOrdinal}
+          } {game.linescore?.currentInningOrdinal}
         </Box>
       )
     case GameStatus.Final:
@@ -60,7 +60,7 @@ export const GameStatusLine = ({game}: GameStatusLineProps) => {
              fontSize={"xx-small"}
              textAlign={"center"}
              color={"text.secondary"}>
-          F{((linescore?.innings?.length ?? 9) != (linescore?.scheduledInnings ?? 9)) ? "/" + linescore?.innings?.length : ""}
+          F{((game.linescore?.innings?.length ?? 9) != (game.linescore?.scheduledInnings ?? 9)) ? "/" + game.linescore?.innings?.length : ""}
         </Box>
       )
     case GameStatus.Postponed:

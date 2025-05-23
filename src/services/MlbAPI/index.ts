@@ -1,4 +1,4 @@
-import {GameType, MlbApi, Season} from "@bp1222/stats-api";
+import {GameType, MlbApi, Schedule, ScheduleDay, Season} from "@bp1222/stats-api";
 import memoize from "@/utils/memoize.ts";
 import {Game, GameFromMLBGame} from "@/types/Game.ts";
 import {GameStatus} from "@/types/Game/GameStatus.ts";
@@ -52,7 +52,7 @@ export const getTeams= memoize(async (season: Season) => {
 })
 
 const baseGameFields = [
-  "dates", "games", "gamePk", "status", "codedGameState", "gameType",
+  "dates", "date", "name", "games", "gamePk", "status", "codedGameState", "gameType",
   "gameDate", "rescheduledFromData", "rescheduledToDate",
   "gamesInSeries", "seriesGameNumber",
   "teams", "away", "home", "isWinner", "seriesNumber", "score",
@@ -62,14 +62,54 @@ const baseGameFields = [
 ]
 
 export const getSeasonSchedule = memoize(async (season: Season) => {
-  const data = await api.getSchedule({
-    sportId: 1,
-    leagueIds: [103, 104],
-    gameTypes: [GameType.Regular, GameType.WildCardSeries, GameType.DivisionSeries, GameType.LeagueChampionshipSeries, GameType.WorldSeries],
-    startDate: season.seasonStartDate,
-    endDate: season.postSeasonEndDate ?? season.seasonEndDate,
-    fields: baseGameFields,
-  })
+  /*
+  const games = [630886, 630890, 630897, 630898, 630888]
+
+  const data: Schedule = {
+    dates: [] as Array<ScheduleDay>
+  } as Schedule
+
+  for (const pk of games) {
+    const fetched = await api.getSchedule({
+      sportId: 1,
+      leagueIds: [103, 104],
+      gameTypes: [GameType.Regular, GameType.WildCardSeries, GameType.DivisionSeries, GameType.LeagueChampionshipSeries, GameType.WorldSeries],
+      startDate: season.seasonStartDate,
+      endDate: season.postSeasonEndDate ?? season.seasonEndDate,
+      fields: baseGameFields,
+      gamePk: pk,
+    })
+    data.dates = [...data.dates, ...fetched.dates]
+  }
+  */
+
+  const dates = [["2020-09-21", "2020-09-27"]]
+  const data: Schedule = {dates: [] as Array<ScheduleDay>} as Schedule
+  for (const date of dates) {
+    const rec = await api.getSchedule({
+      sportId: 1,
+      leagueIds: [103, 104],
+      gameTypes: [GameType.Regular, GameType.WildCardSeries, GameType.DivisionSeries, GameType.LeagueChampionshipSeries, GameType.WorldSeries],
+      startDate: season.seasonStartDate,
+      endDate: season.postSeasonEndDate ?? season.seasonEndDate,
+      fields: baseGameFields,
+    })
+
+    /**
+     * Bad Data Patching
+    // Series number for a Phillies @ Nationals game on 2020-09-22 incorrectly
+    // depicts the series number to be 9, not 17, which is a series with Miami
+    rec.dates.map((d => d.games.map((g) => {
+      if ([630896, 630892, 630884].includes(g.gamePk)) {
+        g.teams.home.seriesNumber = 17
+      }
+    })))
+     */
+
+    data.dates = [...data.dates, ...rec.dates]
+  }
+
+  data.dates.filter((d => d.games.filter((g) => g.teams.home.team.id == 120 || g.teams.home.team.id == 120)))
 
   return SeriesFromMLBSchedule(data.dates.flatMap((d) => d.games))
 }, (season) => {

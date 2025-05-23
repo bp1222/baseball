@@ -5,8 +5,8 @@ import {GameFromMLBGame} from "@/types/Game.ts"
 import {Series} from "@/types/Series.ts"
 import {SeriesType} from "@/types/Series/SeriesType.ts"
 
-const seriesPk = (team: GameTeam, seriesType: SeriesType) => {
-  return team.team.id + "-" + seriesType + "-" + team.seriesNumber
+const seriesPk = (teamA: GameTeam, teamB: GameTeam, seriesType: SeriesType) => {
+  return teamA.team.id + "-" + teamA.seriesNumber + "-" + teamB.team.id + "-" + teamB.seriesNumber + "-" + seriesType
 }
 
 const gameToSeriesType = (game: Game): SeriesType => {
@@ -28,7 +28,7 @@ const gameToSeriesType = (game: Game): SeriesType => {
   }
 }
 
-export const SeriesFromMLBSchedule= (schedule: Game[]) => {
+export const SeriesFromMLBSchedule = (schedule: Game[]) => {
   const seasonSeries: Series[] = []
   const seenGames: number[] = []
 
@@ -42,13 +42,13 @@ export const SeriesFromMLBSchedule= (schedule: Game[]) => {
     // on either the most recent series being an alternate home/away.
     // Also need to ensure they're the same type of series; regular season, playoffs, etc.
     let currentSeries = seasonSeries.find((s) =>
-      s.pk == seriesPk(game.teams.home, gameToSeriesType(game)) ||
-      s.pk == seriesPk(game.teams.away, gameToSeriesType(game)))
-
+      s.pk == seriesPk(game.teams.home, game.teams.away, gameToSeriesType(game)) ||
+      s.pk == seriesPk(game.teams.away, game.teams.home, gameToSeriesType(game)))
 
     if (currentSeries == undefined) {
+      const newPk = seriesPk(game.teams.home, game.teams.away, gameToSeriesType(game))
       currentSeries = {
-        pk: seriesPk(game.teams.home, gameToSeriesType(game)),
+        pk: newPk,
         type: SeriesType.Unknown,
         games: [],
       }
@@ -102,5 +102,19 @@ export const SeriesFromMLBSchedule= (schedule: Game[]) => {
     currentSeries.games.push(GameFromMLBGame(game))
   })
 
-  return seasonSeries
+  // Due to data being weird or inconsistent in 2020, specifically, we will go ahead and
+  // merge all series that are sequential but not the same series number.
+  return seasonSeries.reduce((filtered: Series[], cur) => {
+    const prev = filtered.at(-1)
+    if (prev && prev.type == cur.type &&
+      prev.games[0].home.teamId == cur.games[0].home.teamId &&
+      prev.games[0].away.teamId == cur.games[0].away.teamId) {
+
+      prev.games = [...prev.games, ...cur.games]
+      prev.games.sort((a, b) => a.gameDate.diff(b.gameDate, "minute"))
+    } else {
+      filtered.push(cur)
+    }
+    return filtered
+  }, [])
 }

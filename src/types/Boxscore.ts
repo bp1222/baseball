@@ -1,10 +1,14 @@
-import {Boxscore as MLBBoxscore} from "@bp1222/stats-api"
+import {Boxscore as MLBBoxscore, BoxscoreTeam as MLBBoxscoreTeam} from "@bp1222/stats-api"
 
 import {Player, PlayerFromMLBPlayer} from "@/types/Player.ts"
 
 export type BoxscoreTeam = {
   teamId: number
-  players: Player[]
+  batters: number[]
+  pitchers: number[]
+  bench: number[]
+  bullpen: number[]
+  players: Record<number, Player>
 }
 
 export type Boxscore = {
@@ -12,15 +16,30 @@ export type Boxscore = {
   home: BoxscoreTeam
 }
 
-export function BoxscoreFromMLBBoxscore(boxscore: MLBBoxscore): Boxscore {
-  return {
+function getPlayersFromMLBTeamBoxscorePlayers(players: MLBBoxscoreTeam["players"]): Record<number, Player> {
+  const ret: Record<number, Player> = {}
+  Object.keys(players).forEach((key) => {
+    const player = players[key]
+    ret[Number(key.substring(2))] = PlayerFromMLBPlayer(player)
+  })
+  return ret
+}
+
+export const BoxscoreFromMLBBoxscore = (boxscore: MLBBoxscore): Boxscore => ({
     away: {
       teamId: boxscore.teams.away.team.id,
-      players: Object.values(boxscore.teams.away.players).map((player) => PlayerFromMLBPlayer(player))
+      batters: boxscore.teams.away.batters,
+      pitchers: boxscore.teams.away.pitchers,
+      bench: boxscore.teams.away.bench,
+      bullpen: boxscore.teams.away.bullpen,
+      players: getPlayersFromMLBTeamBoxscorePlayers(boxscore.teams.away.players),
     },
     home: {
       teamId: boxscore.teams.home.team.id,
-      players: Object.values(boxscore.teams.home.players).map((player) => PlayerFromMLBPlayer(player))
+      batters: boxscore.teams.home.batters,
+      pitchers: boxscore.teams.home.pitchers,
+      bench: boxscore.teams.home.bench,
+      bullpen: boxscore.teams.home.bullpen,
+      players: getPlayersFromMLBTeamBoxscorePlayers(boxscore.teams.home.players),
     }
-  }
-}
+})

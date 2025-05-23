@@ -9,6 +9,7 @@ type SeriesBadgeProps = {
 
 export const SeriesBadge = ({type}: SeriesBadgeProps) => {
   let badge = ""
+
   switch (type) {
     case SeriesType.WildCard:
       badge = "Wild Card"
@@ -27,18 +28,16 @@ export const SeriesBadge = ({type}: SeriesBadgeProps) => {
   if (badge.length > 0) {
     return (
       <Typography
-        minWidth={87}
-        maxWidth={87}
+        width={100}
         lineHeight={1}
-        height={11}
         color={"Background"}
         bgcolor={blueGrey[300]}
         fontSize={"smaller"}
         textAlign={"center"}
         border={2}
-        borderRadius={2}
+        borderRadius={1}
         borderColor={blueGrey[500]}
-        marginTop={1}>
+        marginTop={.5}>
         {badge.toUpperCase()}
       </Typography>
     )

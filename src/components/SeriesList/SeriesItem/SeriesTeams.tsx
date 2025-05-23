@@ -23,19 +23,22 @@ export const SeriesTeams = ({series}: SeriesTeamsProps) => {
 
   return (
     <Grid container
-          flexDirection={"row"}
-          alignItems={"center"}>
-      <Grid paddingRight={1}>
-        <ShortTeam team={away} dead={isPlayoffs ? awayLoss : false}/>
-      </Grid>
-      <Grid>
-        <Typography fontSize={"larger"}
-                    fontWeight={"bold"}>
-          @
-        </Typography>
-      </Grid>
-      <Grid paddingLeft={1}>
-        <ShortTeam team={home} dead={isPlayoffs ? homeLoss : false}/>
+          flexDirection={"column"}>
+      <Grid container
+            flexDirection={"row"}
+            alignItems={"center"}>
+        <Grid paddingRight={1}>
+          <ShortTeam team={away} dead={isPlayoffs ? awayLoss : false}/>
+        </Grid>
+        <Grid>
+          <Typography fontSize={"larger"}
+                      fontWeight={"bold"}>
+            @
+          </Typography>
+        </Grid>
+        <Grid paddingLeft={1}>
+          <ShortTeam team={home} dead={isPlayoffs ? homeLoss : false}/>
+        </Grid>
       </Grid>
       {isPlayoffs ? <Grid>
         <Typography textAlign={"center"}>

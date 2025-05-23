@@ -12,6 +12,7 @@ import {Team} from "@/types/Team.ts"
 
 type TeamDailyTally = {
   teamId: number,
+  team: string,
   gameDifference: number
 }
 
@@ -37,18 +38,22 @@ export const TeamRanking = () => {
     const getEmptyDivisionTally = (): TeamDailyTally[] => {
       const retval: TeamDailyTally[] = []
       teams.forEach((t) => {
-        if (t.division == team.division) {
-          retval.push({teamId: t.id, gameDifference: 0})
+        if (t.division != undefined) {
+          if (t.division == team.division) {
+            retval.push({teamId: t.id, team: t.name, gameDifference: 0})
+          }
+        } else if (t.league == team.league) {
+          retval.push({teamId: t.id, team: t.name, gameDifference: 0})
         }
       })
       return retval
     }
 
-    const tallyGame = (date: dayjs.Dayjs, team: Team, isWinner: boolean) => {
+    const tallyGame = (date: dayjs.Dayjs, tallyTeam: Team, isWinner: boolean) => {
       // Init where necessary
-      let teamRunningTally = runningTallies.find((t) => t.teamId == team.id)
+      let teamRunningTally = runningTallies.find((t) => t.teamId == tallyTeam.id)
       if (teamRunningTally == undefined) {
-        teamRunningTally = {teamId: team.id, gameDifference: 0}
+        teamRunningTally = {teamId: tallyTeam.id, team: tallyTeam.name, gameDifference: 0}
         runningTallies.push(teamRunningTally)
       }
 
@@ -73,43 +78,57 @@ export const TeamRanking = () => {
         teamRunningTally.gameDifference -= 0.5
       }
 
-      const teamDailyTally = dailyTally.teams.find((t) => t.teamId == team.id)!
+      const teamDailyTally = dailyTally.teams.find((t) => t.teamId == tallyTeam.id)!
       teamDailyTally.gameDifference = teamRunningTally.gameDifference
     }
 
     seasonSeries
     .flatMap((s) => s.games)
     .sort((a, b) => a.gameDate.diff(b.gameDate, "minute"))
-    .filter((game) => game.gameType == GameType.Regular && game.gameStatus == GameStatus.Final)
     .filter((game) => {
+      // Filter out games not regular, and not final
+      if (game.gameType != GameType.Regular || game.gameStatus != GameStatus.Final) {
+        return false
+      }
+
+      // Denote this as a seen game (for postponed game situations)
       if (seenGames.indexOf(game.pk) > 0) {
         return false
       }
       seenGames.push(game.pk)
-      return true
+
+      // Filter out games that are not in the same division (if divisions exist) or in the same league.
+      const awayTeam = getTeam(game.away.teamId)!
+      const homeTeam = getTeam(game.home.teamId)!
+      if (awayTeam.division != undefined) {
+        return awayTeam.division == team.division || homeTeam.division == team.division
+      }
+      return awayTeam.league == team.league || homeTeam.league == team.league
     })
 
-    .filter((game) => {
-      const awayTeam = getTeam(game.away.teamId)
-      const homeTeam = getTeam(game.home.teamId)
-      if (awayTeam == undefined || homeTeam == undefined) return false
-      return awayTeam.division == team.division || homeTeam.division == team.division
-    })
-
-    // Filter out games that are not regular season games
     // Tally up their records
     .forEach((game) => {
-      const awayTeam = getTeam(game.away.teamId)
-      const homeTeam = getTeam(game.home.teamId)
+      const awayTeam = getTeam(game.away.teamId)!
+      const homeTeam = getTeam(game.home.teamId)!
 
-      // Tally if the away team was in this division
-      if (awayTeam!.division == team.division) {
-        tallyGame(game.gameDate, awayTeam!, game.away.isWinner)
+      if (awayTeam.division != undefined) {
+        // Tally if the away team was in this division
+        if (awayTeam.division == team.division) {
+          tallyGame(game.gameDate, awayTeam, game.away.isWinner)
+        }
+      } else if (awayTeam.league == team.league) {
+        // Tally if the away team was in this league
+        tallyGame(game.gameDate, awayTeam, game.away.isWinner)
       }
 
-      // Tally if the home team was in this division
-      if (homeTeam!.division == team.division) {
-        tallyGame(game.gameDate, homeTeam!, game.home.isWinner)
+      if (homeTeam.division != undefined) {
+        // Tally if the home team was in this division
+        if (homeTeam.division == team.division) {
+          tallyGame(game.gameDate, homeTeam, game.home.isWinner)
+        }
+      } else if (homeTeam.league == team.league) {
+        // Tally if the home team was in this league
+        tallyGame(game.gameDate, homeTeam, game.home.isWinner)
       }
     })
 

@@ -13,6 +13,10 @@ enum Tab {
   Stats,
 }
 
+// aug 21, 22, 23, 24, sept 22
+
+// 630886, 630890, 630897, 630898, 630888
+
 export {Team as default}
 const Team = () => {
   const {seasonSeries} = useAppState()
