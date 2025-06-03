@@ -44,6 +44,7 @@ export const GameLinescore = ({game}: GameLinescoreProps) => {
                     && game.home.teamId == team?.id
                     && index + 1 == game.linescore?.innings.length
                     && game.linescore?.home.runs > game.linescore?.away.runs
+                    && teamInnings?.[index]?.runs == undefined
                       ? 'X' : (teamInnings?.[index]?.runs ?? 0)}
                   </TableCell>
                 )
