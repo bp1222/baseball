@@ -44,7 +44,7 @@ const Season = () => {
     }
   }, [season, seasonSeries, setTeams])
 
-  return (seasonSeries.length == 0 || teams.length == 0 || divisions.length == 0 || leagues.length == 0) ? (
+  return (seasonSeries.length == 0 || teams.length == 0 || leagues.length == 0) ? (
     <Box display={"flex"} justifyContent={"center"}>
       <CircularProgress/>
     </Box>
