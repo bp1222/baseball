@@ -1,21 +1,19 @@
 import {CircularProgress, Container, CssBaseline, ThemeProvider} from "@mui/material"
 import dayjs from "dayjs"
-import React, {useEffect, useLayoutEffect} from "react"
+import React, {useLayoutEffect} from "react"
 import {Outlet, useNavigate, useParams} from "react-router-dom"
 
 import {GetTeamTheme} from "@/colors"
 import {Footer} from "@/components/Footer.tsx"
 import {Header} from "@/components/Header.tsx"
-import {getDivisions, getLeagues, getSeasons, getTeams} from "@/services/MlbAPI"
-import {useAppState, useAppStateApi, useAppStateUtil} from "@/state"
+import {getSeasons} from "@/services/MlbAPI"
+import {useAppState, useAppStateApi} from "@/state"
 
 export const App = () => {
-  const {seasons, leagues, teams} = useAppState()
-  const {setSeasons, setLeagues, setDivisions, setTeams} = useAppStateApi()
-  const {getSeason} = useAppStateUtil()
+  const {seasons} = useAppState()
+  const {setSeasons} = useAppStateApi()
   const {seasonId, interestedTeamId} = useParams()
   const navigate = useNavigate()
-  const season = getSeason(seasonId)
 
   useLayoutEffect(() => {
     getSeasons().then((seasons) => {
@@ -27,14 +25,6 @@ export const App = () => {
     })
   }, [setSeasons])
 
-  useEffect(() => {
-    if (season) {
-      getLeagues(season).then((l) => setLeagues(l))
-      getDivisions(season).then((d) => setDivisions(d))
-      getTeams(season).then((t) => setTeams(t))
-    }
-  }, [season, setDivisions, setLeagues, setTeams])
-
   if (seasonId == undefined) {
     navigate("/" + dayjs().year())
     return
@@ -45,7 +35,7 @@ export const App = () => {
       <CssBaseline/>
       <Header/>
       <Container maxWidth={"lg"}>
-        {seasons.length == 0 || teams.length == 0 || leagues.length == 0 ? (
+        {seasons.length == 0 ? (
           <CircularProgress/>
         ) : (
           <Outlet/>

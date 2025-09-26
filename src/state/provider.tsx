@@ -137,7 +137,7 @@ const appStateUtil = (seasons: Season[], leagues: League[], divisions: Division[
     if (teams.length == 0) return
 
     const found = teams.find((t) => t.id == teamId)
-    if (!found) throw new Error(`Unable to find team with id ${teamId}`)
+    if (!found) return
     return found
   })
 

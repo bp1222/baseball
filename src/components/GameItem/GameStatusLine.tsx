@@ -28,7 +28,13 @@ export const GameStatusLine = ({game}: GameStatusLineProps) => {
     case GameStatus.Scheduled:
       // This seems to be a special date for games that don't have a scheduled time yet
       if (dayjs(game.gameDate).utc().format("h:mm A") == "7:33 AM") {
-        return
+        return (
+          <Box fontSize={"xx-small"}
+               textAlign={"center"}
+               color={"text.secondary"}>
+            TBD
+          </Box>
+        )
       }
 
       return (
