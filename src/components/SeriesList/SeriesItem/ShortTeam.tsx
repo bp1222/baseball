@@ -10,25 +10,24 @@ type ShortTeamProps = {
 
 const ShortTeam = ({team, dead}: ShortTeamProps) => {
   if (team == undefined) return
+  const isTbd = /[\d/]/
 
   return (
-    <Grid>
-      <Grid container
-             justifyContent={"center"}
-             alignItems={"center"}
-             flexDirection={"column"}>
-        <Tooltip title={team.name}
-                 enterDelay={500}
-                 enterNextDelay={500}
-                 leaveDelay={200}>
-          <Typography
-            width={"min-content"}
-            fontSize={"smaller"}>
-            {GetTeamImage(team, dead)}
-            {team.abbreviation?.toUpperCase() ?? "TBD"}
-          </Typography>
-        </Tooltip>
-      </Grid>
+    <Grid container
+          justifyContent={"center"}
+          alignItems={"center"}
+          flexDirection={"column"}>
+      <Tooltip title={team.name}
+               enterDelay={500}
+               enterNextDelay={500}
+               leaveDelay={200}>
+        <Typography
+          width={"min-content"}
+          fontSize={"smaller"}>
+          {GetTeamImage(team, dead)}
+          {isTbd.test(team.abbreviation??'') ? 'TBD' : team.abbreviation?.toUpperCase() ?? "TBD"}
+        </Typography>
+      </Tooltip>
     </Grid>
   )
 }

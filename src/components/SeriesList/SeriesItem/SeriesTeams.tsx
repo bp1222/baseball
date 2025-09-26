@@ -1,4 +1,5 @@
 import {Grid, Typography} from "@mui/material"
+import {Fragment} from "react"
 
 import {useAppStateUtil} from "@/state"
 import {GetSeriesResult, GetSeriesWins, Series} from "@/types/Series.ts"
@@ -21,13 +22,16 @@ export const SeriesTeams = ({series}: SeriesTeamsProps) => {
   const homeLoss = [SeriesResult.Loss, SeriesResult.Swept].indexOf(GetSeriesResult(series, home)) >= 0
   const awayLoss = [SeriesResult.Loss, SeriesResult.Swept].indexOf(GetSeriesResult(series, away)) >= 0
 
+  console.log(series)
+  console.log(home, away)
+
   return (
-    <Grid container
-          flexDirection={"column"}>
+    <Fragment>
       <Grid container
             flexDirection={"row"}
+            justifyContent={"center"}
             alignItems={"center"}>
-        <Grid paddingRight={1}>
+        <Grid justifyItems={"center"} width={"40%"} maxWidth={"40%"} paddingRight={1}>
           <ShortTeam team={away} dead={isPlayoffs ? awayLoss : false}/>
         </Grid>
         <Grid>
@@ -36,7 +40,7 @@ export const SeriesTeams = ({series}: SeriesTeamsProps) => {
             @
           </Typography>
         </Grid>
-        <Grid paddingLeft={1}>
+        <Grid width={"40%"} maxWidth={"40%"} paddingLeft={1}>
           <ShortTeam team={home} dead={isPlayoffs ? homeLoss : false}/>
         </Grid>
       </Grid>
@@ -45,6 +49,6 @@ export const SeriesTeams = ({series}: SeriesTeamsProps) => {
           {GetSeriesWins(series, away!)} - {GetSeriesWins(series, home!)}
         </Typography>
       </Grid> : <></>}
-    </Grid>
+    </Fragment>
   )
 }

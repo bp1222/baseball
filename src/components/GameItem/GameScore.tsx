@@ -11,8 +11,10 @@ type GameScoreProps = {
 
 export const GameScore = ({gameTeam, color}: GameScoreProps) => {
   const {getTeam} = useAppStateUtil()
+  const isTbd = /[\d/]/
 
   const scoreColor: Color = color || DefaultGameResultColor
+  const team = getTeam(gameTeam.teamId)
 
   return (
     <Grid container
@@ -25,7 +27,7 @@ export const GameScore = ({gameTeam, color}: GameScoreProps) => {
              color={scoreColor[700]}
              width={"70%"}
              paddingTop={0.1}>
-        {getTeam(gameTeam.teamId)?.abbreviation}
+        {isTbd.test(team?.abbreviation??'') ? 'TBD' : team?.abbreviation}
       </Grid>
       <Grid borderBottom={1}
              borderColor={scoreColor[100]}
