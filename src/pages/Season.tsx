@@ -7,7 +7,7 @@ import {useAppState, useAppStateApi, useAppStateUtil} from "@/state"
 
 export {Season as default}
 const Season = () => {
-  const {seasonSeries, teams, leagues, divisions} = useAppState()
+  const {seasonSeries, teams, leagues} = useAppState()
   const {setSeasonSeries, setLeagues, setDivisions, setTeams} = useAppStateApi()
   const {getSeason} = useAppStateUtil()
   const {seasonId} = useParams()

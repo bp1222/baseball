@@ -41,7 +41,7 @@ export const TeamPicker = () => {
       <Menu anchorEl={anchorEl}
             open={isOpen}
             onClose={() => setAnchorEl(null)}>
-        {teams?.map((t) => (
+        {teams?.filter((t) => t.id < 1000).map((t) => (
           <MenuItem key={t.name}
                     onClick={() => {
                       setTeamId(t.id)
