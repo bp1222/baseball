@@ -37,7 +37,7 @@ export const TeamRanking = () => {
 
     const getEmptyDivisionTally = (): TeamDailyTally[] => {
       const retval: TeamDailyTally[] = []
-      teams.forEach((t) => {
+      teams.filter((t) => t.id < 1000).forEach((t) => {
         if (t.division != undefined) {
           if (t.division == team.division) {
             retval.push({teamId: t.id, team: t.name, gameDifference: 0})
