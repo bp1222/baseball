@@ -1,41 +1,48 @@
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
-import {Button, Grid, Menu, MenuItem} from "@mui/material"
-import {useState} from "react"
-import {useNavigate, useParams} from "react-router-dom"
+import {Button, Grid, Menu, MenuItem} from '@mui/material'
+import {useQueryClient} from '@tanstack/react-query'
+import {useNavigate, useParams} from '@tanstack/react-router'
+import {useState} from 'react'
 
-import {useAppState} from "@/state"
+import {useTeams} from '@/queries/team.ts'
 
 export const TeamPicker = () => {
-  const {teams} = useAppState()
-  const {seasonId, interestedTeamId} = useParams()
+  const { teamId } = useParams({strict: false})
+  const { data: teams } = useTeams()
+
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
+  const interestedTeam = teams?.find(t => t.id == teamId)
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const isOpen = Boolean(anchorEl)
-  const navigate = useNavigate()
-  const interestedTeam = teams.find(t => t.id == parseInt(interestedTeamId??""))
 
-  const setTeamId = (teamId: number | undefined) => {
-    if (teamId) {
-      navigate(`/${seasonId}/${teamId}`)
-    } else {
-      navigate(`/${seasonId}`)
-    }
+  const setTeam = (teamId: number | null) => {
+    void queryClient.invalidateQueries({ queryKey: ['schedule', teamId] })
+    void navigate({
+      to: `/{$seasonId}/` + (teamId != null ? `{$teamId}` : ``),
+      params: {
+        teamId: teamId,
+      },
+    })
   }
 
   return (
     <Grid container
-           alignItems={"center"}
+           alignItems={'center'}
     >
       <Grid>
-        <Button variant={"text"}
-                color={"inherit"}
-                size={"large"}
-                sx={{alignItems: "flex-start"}}
-                endIcon={interestedTeam ? <RemoveCircleIcon onClick={(e) => {
+        <Button variant={'text'}
+                color={'inherit'}
+                size={'large'}
+                sx={{alignItems: 'flex-start'}}
+                endIcon={teamId ? <RemoveCircleIcon onClick={async (e) => {
                   e.stopPropagation()
-                  setTeamId(undefined)
+                  return setTeam(null)
                 }}></RemoveCircleIcon> : undefined}
                 onClick={(event) => setAnchorEl(event.currentTarget)}>
-          {interestedTeam?.name ?? "Select Team"}
+          {interestedTeam?.name ?? 'Select Team'}
         </Button>
       </Grid>
       <Menu anchorEl={anchorEl}
@@ -44,7 +51,7 @@ export const TeamPicker = () => {
         {teams?.filter((t) => t.id < 1000).map((t) => (
           <MenuItem key={t.name}
                     onClick={() => {
-                      setTeamId(t.id)
+                      setTeam(t.id)
                       setAnchorEl(null)
                     }}>
             {t.name}

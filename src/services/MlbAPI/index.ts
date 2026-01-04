@@ -7,17 +7,14 @@ import {LinescoreFromMLBLinescore} from "@/types/Linescore.ts";
 import {SeriesFromMLBSchedule} from "@/utils/GenerateSeasonSeries.ts";
 import dayjs from "dayjs";
 import {BoxscoreFromMLBBoxscore} from "@/types/Boxscore.ts";
-import {StandingsFromMLBDivisionStandingsList} from "@/types/Standings.ts";
-import {DivisionFromMLBDivision} from "@/types/Division.ts";
 import {LeagueFromMLBLeague} from "@/types/League.ts";
 
-const api = new MlbApi().withPreMiddleware(async (ctx) => {
+export const api = new MlbApi().withPreMiddleware(async (ctx) => {
   ctx.init.cache = "no-cache"
   return ctx
 })
 
 export const getSeasons = memoize(() => {
-  return api.getAllSeasons({sportId: 1})
 }, () => "allSeasons")
 
 export const getLeagues = memoize(async (season: Season) => {
@@ -28,16 +25,14 @@ export const getLeagues = memoize(async (season: Season) => {
 })
 
 export const getDivisions = memoize(async (season: Season) => {
-  const data = await api.getDivisions({sportId: 1, season: season.seasonId})
-  return data.divisions.map((d) => DivisionFromMLBDivision(d))
 }, (season) => {
   return `${season.seasonId}`
 })
 
-export const getTeams= memoize(async (season: Season, teamIds: number[]) => {
+export const getTeams= memoize(async (season: Season, teamIds?: number[]) => {
   const data = await api.getTeams({
     sportId: 1,
-    teamId: teamIds,
+    teamId: teamIds??[],
     season: season.seasonId,
     fields: [
       "teams", "id", "name", "teamName", "shortName", "abbreviation", "franchiseName",
@@ -47,8 +42,8 @@ export const getTeams= memoize(async (season: Season, teamIds: number[]) => {
   })
 
   return data.teams.sort((a, b) => a.name.localeCompare(b.name) ?? 0).map((t) => TeamFromMLBTeam(t))
-}, (season) => {
-  return `${season.seasonId}`
+}, (season, teamIds) => {
+  return `${season}${teamIds?.join(',')}`
 })
 
 const baseGameFields = [
@@ -113,17 +108,6 @@ export const getGameBoxscore = memoize(async (game: Game) => {
 })
 
 export const getStandings = memoize(async (season: string, league: number) => {
-  const standings = await api.getStandings({
-    leagueId: league,
-    season: season,
-    fields: [
-      "records", "standingsType", "league", "division", "id", "teamRecords",
-      "team", "divisionRank", "leagueRank", "leagueGamesBack", "wildCardGamesBack",
-      "leagueGamesBack", "divisionGamesBack", "gamesBack", "eliminationNumber", "wildCardEliminationNumber",
-      "wins", "losses", "winningPercentage", "clinched", "wildCardClinched",
-    ],
-  })
-  return StandingsFromMLBDivisionStandingsList(standings)
 }, (season, league) => {
   return `${season}-${league}`
 })

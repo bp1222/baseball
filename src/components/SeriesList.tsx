@@ -1,9 +1,9 @@
-import {Grid} from "@mui/material"
-import dayjs from "dayjs"
+import {Grid} from '@mui/material'
+import dayjs from 'dayjs'
 
-import {Series} from "@/types/Series.ts"
+import {Series} from '@/types/Series.ts'
 
-import {SeriesItem} from "./SeriesList/SeriesItem.tsx"
+import {SeriesItem} from './SeriesList/SeriesItem.tsx'
 
 type SeriesListProps = {
   series: Series[]
@@ -13,14 +13,16 @@ type SeriesListProps = {
 export const SeriesList = ({series, selectedDate}: SeriesListProps) => {
   return (
     <Grid container
-           spacing={1.5}
-           columns={2}>
+          id={'seriesList'}
+          width={'100%'}
+          spacing={1.5}
+          columns={2}>
       {series?.map((s) => (
         <Grid container
-               key={s.pk}
-               size={1}
-               justifyContent={"center"}
-               flexGrow={1}>
+              key={s.pk}
+              size={1}
+              justifyContent={'center'}
+              flexGrow={1}>
           <SeriesItem series={s} selectedDate={selectedDate}/>
         </Grid>
       ))}

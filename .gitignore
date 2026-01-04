@@ -7,6 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+.tanstack/
 node_modules/
 dist
 .aws-sam

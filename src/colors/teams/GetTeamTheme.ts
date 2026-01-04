@@ -64,7 +64,11 @@ const teamColorMap: Record<number, Theme> = {
   158: brewers,
 }
 
-export const GetTeamTheme = (teamId: number): Theme => {
+export const GetTeamTheme = (teamId: number | undefined): Theme => {
+  if (!teamId) {
+    return createTheme()
+  }
+
   const t: Theme = teamColorMap[teamId]
 
   return createTheme({},

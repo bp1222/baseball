@@ -42,16 +42,16 @@ export const GetGameResult = (game: Game): GameResultStatus => {
   return GameResult.Unknown
 }
 
-export const GetGameResultColor = (game: Game, interested: Team): Color => {
+export const GetGameResultColor = (game: Game, interested: Team | undefined): Color => {
   if (game.gameStatus == GameStatus.Final) {
     if (game.home.score > game.away.score) {
-      if (game.home.teamId == interested.id) {
+      if (game.home.teamId == interested?.id) {
         return GameResultColors[GameResult.Win]
       } else {
         return GameResultColors[GameResult.Loss]
       }
     } else if (game.away.score > game.home.score) {
-      if (game.away.teamId == interested.id) {
+      if (game.away.teamId == interested?.id) {
         return GameResultColors[GameResult.Win]
       } else {
         return GameResultColors[GameResult.Loss]

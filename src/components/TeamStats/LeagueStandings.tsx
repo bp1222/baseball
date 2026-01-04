@@ -1,6 +1,8 @@
 import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,} from "@mui/material"
 
-import {useAppStateUtil} from "@/state"
+import {useDivisions} from "@/queries/division.ts"
+import {useLeagues} from "@/queries/league.ts"
+import {useTeams} from "@/queries/team.ts"
 import {Standings} from "@/types/Standings.ts"
 import {Team} from "@/types/Team.ts"
 import LabelPaper from "@/utils/LabelPaper.tsx"
@@ -11,7 +13,9 @@ interface LeagueStandingsProps {
 }
 
 export const LeagueStandings = ({team, standings}: LeagueStandingsProps) => {
-  const {getLeague, getDivision, getTeam} = useAppStateUtil()
+  const { data: teams } = useTeams()
+  const { getDivision } = useDivisions()
+  const { getLeague } = useLeagues()
   const league = getLeague(team.league)
 
   if (league == undefined) return
@@ -51,8 +55,8 @@ export const LeagueStandings = ({team, standings}: LeagueStandingsProps) => {
           </TableHead>
           <TableBody>
             {finalLeagueStandings.map((s, idx) => {
-              const team = getTeam(s.teamId)
-              const division = getDivision(team?.division)
+              const team = teams?.find((t) => t.id == s.teamId)
+              const division = getDivision(team!.division)
 
               let clinchedLeague = false
               if (idx == 0 && finalLeagueStandings[1].leagueGamesBack && finalLeagueStandings[1].gamesPlayed) {

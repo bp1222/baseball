@@ -1,11 +1,11 @@
-import {Box, Button, CircularProgress, Grid, ThemeProvider} from "@mui/material"
+import {Alert, Box, Button, CircularProgress, Grid, ThemeProvider} from "@mui/material"
 import {grey} from "@mui/material/colors"
-import {Fragment, useEffect, useState} from "react"
+import {Fragment, useState} from "react"
 
 import {GetTeamTheme} from "@/colors"
 import {TeamBoxscore} from "@/components/GameBoxscore/TeamsBoxscore/TeamBoxscore.tsx"
-import {getGameBoxscore} from "@/services/MlbAPI"
-import {useAppStateApi, useAppStateUtil} from "@/state"
+import {useBoxscore} from "@/queries/boxscore.ts"
+import {useTeam} from "@/queries/team.ts"
 import {Game} from "@/types/Game.ts"
 import {Team} from "@/types/Team.ts"
 
@@ -19,24 +19,19 @@ enum Tab {
 }
 
 export const TeamsBoxscore = ({game}: GameBoxscores) => {
-  const {setBoxscore} = useAppStateApi()
-  const {getTeam} = useAppStateUtil()
+  const { data: homeTeam } = useTeam(game.home.teamId)
+  const { data: awayTeam } = useTeam(game.away.teamId)
+  const { data: boxscore , isPending, isError } = useBoxscore(game.pk)
 
   const [tab, setTab] = useState<Tab>(Tab.Away)
 
-  useEffect(() => {
-    getGameBoxscore(game).then((boxscore) => {
-      setBoxscore(game.pk, boxscore)
-    })
-  }, [game, setBoxscore])
-
-  const makeButton = (team: Team, loc: Tab) => {
+  const makeButton = (team: Team | undefined, loc: Tab) => {
     const selected = tab == loc
     const fontColor = selected ? "primary.main" : "black"
     const bgColor = selected ? "secondary.main" : grey[200]
 
     return (
-      <ThemeProvider theme={GetTeamTheme(team.id)}>
+      <ThemeProvider theme={GetTeamTheme(team?.id)}>
         <Button
           onClick={() => {
             setTab(loc)
@@ -57,30 +52,32 @@ export const TeamsBoxscore = ({game}: GameBoxscores) => {
           }}
         >
           <Box>
-            {team.franchiseName}
+            {team?.franchiseName}
           </Box>
         </Button>
       </ThemeProvider>
     )
   }
 
-  if (game.boxscore == undefined) {
+  if (isPending) {
     return <CircularProgress/>
+  } else if (isError) {
+    return <Alert severity={"error"}>Error Loading Boxscore</Alert>
   }
 
   return (
     <Fragment>
       <Grid textAlign={"center"}>
-        {makeButton(getTeam(game.away.teamId)!, Tab.Away)}
-        {makeButton(getTeam(game.home.teamId)!, Tab.Home)}
+        {makeButton(awayTeam, Tab.Away)}
+        {makeButton(homeTeam, Tab.Home)}
       </Grid>
 
       <Grid display={tab == Tab.Home ? "none" : "block"}>
-        <TeamBoxscore boxscore={game.boxscore.away}/>
+        <TeamBoxscore boxscore={boxscore.away}/>
       </Grid>
 
       <Grid display={tab == Tab.Home ? "block" : "none"}>
-        <TeamBoxscore boxscore={game.boxscore.home}/>
+        <TeamBoxscore boxscore={boxscore.home}/>
       </Grid>
     </Fragment>
   )

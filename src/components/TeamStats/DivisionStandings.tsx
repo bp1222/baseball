@@ -1,6 +1,7 @@
 import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,} from "@mui/material"
 
-import {useAppStateUtil} from "@/state"
+import {useDivisions} from "@/queries/division.ts"
+import {useTeams} from "@/queries/team.ts"
 import {Standings} from "@/types/Standings.ts"
 import {Team} from "@/types/Team.ts"
 import LabelPaper from "@/utils/LabelPaper.tsx"
@@ -11,7 +12,8 @@ interface StandingsProps {
 }
 
 export const DivisionStandings = ({team, standings}: StandingsProps) => {
-  const {getTeam, getDivision} = useAppStateUtil()
+  const { data: teams } = useTeams()
+  const { getDivision }  = useDivisions()
   const division = getDivision(team.division)
 
   if (division == undefined) return
@@ -45,7 +47,7 @@ export const DivisionStandings = ({team, standings}: StandingsProps) => {
           </TableHead>
           <TableBody>
             {divisionStandings.map((d) => {
-              const team = getTeam(d.teamId)
+              const team = teams?.find((t) => t.id == d.teamId)
               return (
                 <TableRow key={d.teamId}>
                   <TableCell width={1} style={{whiteSpace: 'nowrap'}} align="left">

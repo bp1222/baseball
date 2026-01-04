@@ -1,6 +1,6 @@
 import {Grid, Typography} from "@mui/material"
 
-import {useAppStateUtil} from "@/state"
+import {useTeams} from "@/queries/team.ts"
 import {GameTeam} from "@/types/GameTeam.ts"
 import {GetTeamImage} from "@/utils/GetTeamImage.tsx"
 
@@ -9,7 +9,8 @@ type BoxscoreTeamProps = {
 }
 
 export const BoxscoreTeam = ({gameTeam}: BoxscoreTeamProps) => {
-  const {getTeam} = useAppStateUtil()
+  const { data: teams } = useTeams()
+
   return (
     <Grid container
            flexDirection={"column"}
@@ -18,7 +19,7 @@ export const BoxscoreTeam = ({gameTeam}: BoxscoreTeamProps) => {
       <Grid container
              flexDirection={"row"}
              alignItems={"center"}>
-        {GetTeamImage(getTeam(gameTeam.teamId)!)}
+        {GetTeamImage(teams?.find((t) => t.id == gameTeam.teamId))}
         <Typography
           paddingLeft={1}
           fontSize={"larger"}>
@@ -27,7 +28,7 @@ export const BoxscoreTeam = ({gameTeam}: BoxscoreTeamProps) => {
       </Grid>
       <Grid>
         <Typography fontSize={"small"}>
-          {getTeam(gameTeam.teamId)?.name}
+          {teams?.find((t) => t.id == gameTeam.teamId)?.name}
         </Typography>
         <Typography fontSize={"x-small"}>
           {gameTeam.record.wins} - {gameTeam.record.losses}

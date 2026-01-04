@@ -1,6 +1,6 @@
 import {Grid, Typography} from "@mui/material"
 
-import {useAppStateUtil} from "@/state"
+import {useTeam} from "@/queries/team.ts"
 import {GetSeriesHomeAway, Series} from "@/types/Series.ts"
 import {SeriesHomeAway} from "@/types/Series/SeriesHomeAway.ts"
 import {SeriesType} from "@/types/Series/SeriesType.ts"
@@ -13,15 +13,15 @@ type SeriesTeamProps = {
 }
 
 export const SeriesTeam = ({series, team}: SeriesTeamProps) => {
-  const {getTeam} = useAppStateUtil()
-  const homeaway = GetSeriesHomeAway(series, team)
-
-  let against: Team | undefined
+  let againstId: number | undefined
   if (series.games[0].away.teamId != team.id) {
-    against = getTeam(series.games[0].away.teamId)
+    againstId = series.games[0].away.teamId
   } else {
-    against = getTeam(series.games[0].home.teamId)
+    againstId = series.games[0].home.teamId
   }
+
+  const { data: against } = useTeam(againstId)
+  const homeaway = GetSeriesHomeAway(series, team)
 
   return (
     <Grid container
