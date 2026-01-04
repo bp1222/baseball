@@ -1,11 +1,12 @@
 import {Grid, Paper, TableContainer, Typography} from "@mui/material"
 import {LineChart, LineSeriesType} from "@mui/x-charts"
+import {useParams} from "@tanstack/react-router"
 import dayjs from "dayjs"
 import {useMemo} from "react"
-import {useParams} from "react-router-dom"
 
 import {GetTeamTheme} from "@/colors"
-import {useAppState, useAppStateUtil} from "@/state"
+import {useSchedule} from "@/queries/schedule.ts"
+import {useTeams} from "@/queries/team.ts"
 import {GameStatus} from "@/types/Game/GameStatus.ts"
 import {GameType} from "@/types/Game/GameType.ts"
 import {Team} from "@/types/Team.ts"
@@ -22,22 +23,21 @@ type DailyTally = {
 }
 
 export const TeamRanking = () => {
-  const {teams, seasonSeries} = useAppState()
-  const {getTeam} = useAppStateUtil()
-  const {interestedTeamId} = useParams()
+  const { teamId: interestedTeamId } = useParams({strict: false})
+  const { data: teams } = useTeams()
+  const { data: seasonSeries } = useSchedule()
 
   const standings = useMemo(() => {
-    const team = getTeam(parseInt(interestedTeamId ?? ""))
-    if (teams == undefined || seasonSeries == undefined || team == undefined) return
+    const team = teams?.find((t) => t.id == interestedTeamId)
+    if (team === undefined) return
 
     const runningTallies: TeamDailyTally[] = []
-
     const dailyTallies: DailyTally[] = []
     const seenGames: number[] = []
 
     const getEmptyDivisionTally = (): TeamDailyTally[] => {
       const retval: TeamDailyTally[] = []
-      teams.filter((t) => t.id < 1000).forEach((t) => {
+      teams?.filter((t) => t.id < 1000).forEach((t) => {
         if (t.division != undefined) {
           if (t.division == team.division) {
             retval.push({teamId: t.id, team: t.name, gameDifference: 0})
@@ -83,7 +83,7 @@ export const TeamRanking = () => {
     }
 
     seasonSeries
-    .flatMap((s) => s.games)
+    ?.flatMap((s) => s.games)
     .sort((a, b) => a.gameDate.diff(b.gameDate, "minute"))
     .filter((game) => {
       // Filter out games not regular, and not final
@@ -98,35 +98,35 @@ export const TeamRanking = () => {
       seenGames.push(game.pk)
 
       // Filter out games that are not in the same division (if divisions exist) or in the same league.
-      const awayTeam = getTeam(game.away.teamId)!
-      const homeTeam = getTeam(game.home.teamId)!
-      if (awayTeam.division != undefined) {
-        return awayTeam.division == team.division || homeTeam.division == team.division
+      const awayTeam = teams?.find((t) => t.id == game.away.teamId)
+      const homeTeam = teams?.find((t) => t.id == game.home.teamId)
+      if (awayTeam?.division != undefined) {
+        return awayTeam?.division == team.division || homeTeam?.division == team.division
       }
-      return awayTeam.league == team.league || homeTeam.league == team.league
+      return awayTeam?.league == team.league || homeTeam?.league == team.league
     })
 
     // Tally up their records
     .forEach((game) => {
-      const awayTeam = getTeam(game.away.teamId)!
-      const homeTeam = getTeam(game.home.teamId)!
+      const awayTeam = teams?.find((t) => t.id == game.away.teamId)
+      const homeTeam = teams?.find((t) => t.id == game.home.teamId)
 
-      if (awayTeam.division != undefined) {
+      if (awayTeam?.division != undefined) {
         // Tally if the away team was in this division
-        if (awayTeam.division == team.division) {
+        if (awayTeam?.division == team.division) {
           tallyGame(game.gameDate, awayTeam, game.away.isWinner)
         }
-      } else if (awayTeam.league == team.league) {
+      } else if (awayTeam?.league == team.league) {
         // Tally if the away team was in this league
         tallyGame(game.gameDate, awayTeam, game.away.isWinner)
       }
 
-      if (homeTeam.division != undefined) {
+      if (homeTeam?.division != undefined) {
         // Tally if the home team was in this division
         if (homeTeam.division == team.division) {
           tallyGame(game.gameDate, homeTeam, game.home.isWinner)
         }
-      } else if (homeTeam.league == team.league) {
+      } else if (homeTeam?.league == team.league) {
         // Tally if the home team was in this league
         tallyGame(game.gameDate, homeTeam, game.home.isWinner)
       }
@@ -142,7 +142,7 @@ export const TeamRanking = () => {
     })
 
     return dailyTallies
-  }, [teams, seasonSeries, interestedTeamId, getTeam])
+  }, [teams, seasonSeries, interestedTeamId])
 
   if ((standings?.length ?? 0) <= 0) {
     return
@@ -150,21 +150,29 @@ export const TeamRanking = () => {
 
   const getSeries = (): LineSeriesType[] => {
     const ret: LineSeriesType[] = []
-    const teams = standings?.[0].teams.map((t) => t.teamId)
+    const standingTeams = standings?.[0].teams.map((t) => t.teamId)
 
-    teams?.forEach((teamId) => {
-      const team = getTeam(teamId)
+    standingTeams?.forEach((teamId) => {
+      const team = teams?.find((t) => t.id == teamId)
+      if (team === undefined) return
       ret.push({
         type: 'line',
-        data: standings?.map((t) => t.teams.filter((team) => team.teamId == teamId).map((team) => team.gameDifference)[0]),
-        label: team?.name,
+        data: standings?.map(
+          (t) => t.teams.filter(
+            (team) => team.teamId == teamId
+          ).map(
+            (team) => team.gameDifference)[0]
+        ),
+        label: team.name,
         showMark: false,
         curve: 'catmullRom',
-        color: GetTeamTheme(team?.id ?? 0).palette.primary.main,
+        color: GetTeamTheme(team.id).palette.primary.main,
       })
     })
     return ret
   }
+
+
 
   return (
     <Grid display={"flex"} flexDirection={"column"}>

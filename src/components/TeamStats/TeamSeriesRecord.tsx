@@ -1,6 +1,6 @@
-import {Grid, Typography} from "@mui/material"
+import {Alert, CircularProgress, Grid, Typography} from "@mui/material"
 
-import {useAppState} from "@/state"
+import {useSchedule} from "@/queries/schedule.ts"
 import {GetSeriesResult} from "@/types/Series.ts"
 import {SeriesResult} from "@/types/Series/SeriesResult.ts"
 import {SeriesType} from "@/types/Series/SeriesType.ts"
@@ -12,7 +12,7 @@ type TeamSeriesRecordProps = {
 }
 
 export const TeamSeriesRecord = ({team}: TeamSeriesRecordProps) => {
-  const {seasonSeries} = useAppState()
+  const { data: seasonSeries, isPending, isError } = useSchedule()
 
   const regularSeasonSeriesResults = seasonSeries
   ?.filter((s) => s.type == SeriesType.Regular)
@@ -25,18 +25,25 @@ export const TeamSeriesRecord = ({team}: TeamSeriesRecordProps) => {
   const seriesTies = regularSeasonSeriesResults?.filter((s) => s == SeriesResult.Tie).length ?? 0
 
   const seriesPct = ((seriesWins + (.5 * seriesTies)) / (seriesWins + seriesLosses + seriesTies))
+
+  if (isPending) {
+    return <CircularProgress />
+  } else if (isError) {
+    return <Alert severity={'error'}>Unable to acquire series record</Alert>
+  }
+
   return (
     <LabelPaper label={"Series Record"}>
       <Grid container
-             display={"flex"}
-             flexDirection={"column"}>
+            display={"flex"}
+            flexDirection={"column"}>
         <Grid container
-               display={"flex"}
-               flexDirection={"row"}
-               justifyContent={"center"}
-               justifyItems={"center"}
-               textAlign={"center"}
-               columns={3}>
+              display={"flex"}
+              flexDirection={"row"}
+              justifyContent={"center"}
+              justifyItems={"center"}
+              textAlign={"center"}
+              columns={3}>
           <Grid size={1}>
             <Typography fontSize={"xx-large"}>{seriesWins}</Typography>
           </Grid>
@@ -48,12 +55,12 @@ export const TeamSeriesRecord = ({team}: TeamSeriesRecordProps) => {
           </Grid>
         </Grid>
         <Grid container
-               display={"flex"}
-               flexDirection={"row"}
-               justifyContent={"center"}
-               justifyItems={"center"}
-               textAlign={"center"}
-               columns={3}>
+              display={"flex"}
+              flexDirection={"row"}
+              justifyContent={"center"}
+              justifyItems={"center"}
+              textAlign={"center"}
+              columns={3}>
           <Grid size={1}>
             <Typography fontSize={"smaller"}>{"Series Wins"}</Typography>
           </Grid>
@@ -66,12 +73,12 @@ export const TeamSeriesRecord = ({team}: TeamSeriesRecordProps) => {
         </Grid>
       </Grid>
       <Grid container
-             display={"flex"}
-             flexDirection={"row"}
-             justifyContent={"center"}
-             justifyItems={"center"}
-             textAlign={"center"}
-             columns={1}>
+            display={"flex"}
+            flexDirection={"row"}
+            justifyContent={"center"}
+            justifyItems={"center"}
+            textAlign={"center"}
+            columns={1}>
         {isNaN(seriesPct) ? <></> :
           <Grid size={1} paddingBottom={1}>
             <Typography fontSize={"smaller"} display={"inline"}

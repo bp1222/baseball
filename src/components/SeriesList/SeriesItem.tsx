@@ -1,10 +1,10 @@
 import {Grid} from "@mui/material"
+import {useParams} from "@tanstack/react-router"
 import dayjs from "dayjs"
-import {useParams} from "react-router-dom"
 
 import {GameItem} from "@/components/GameItem.tsx"
 import {SeriesTeam} from "@/components/SeriesList/SeriesItem/SeriesTeam.tsx"
-import {useAppStateUtil} from "@/state"
+import {useTeam} from "@/queries/team.ts"
 import {GetSeriesResult, Series} from "@/types/Series.ts"
 import {DefaultSeriesResultColor, GetSeriesColors} from "@/types/Series/SeriesResult.ts"
 
@@ -18,15 +18,14 @@ type SeriesItemProps = {
 }
 
 export const SeriesItem = ({series, selectedDate}: SeriesItemProps) => {
-  const {interestedTeamId} = useParams()
-  const {getTeam} = useAppStateUtil()
-  const interestedTeam = getTeam(interestedTeamId)
+  const { teamId } = useParams({strict: false})
+  const { data: interestedTeam } = useTeam(teamId)
 
   const seriesResult = GetSeriesResult(series, interestedTeam)
   const {
     background,
     border
-  } = interestedTeamId ? GetSeriesColors(series.type, seriesResult) : DefaultSeriesResultColor
+  } = interestedTeam ? GetSeriesColors(series.type, seriesResult) : DefaultSeriesResultColor
 
   return (
     <Grid container
@@ -40,7 +39,7 @@ export const SeriesItem = ({series, selectedDate}: SeriesItemProps) => {
           fontSize={"small"}
           columns={3}>
 
-      {interestedTeamId && (
+      {interestedTeam && (
         <Grid position={"absolute"}
               marginTop={-1}
               marginLeft={-1}>

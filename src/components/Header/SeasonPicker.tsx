@@ -1,14 +1,20 @@
 import {Button, Grid, Menu, MenuItem} from "@mui/material"
+import {useNavigate, useParams} from "@tanstack/react-router"
 import {useState} from "react"
-import {useNavigate, useParams} from "react-router-dom"
 
-import {useAppState} from "@/state"
+import {useSeasons} from "@/queries/season.ts"
 
 export const SeasonPicker = () => {
-  const {seasons} = useAppState()
-  const {seasonId} = useParams()
+  const { seasonId } = useParams({strict: false})
+  const { data: seasons } = useSeasons()
+
+  const navigate = useNavigate()
+
+  const setSeason = (newSeasonId: string) => {
+    void navigate({to: "/{-$seasonId}/", params: {seasonId: newSeasonId}})
+  }
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const navigagte = useNavigate()
   const isOpen = Boolean(anchorEl)
 
   return (
@@ -27,7 +33,7 @@ export const SeasonPicker = () => {
         {seasons?.map((v) => (
           <MenuItem key={v.seasonId}
                     onClick={() => {
-                      navigagte("/" + v.seasonId)
+                      setSeason(v.seasonId)
                       setAnchorEl(null)
                     }}>
             {v.seasonId}

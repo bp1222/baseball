@@ -1,9 +1,9 @@
 import {Box, CircularProgress, Color, Grid, Modal} from "@mui/material"
+import {useParams} from "@tanstack/react-router"
 import dayjs from "dayjs"
 import {lazy, Suspense, useState} from "react"
-import {useParams} from "react-router-dom"
 
-import {useAppStateUtil} from "@/state"
+import {useTeams} from "@/queries/team.ts"
 import {Game} from "@/types/Game.ts"
 import {DefaultGameResultColor, GetGameResultColor} from "@/types/Game/GameResult.ts"
 import {GameStatus, GetGameStatusColor} from "@/types/Game/GameStatus.ts"
@@ -19,13 +19,13 @@ type SeriesGameProps = {
 }
 
 export const GameItem = ({game, selectedDate}: SeriesGameProps) => {
-  const {getTeam} = useAppStateUtil()
-  const {interestedTeamId} = useParams()
+  const { teamId } = useParams({strict: false})
+  const { data: teams } = useTeams()
+  const interestedTeam = teams?.find((t) => t.id == teamId)
 
-  const gameIsToday = dayjs(game.gameDate).isSame(interestedTeamId ? dayjs() : selectedDate, "day")
+  const gameIsToday = dayjs(game.gameDate).isSame(interestedTeam ? dayjs() : selectedDate, "day")
   const [modelPopup, setModelPopup] = useState(false)
 
-  const interestedTeam = getTeam(interestedTeamId)
   const gameTileColor: Color = interestedTeam
     ? GetGameResultColor(game, interestedTeam)
     : [GameStatus.InProgress, GameStatus.Canceled].indexOf(game.gameStatus) > -1
@@ -70,11 +70,11 @@ export const GameItem = ({game, selectedDate}: SeriesGameProps) => {
       </Box>
       <Grid>
         <GameScore gameTeam={game.away}
-                   color={GetGameResultColor(game, interestedTeam ?? getTeam(game.away.teamId)!)}/>
+                   color={GetGameResultColor(game, interestedTeam ?? teams?.find((t) => t.id == game.away.teamId))}/>
       </Grid>
       <Grid>
         <GameScore gameTeam={game.home}
-                   color={GetGameResultColor(game, interestedTeam ?? getTeam(game.home.teamId)!)}/>
+                   color={GetGameResultColor(game, interestedTeam ?? teams?.find((t) => t.id == game.home.teamId))}/>
       </Grid>
       <Grid>
         <GameStatusLine game={game}/>

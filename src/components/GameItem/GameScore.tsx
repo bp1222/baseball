@@ -1,6 +1,6 @@
 import {Color, Grid} from "@mui/material"
 
-import {useAppStateUtil} from "@/state"
+import {useTeam} from "@/queries/team.ts"
 import {DefaultGameResultColor} from "@/types/Game/GameResult.ts"
 import {GameTeam} from "@/types/GameTeam.ts"
 
@@ -10,11 +10,10 @@ type GameScoreProps = {
 }
 
 export const GameScore = ({gameTeam, color}: GameScoreProps) => {
-  const {getTeam} = useAppStateUtil()
   const isTbd = /[\d/]/
+  const { data: team } = useTeam(gameTeam.teamId)
 
   const scoreColor: Color = color || DefaultGameResultColor
-  const team = getTeam(gameTeam.teamId)
 
   return (
     <Grid container
