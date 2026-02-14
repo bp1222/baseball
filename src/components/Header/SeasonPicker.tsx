@@ -11,7 +11,7 @@ export const SeasonPicker = () => {
   const navigate = useNavigate()
 
   const setSeason = (newSeasonId: string) => {
-    void navigate({to: "/{-$seasonId}/", params: {seasonId: newSeasonId}})
+    void navigate({ to: "/{$seasonId}", params: { seasonId: newSeasonId } })
   }
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -19,11 +19,14 @@ export const SeasonPicker = () => {
 
   return (
     <Grid>
-      <Button variant={"text"}
-              color={"inherit"}
-              size={"large"}
-              onClick={(event) => setAnchorEl(event.currentTarget)}>
-        {seasonId ? "Season: " + seasonId : "Select Season"}
+      <Button
+        variant="text"
+        color="inherit"
+        size="large"
+        onClick={(event) => setAnchorEl(event.currentTarget)}
+        sx={{ minHeight: 44, minWidth: 44 }}
+      >
+        {seasonId ? String(seasonId) : "Season"}
       </Button>
       <Menu anchorEl={anchorEl}
             open={isOpen}

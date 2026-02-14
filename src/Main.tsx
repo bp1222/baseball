@@ -10,7 +10,8 @@ import timezone from "dayjs/plugin/timezone"
 import utc from "dayjs/plugin/utc"
 import {createRoot} from "react-dom/client"
 
-import {routeTree} from "@/routeTree.gen"
+import { routeTree } from "@/routeTree.gen"
+import type { RouterContext } from "@/router/context"
 
 dayjs.locale("en")
 
@@ -19,20 +20,15 @@ dayjs.extend(timezone)
 dayjs.extend(isBetween)
 dayjs.extend(isToday)
 
-export interface RouterContext {
-  queryClient: QueryClient
-  defaultSeason: string
-}
-
 const queryClient = new QueryClient()
 const router = createRouter({
   routeTree,
   context: {
-    queryClient: queryClient,
-    defaultSeason: dayjs().format('YYYY')
-  },
+    queryClient,
+    defaultSeason: dayjs().format("YYYY"),
+  } satisfies RouterContext,
   history: createHashHistory(),
-  defaultStaleTime: 1000* 60 * 5, // 5 minutes
+  defaultStaleTime: 1000 * 60 * 5, // 5 minutes
   scrollRestoration: true,
 })
 

@@ -12,10 +12,10 @@ export const HeaderName = () => {
                   fontWeight={"bolder"}
                   textAlign={"left"}
                   whiteSpace={"nowrap"}>
-        <Grid display={{xs: "block", sm: "none"}}>
-          BS
+        <Grid display={{ xs: "block", sm: "none" }}>
+          Series
         </Grid>
-        <Grid display={{xs: "none", sm: "block"}}>
+        <Grid display={{ xs: "none", sm: "block" }}>
           Baseball Series
         </Grid>
       </Typography>

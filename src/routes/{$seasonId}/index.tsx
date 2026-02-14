@@ -1,40 +1,50 @@
-import {Alert, Box, CircularProgress} from '@mui/material'
-import {createFileRoute} from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router"
+import dayjs from "dayjs"
 
-import {SeasonSeries} from '@/components/SeasonSeries.tsx'
-import {seasonsOptions, useSeason} from '@/queries/season.ts'
-import {teamsOptions, useTeams} from '@/queries/team.ts'
+import { SeasonSeries } from "@/features/schedule"
+import { scheduleOptions } from "@/queries/schedule"
+import { seasonsOptions } from "@/queries/season"
+import { teamsOptions } from "@/queries/team"
 
-const SeasonComponent = () => {
-  const { data: season, isPending: isPendingSeason, isError: isErrorSeason } = useSeason()
-  const { data: teams, isPending: isPendingTeams, isError: isErrorTeams } = useTeams()
-
-  if (isPendingSeason || isPendingTeams) {
-    return (
-      <Box width={'fit-content'}>
-        <CircularProgress />
-      </Box>
-    )
-  } else if (isErrorTeams || isErrorSeason) {
-    return (
-      <Box width={'fit-content'}>
-        <Alert severity={'error'}>Error Loading Teams or Seasons</Alert>
-      </Box>
-    )
-  }
-
-  return (
-    <SeasonSeries
-      teams={teams}
-      season={season}
-    />
-  )
+/**
+ * Search params schema for the season route
+ */
+type SeasonSearchParams = {
+  /** Selected date in YYYY-MM-DD format */
+  date?: string
 }
 
-export const Route = createFileRoute('/{$seasonId}/')({
-  loader: ({ context: { queryClient, defaultSeason }, params: { seasonId } }) => {
-    queryClient.ensureQueryData(seasonsOptions)
-    queryClient.ensureQueryData(teamsOptions(seasonId ?? defaultSeason))
+/**
+ * Season index route - displays all series for the selected date
+ *
+ * The date is stored in URL search params for:
+ * - Shareable URLs
+ * - Browser back/forward navigation
+ * - Refresh persistence
+ */
+const SeasonComponent = () => {
+  return <SeasonSeries />
+}
+
+export const Route = createFileRoute("/{$seasonId}/")({
+  validateSearch: (search: Record<string, unknown>): SeasonSearchParams => ({
+    date:
+      typeof search.date === "string" && dayjs(search.date).isValid()
+        ? search.date
+        : undefined,
+  }),
+  loader: async ({
+    context: { queryClient, defaultSeason },
+    params: { seasonId },
+  }) => {
+    const seasons = await queryClient.ensureQueryData(seasonsOptions)
+    const season = seasons.find((s) => s.seasonId === (seasonId ?? defaultSeason))
+    await Promise.all([
+      queryClient.ensureQueryData(teamsOptions(seasonId ?? defaultSeason)),
+      season
+        ? queryClient.ensureQueryData(scheduleOptions(season))
+        : Promise.resolve(),
+    ])
   },
   component: SeasonComponent,
 })

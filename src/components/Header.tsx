@@ -1,35 +1,84 @@
-import {AppBar, Grid, Toolbar} from "@mui/material"
+import { AppBar, Box, Toolbar, Typography } from "@mui/material"
+import { useParams } from "@tanstack/react-router"
 
-import {HeaderName} from "./Header/HeaderName.tsx"
-import {SeasonPicker} from "./Header/SeasonPicker.tsx"
-import {TeamPicker} from "./Header/TeamPicker.tsx"
+import { useInterestedTeam } from "@/context/InterestedTeamContext"
+
+import { HeaderName } from "./Header/HeaderName"
+import { SeasonPicker } from "./Header/SeasonPicker"
+import { TeamPicker } from "./Header/TeamPicker"
 
 export const Header = () => {
+  const { seasonId } = useParams({ strict: false })
+  const selectedTeam = useInterestedTeam()
+
   return (
-    <AppBar position={"sticky"}
-            sx={{marginBottom: 2}}>
-      <Toolbar>
-        <Grid container
-               size={"grow"}>
-          <Grid container
-                 size={{xs: 2, sm: "grow"}}>
-            <HeaderName/>
-          </Grid>
+    <AppBar position="sticky" sx={{ marginBottom: 2 }}>
+      <Toolbar sx={{ minWidth: 0, px: { xs: 0.5, sm: 2 } }}>
+        {/* Left: app name */}
+        <Box
+          sx={{
+            flex: "0 0 auto",
+            minWidth: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-start",
+          }}
+        >
+          <HeaderName />
+        </Box>
 
-          <Grid container
-                 size={{xs: 3, sm: "grow"}}
-                 alignContent={"center"}
-                 justifyContent={"center"}>
-            <SeasonPicker/>
-          </Grid>
+        {/* Center: season picker */}
+        <Box
+          sx={{
+            flex: "1 1 0",
+            minWidth: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            px: 0.5,
+          }}
+        >
+          <SeasonPicker />
+        </Box>
 
-          <Grid container
-                 size={"grow"}
-                 justifyContent={"flex-end"}>
-            <TeamPicker/>
-          </Grid>
-        </Grid>
+        {/* Right: team picker (with cancel when team selected) */}
+        <Box
+          sx={{
+            flex: "0 0 auto",
+            minWidth: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
+          <TeamPicker />
+        </Box>
       </Toolbar>
+
+      {seasonId && selectedTeam && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            pb: 0.5,
+            px: 1,
+          }}
+        >
+          <Typography
+            variant="subtitle2"
+            component="span"
+            sx={{
+              opacity: 0.9,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "100%",
+            }}
+          >
+            {seasonId} • {selectedTeam.name}
+          </Typography>
+        </Box>
+      )}
     </AppBar>
   )
 }

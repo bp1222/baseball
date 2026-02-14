@@ -1,31 +1,33 @@
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
-import {Button, Grid, Menu, MenuItem} from '@mui/material'
-import {useQueryClient} from '@tanstack/react-query'
-import {useNavigate, useParams} from '@tanstack/react-router'
-import {useState} from 'react'
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle"
+import { Button, Grid, Menu, MenuItem } from "@mui/material"
+import { useNavigate, useParams } from "@tanstack/react-router"
+import { useState } from "react"
 
-import {useTeams} from '@/queries/team.ts'
+import { useInterestedTeamContext } from "@/context/InterestedTeamContext"
+import { useTeams } from "@/queries/team"
 
 export const TeamPicker = () => {
-  const { teamId } = useParams({strict: false})
+  const { seasonId } = useParams({ strict: false })
+  const { team: interestedTeam, teamId } = useInterestedTeamContext()
   const { data: teams } = useTeams()
-
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
-
-  const interestedTeam = teams?.find(t => t.id == teamId)
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const isOpen = Boolean(anchorEl)
 
-  const setTeam = (teamId: number | null) => {
-    void queryClient.invalidateQueries({ queryKey: ['schedule', teamId] })
-    void navigate({
-      to: `/{$seasonId}/` + (teamId != null ? `{$teamId}` : ``),
-      params: {
-        teamId: teamId,
-      },
-    })
+  const setTeam = (newTeamId: number | null) => {
+    if (seasonId == null) return
+    if (newTeamId != null) {
+      void navigate({
+        to: "/{$seasonId}/{$teamId}",
+        params: { seasonId, teamId: String(newTeamId) },
+      })
+    } else {
+      void navigate({
+        to: "/{$seasonId}",
+        params: { seasonId },
+      })
+    }
   }
 
   return (
@@ -33,16 +35,31 @@ export const TeamPicker = () => {
            alignItems={'center'}
     >
       <Grid>
-        <Button variant={'text'}
-                color={'inherit'}
-                size={'large'}
-                sx={{alignItems: 'flex-start'}}
-                endIcon={teamId ? <RemoveCircleIcon onClick={async (e) => {
+        <Button
+          variant="text"
+          color="inherit"
+          size="large"
+          sx={{
+            alignItems: "center",
+            minHeight: 44,
+            minWidth: 44,
+            maxWidth: { xs: 140, sm: "none" },
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+          endIcon={
+            teamId ? (
+              <RemoveCircleIcon
+                onClick={(e) => {
                   e.stopPropagation()
-                  return setTeam(null)
-                }}></RemoveCircleIcon> : undefined}
-                onClick={(event) => setAnchorEl(event.currentTarget)}>
-          {interestedTeam?.name ?? 'Select Team'}
+                  setTeam(null)
+                }}
+              />
+            ) : undefined
+          }
+          onClick={(event) => setAnchorEl(event.currentTarget)}
+        >
+          {interestedTeam?.name ?? "Select Team"}
         </Button>
       </Grid>
       <Menu anchorEl={anchorEl}

@@ -1,38 +1,59 @@
-import {queryOptions, useQuery} from '@tanstack/react-query'
+/**
+ * Teams Query
+ *
+ * Fetches and caches team data for a season.
+ * Teams are static within a season, so we use Infinity stale time.
+ */
 
-import {useSeason} from "@/queries/season.ts"
-import {api} from '@/services/MlbAPI'
-import {TeamFromMLBTeam} from '@/types/Team.ts'
+import { queryOptions, useQuery } from "@tanstack/react-query"
 
-export const teamsOptions = (seasonId?: string) => queryOptions({
-  queryKey: ['teams', seasonId],
-  staleTime: 'static',
-  enabled: !!seasonId,
-  queryFn: () => api.getTeams({
-    sportId: 1,
-    season: seasonId!,
-    fields: [
-      'teams', 'id', 'name', 'teamName', 'shortName', 'abbreviation', 'franchiseName',
-      'league', 'division', 'nameShort'
-    ],
-    hydrate: 'division'
-  }).then(
-    ({teams}) => teams.sort(
-      (a, b) => a.name.localeCompare(b.name) ?? 0
-    ).map(
-      (t) => TeamFromMLBTeam(t)
-    )
-  )
-})
+import { useSeason } from "@/queries/season"
+import { api } from "@/services/MlbAPI"
+import { TeamFromMLBTeam } from "@/types/Team"
 
-export const useTeam = (teamId: number) => {
+/**
+ * Stale time: Infinity (static)
+ * Team data doesn't change within a season.
+ */
+const TEAMS_STALE_TIME = Infinity
+
+export const teamsOptions = (seasonId?: string) =>
+  queryOptions({
+    queryKey: ["teams", seasonId],
+    staleTime: TEAMS_STALE_TIME,
+    enabled: !!seasonId,
+    queryFn: async () => {
+      const { teams } = await api.getTeams({
+        sportId: 1,
+        season: seasonId!,
+        fields: [
+          "teams", "id", "name", "teamName", "shortName", "abbreviation", "franchiseName",
+          "league", "division", "nameShort",
+        ],
+        hydrate: "division",
+      })
+      return teams
+        .sort((a, b) => a.name.localeCompare(b.name) ?? 0)
+        .map((t) => TeamFromMLBTeam(t))
+    },
+  })
+
+/**
+ * Get a single team by ID
+ * Uses select to derive from the teams list (no extra fetch)
+ */
+export const useTeam = (teamId: number | undefined) => {
   const { data: season } = useSeason()
   return useQuery({
     ...teamsOptions(season?.seasonId),
-    select: (teams) => teams.find((t) => t.id == teamId),
+    enabled: teamId != null && !!season?.seasonId,
+    select: (teams) => (teamId != null ? teams.find((t) => t.id === teamId) : undefined),
   })
 }
 
+/**
+ * Get all teams for the current season
+ */
 export const useTeams = () => {
   const { data: season } = useSeason()
   return useQuery(teamsOptions(season?.seasonId))
