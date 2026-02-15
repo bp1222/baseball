@@ -1,15 +1,14 @@
-import { Box, Grid, ToggleButton, ToggleButtonGroup } from "@mui/material"
-import { createFileRoute } from "@tanstack/react-router"
-import { useState } from "react"
+import {Box, Grid, ToggleButton, ToggleButtonGroup} from "@mui/material"
+import {createFileRoute} from "@tanstack/react-router"
+import {useState} from "react"
 
-import { SeriesCardSkeleton, SeriesList } from "@/features/schedule"
-import { StandingsSkeleton } from "@/features/standings"
-import { SeriesRecordSkeleton, TeamStats } from "@/features/team"
-import { useSchedule } from "@/queries/schedule"
-import { SeriesType } from "@/types/Series/SeriesType"
-import { scheduleOptions } from "@/queries/schedule"
-import { seasonsOptions } from "@/queries/season"
-import { teamsOptions } from "@/queries/team"
+import {SeriesCardSkeleton, SeriesList} from "@/features/schedule"
+import {StandingsSkeleton} from "@/features/standings"
+import {SeriesRecordSkeleton, TeamStats} from "@/features/team"
+import {scheduleOptions, useSchedule} from "@/queries/schedule"
+import {seasonsOptions} from "@/queries/season"
+import {teamsOptions} from "@/queries/team"
+import {SeriesType} from "@/types/Series/SeriesType"
 
 type TeamViewTab = "schedule" | "stats"
 
@@ -116,7 +115,7 @@ const TeamComponent = () => {
   )
 
   return (
-    <Box sx={{ width: "100%", minWidth: 0, overflow: "hidden" }}>
+    <Box sx={{ width: "100%", minWidth: 0 }}>
       {/* Narrow: toggle + single panel */}
       <Box sx={{ display: { xs: "block", md: "none" }, width: "100%", minWidth: 0 }}>
         <ToggleButtonGroup
@@ -131,7 +130,7 @@ const TeamComponent = () => {
           <ToggleButton value="stats" aria-label="Team stats">Team stats</ToggleButton>
         </ToggleButtonGroup>
         {narrowTab === "schedule" && (
-          <Box sx={{ paddingLeft: 2, minWidth: 0, overflow: "hidden" }}>
+          <Box sx={{ minWidth: 0 }}>
             {(seasonSeries?.length ?? 0) === 0 ? emptyMessage : <SeriesList series={seasonSeries!} />}
           </Box>
         )}
@@ -158,7 +157,7 @@ const TeamComponent = () => {
             columns={3}
             sx={{ flexDirection: "row", width: "100%", maxWidth: "100%", minWidth: 0 }}
           >
-            <Grid size={2} sx={{ minWidth: 0, overflow: "hidden", paddingLeft: 2, paddingTop: 1.5, alignSelf: "flex-start" }}>
+            <Grid size={2} sx={{ minWidth: 0, paddingTop: 1.5, alignSelf: "flex-start" }}>
               <SeriesList series={seasonSeries!} />
             </Grid>
             <Grid size={1} sx={{ minWidth: 0, paddingTop: 1.5, alignSelf: "flex-start" }}>
