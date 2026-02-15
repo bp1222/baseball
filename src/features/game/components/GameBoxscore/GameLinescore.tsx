@@ -124,12 +124,12 @@ export const GameLinescore = ({ game }: GameLinescoreProps) => {
         // Ensure horizontal scroll on narrow viewports; no horizontal scroll on wide
         maxWidth: "100%",
         "&::-webkit-scrollbar": { height: 6 },
-        "&::-webkit-scrollbar-thumb": { borderRadius: 3, bgcolor: "grey.400" },
+        "&::-webkit-scrollbar-thumb": { borderRadius: 3, bgcolor: "divider" },
       }}
     >
       <Table size="small" padding="normal" sx={{ minWidth: minTableWidth }}>
         <TableHead>
-          <TableRow sx={{ bgcolor: "grey.100" }}>
+          <TableRow sx={{ bgcolor: "action.hover" }}>
             <TableCell sx={{ fontWeight: 600, width: 48, minWidth: 48 }} />
             {Array.from({ length: inningCount }, (_, index) => (
               <TableCell

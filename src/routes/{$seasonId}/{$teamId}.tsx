@@ -3,9 +3,10 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 
 import { SeriesCardSkeleton, SeriesList } from "@/features/schedule"
-import { SeriesRecordSkeleton, TeamStats } from "@/features/team"
 import { StandingsSkeleton } from "@/features/standings"
+import { SeriesRecordSkeleton, TeamStats } from "@/features/team"
 import { useSchedule } from "@/queries/schedule"
+import { SeriesType } from "@/types/Series/SeriesType"
 import { scheduleOptions } from "@/queries/schedule"
 import { seasonsOptions } from "@/queries/season"
 import { teamsOptions } from "@/queries/team"
@@ -21,12 +22,14 @@ const TeamComponent = () => {
   let seasonSeries = scheduleData
 
   if (interestedTeamId != null && seasonSeries != null) {
-    seasonSeries = seasonSeries.filter((s) =>
-      s.games.some(
-        (g) =>
-          g.away.teamId === interestedTeamId ||
-          g.home.teamId === interestedTeamId
-      )
+    seasonSeries = seasonSeries.filter(
+      (s) =>
+        s.type !== SeriesType.SpringTraining &&
+        s.games.some(
+          (g) =>
+            g.away.teamId === interestedTeamId ||
+            g.home.teamId === interestedTeamId
+        )
     )
   }
 
@@ -155,10 +158,10 @@ const TeamComponent = () => {
             columns={3}
             sx={{ flexDirection: "row", width: "100%", maxWidth: "100%", minWidth: 0 }}
           >
-            <Grid size={2} sx={{ minWidth: 0, overflow: "hidden", paddingLeft: 2 }}>
+            <Grid size={2} sx={{ minWidth: 0, overflow: "hidden", paddingLeft: 2, paddingTop: 1.5, alignSelf: "flex-start" }}>
               <SeriesList series={seasonSeries!} />
             </Grid>
-            <Grid size={1} sx={{ minWidth: 0 }}>
+            <Grid size={1} sx={{ minWidth: 0, paddingTop: 1.5, alignSelf: "flex-start" }}>
               <TeamStats seasonId={seasonId} teamId={interestedTeamId} />
             </Grid>
           </Grid>

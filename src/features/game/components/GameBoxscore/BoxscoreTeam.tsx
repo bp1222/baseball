@@ -1,8 +1,8 @@
 import {Grid, Typography} from "@mui/material"
 
 import {useTeams} from "@/queries/team.ts"
-import {GameTeam} from "@/types/GameTeam.ts"
 import { GetTeamImage } from "@/shared/components/GetTeamImage"
+import {GameTeam} from "@/types/GameTeam.ts"
 
 type BoxscoreTeamProps = {
   gameTeam: GameTeam

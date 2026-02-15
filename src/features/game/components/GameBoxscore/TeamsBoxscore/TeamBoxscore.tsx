@@ -1,8 +1,9 @@
 import {Grid} from "@mui/material"
 
+import { BoxscoreTeam } from "@/types/Boxscore"
+
 import { BattersBoxscore } from "./TeamBoxscore/BattersBoxscore"
 import { PitchersBoxscore } from "./TeamBoxscore/PitchersBoxscore"
-import { BoxscoreTeam } from "@/types/Boxscore"
 
 type TeamBoxscoreProps = {
   boxscore: BoxscoreTeam

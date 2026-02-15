@@ -25,7 +25,7 @@ type TeamTab = "away" | "home"
 const teamCardSx = {
   p: 1.5,
   borderRadius: 1.5,
-  bgcolor: "grey.50",
+  bgcolor: "action.hover",
   border: 1,
   borderColor: "divider",
 }

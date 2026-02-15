@@ -10,16 +10,22 @@
  * Opens the boxscore modal via ModalContext when clicked.
  */
 
-import {Box, Color, Grid} from "@mui/material"
+import { Box, Color, Grid } from "@mui/material"
 import dayjs from "dayjs"
-import {useRef} from "react"
+import { useRef } from "react"
 
-import {useInterestedTeam} from "@/context/InterestedTeamContext"
-import {useModal} from "@/context/ModalContext"
-import {useTeams} from "@/queries/team"
-import {Game} from "@/types/Game"
-import {DefaultGameResultColor, GetGameResultColor} from "@/types/Game/GameResult"
-import {GameStatus, GetGameStatusColor} from "@/types/Game/GameStatus"
+import { useInterestedTeam } from "@/context/InterestedTeamContext"
+import { useThemeMode } from "@/context/ThemeModeContext"
+import { useModal } from "@/context/ModalContext"
+import { useTeams } from "@/queries/team"
+import { Game } from "@/types/Game"
+import {
+  DefaultGameResultColor,
+  GameTileDarkColorsMap,
+  GetGameResultColor,
+  getGameTileDarkKey,
+} from "@/types/Game/GameResult"
+import { GameStatus, GetGameStatusColor } from "@/types/Game/GameStatus"
 
 import {GameScore} from "./GameScore"
 import {GameStatusLine} from "./GameStatusLine"
@@ -40,9 +46,11 @@ export const GameTile = ({
   gamesInSeries,
 }: GameTileProps) => {
   const interestedTeam = useInterestedTeam()
+  const { mode } = useThemeMode()
   const { data: teams } = useTeams()
   const { openBoxscore } = useModal()
   const tileRef = useRef<HTMLDivElement>(null)
+  const isDark = mode === "dark"
 
   const gameIsToday = dayjs(game.gameDate).isSame(
     interestedTeam ? dayjs() : selectedDate,
@@ -69,6 +77,29 @@ export const GameTile = ({
     : [GameStatus.InProgress, GameStatus.Canceled].indexOf(game.gameStatus) > -1
       ? GetGameStatusColor(game.gameStatus)
       : DefaultGameResultColor
+
+  const darkColors = isDark ? GameTileDarkColorsMap[getGameTileDarkKey(game, interestedTeam ?? undefined)] : null
+
+  const tileBg = gameIsToday
+    ? "primary.50"
+    : darkColors
+      ? darkColors.bg
+      : gameTileColor[50]
+  const tileBorder = gameIsToday
+    ? "primary.main"
+    : darkColors
+      ? darkColors.border
+      : gameTileColor[400]
+  const badgeBg = gameIsToday
+    ? "primary.main"
+    : darkColors
+      ? darkColors.badgeBg
+      : gameTileColor[300]
+  const badgeTextColor = gameIsToday
+    ? "primary.contrastText"
+    : darkColors
+      ? darkColors.text
+      : gameTileColor[800]
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -105,19 +136,18 @@ export const GameTile = ({
       }}
       border={gameIsToday ? 2 : 0.75}
       borderRadius={0.5}
-      borderColor={gameIsToday ? "primary.main" : gameTileColor[200]}
-      bgcolor={gameIsToday ? "primary.50" : gameTileColor[50]}
+      borderColor={tileBorder}
+      bgcolor={tileBg}
       aria-label={`View boxscore: ${awayAbbr} at ${homeAbbr}${postponedCanceledBadge ? ` (${postponedCanceledBadge})` : ""}`}
     >
       {/* Date badge */}
       <Box
         flexGrow={1}
-        sx={{ fontSize: "0.75rem" }}
+        sx={{ fontSize: "0.75rem", color: badgeTextColor }}
         textAlign="center"
-        color={gameIsToday ? "primary.contrastText" : "Background"}
         paddingLeft={0.2}
         paddingRight={0.2}
-        bgcolor={gameIsToday ? "primary.main" : gameTileColor[300]}
+        bgcolor={badgeBg}
         fontWeight={gameIsToday ? 700 : 400}
       >
         {postponedCanceledBadge
@@ -146,6 +176,12 @@ export const GameTile = ({
             game,
             interestedTeam ?? teams?.find((t) => t.id == game.away.teamId)
           )}
+          darkMode={isDark}
+          darkModeColors={
+            darkColors
+              ? { bg: darkColors.bg, border: darkColors.border, text: darkColors.text }
+              : undefined
+          }
         />
       </Grid>
       <Grid>
@@ -155,6 +191,12 @@ export const GameTile = ({
             game,
             interestedTeam ?? teams?.find((t) => t.id == game.home.teamId)
           )}
+          darkMode={isDark}
+          darkModeColors={
+            darkColors
+              ? { bg: darkColors.bg, border: darkColors.border, text: darkColors.text }
+              : undefined
+          }
         />
       </Grid>
 

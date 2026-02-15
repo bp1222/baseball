@@ -9,8 +9,8 @@
  *   // Returns Team | undefined
  */
 
-import { createContext, ReactNode, useContext } from "react"
 import { useParams } from "@tanstack/react-router"
+import { createContext, ReactNode, useContext } from "react"
 
 import { useTeam } from "@/queries/team"
 import { Team } from "@/types/Team"

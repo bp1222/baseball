@@ -8,6 +8,7 @@ import { Footer } from "@/components/Footer"
 import { Header } from "@/components/Header"
 import { InterestedTeamProvider, useInterestedTeamContext } from "@/context/InterestedTeamContext"
 import { ModalProvider } from "@/context/ModalContext"
+import { ThemeModeProvider, useThemeMode } from "@/context/ThemeModeContext"
 import type { RouterContext } from "@/router/context"
 
 /**
@@ -15,9 +16,10 @@ import type { RouterContext } from "@/router/context"
  */
 const RootLayout = () => {
   const { teamId } = useInterestedTeamContext()
+  const { mode } = useThemeMode()
 
   return (
-    <ThemeProvider theme={GetTeamTheme(teamId ?? 0)}>
+    <ThemeProvider theme={GetTeamTheme(teamId ?? 0, mode)}>
       <CssBaseline />
       <Header />
       <Container maxWidth="lg" sx={{ minWidth: 0 }}>
@@ -25,8 +27,8 @@ const RootLayout = () => {
           <Outlet />
         </Box>
       </Container>
-      {/* Modals rendered at root level for single instance */}
       <AppModals />
+      <Footer />
     </ThemeProvider>
   )
 }
@@ -35,12 +37,13 @@ const RootComponent = () => {
   return (
     <>
       <InterestedTeamProvider>
-        <ModalProvider>
-          <RootLayout />
-        </ModalProvider>
+        <ThemeModeProvider>
+          <ModalProvider>
+            <RootLayout />
+          </ModalProvider>
+        </ThemeModeProvider>
       </InterestedTeamProvider>
       <TanStackRouterDevtools position="bottom-left" />
-      <Footer />
     </>
   )
 }

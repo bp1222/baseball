@@ -5,21 +5,24 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  useTheme,
 } from "@mui/material"
 
 import { useDivisions } from "@/queries/division"
 import { useLeagues } from "@/queries/league"
 import { useTeams } from "@/queries/team"
+import LabelPaper from "@/shared/components/LabelPaper"
 import { Standings } from "@/types/Standings"
 import { Team } from "@/types/Team"
-import LabelPaper from "@/shared/components/LabelPaper"
 
 interface LeagueStandingsProps {
   team: Team
   standings: Standings[]
 }
 
-export const LeagueStandings = ({team, standings}: LeagueStandingsProps) => {
+export const LeagueStandings = ({ team, standings }: LeagueStandingsProps) => {
+  const theme = useTheme()
+  const isDark = theme.palette.mode === "dark"
   const { data: teams } = useTeams()
   const { getDivision } = useDivisions()
   const { getLeague } = useLeagues()
@@ -40,7 +43,11 @@ export const LeagueStandings = ({team, standings}: LeagueStandingsProps) => {
   })
   finalLeagueStandings.push(...orderedLeagueStandings.filter((s) => !finalLeagueStandings.includes(s)))
 
-  const headerCellSx = { whiteSpace: "nowrap" as const, fontWeight: 700, bgcolor: "grey.100", py: 1 }
+  const headerCellSx = {
+    whiteSpace: "nowrap" as const,
+    fontWeight: 700,
+    py: 1,
+  }
 
   return (
     <LabelPaper label={`${league.name} Standings`}>
@@ -48,8 +55,21 @@ export const LeagueStandings = ({team, standings}: LeagueStandingsProps) => {
         sx={{
           maxHeight: 425,
           overflowX: "auto",
+          overflowY: "auto",
           "&::-webkit-scrollbar": { height: 6 },
-          "&::-webkit-scrollbar-thumb": { borderRadius: 3, bgcolor: "grey.400" },
+          "&::-webkit-scrollbar-thumb": { borderRadius: 3, bgcolor: "divider" },
+          // Keep sticky header above body rows: solid background and higher z-index
+          "& thead th": {
+            position: "sticky",
+            top: 0,
+            zIndex: 10,
+            // Opaque background so body rows don't show through when scrolling
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? theme.palette.grey[800]
+                : theme.palette.grey[100],
+            boxShadow: `0 1px 0 0 ${theme.palette.divider}`,
+          },
         }}
       >
         <Table stickyHeader size="small" sx={{ minWidth: 320 }}>
@@ -83,7 +103,10 @@ export const LeagueStandings = ({team, standings}: LeagueStandingsProps) => {
                   key={rowTeam?.id}
                   sx={{
                     "&:hover": { bgcolor: isCurrentTeam ? "primary.light" : "action.hover" },
-                    ...(isCurrentTeam && { bgcolor: "primary.50" }),
+                    ...(isCurrentTeam && {
+                      bgcolor: isDark ? "primary.dark" : "primary.50",
+                      color: isDark ? "primary.contrastText" : undefined,
+                    }),
                   }}
                 >
                   <TableCell sx={{ whiteSpace: "nowrap", fontWeight: isCurrentTeam ? 600 : 400 }} align="left">

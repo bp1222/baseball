@@ -1,15 +1,17 @@
-import { Grid, Typography } from "@mui/material"
+import { Grid, Typography, useTheme } from "@mui/material"
 import dayjs from "dayjs"
 
-import { GameItem } from "./GameItem"
-import { SeriesTeam } from "./SeriesItem/SeriesTeam"
 import { useInterestedTeam } from "@/context/InterestedTeamContext"
+import { useThemeMode } from "@/context/ThemeModeContext"
 import { GetSeriesResult, Series } from "@/types/Series"
-import { DefaultSeriesResultColor, GetSeriesColors } from "@/types/Series/SeriesResult"
+import { GetSeriesColors } from "@/types/Series/SeriesResult"
 import { SeriesType } from "@/types/Series/SeriesType"
 
+import { GameItem } from "./GameItem"
 import { ResultBadge } from "./SeriesItem/ResultBadge"
 import { SeriesBadge } from "./SeriesItem/SeriesBadge"
+import { SpringLeagueIcon } from "./SeriesItem/SpringLeagueIcon"
+import { SeriesTeam } from "./SeriesItem/SeriesTeam"
 import { SeriesTeams } from "./SeriesItem/SeriesTeams"
 
 type SeriesItemProps = {
@@ -19,11 +21,19 @@ type SeriesItemProps = {
 
 export const SeriesItem = ({ series, selectedDate }: SeriesItemProps) => {
   const interestedTeam = useInterestedTeam()
+  const { mode } = useThemeMode()
+  const theme = useTheme()
 
-  const seriesResult = GetSeriesResult(series, interestedTeam)
-  const { background, border } = interestedTeam
-    ? GetSeriesColors(series.type, seriesResult)
-    : DefaultSeriesResultColor
+  const seriesResult = GetSeriesResult(series, interestedTeam ?? undefined)
+  const { background, border } = GetSeriesColors(
+    series.type,
+    seriesResult,
+    series.springLeague,
+    mode
+  )
+
+  const isDarkCard = mode === "dark"
+  const textColor = isDarkCard ? theme.palette.text.primary : undefined
 
   return (
     <Grid
@@ -41,6 +51,7 @@ export const SeriesItem = ({ series, selectedDate }: SeriesItemProps) => {
         minWidth: 0,
         flexGrow: 1,
         boxSizing: "border-box",
+        ...(textColor && { color: textColor }),
       }}
     >
       {interestedTeam && (
@@ -72,7 +83,7 @@ export const SeriesItem = ({ series, selectedDate }: SeriesItemProps) => {
               <SeriesTeams series={series} />
             )}
           </Grid>
-          <Grid>
+          <Grid container alignItems="center" justifyContent="center" gap={0.5} marginTop={0.5}>
             <SeriesBadge type={series.type} />
           </Grid>
           {series.startDate != null && series.endDate != null && (
@@ -90,6 +101,13 @@ export const SeriesItem = ({ series, selectedDate }: SeriesItemProps) => {
           )}
         </Grid>
       </Grid>
+
+      {/* Spring league icon — to the left of games, same box */}
+      {series.type === SeriesType.SpringTraining && series.springLeague && (
+        <Grid sx={{ flexShrink: 0, alignSelf: "center", paddingRight: 1 }}>
+          <SpringLeagueIcon league={series.springLeague} size={24} />
+        </Grid>
+      )}
 
       {/* Game tiles — fills remaining width, wraps to next line when needed */}
       <Grid

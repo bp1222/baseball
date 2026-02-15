@@ -12,12 +12,12 @@
  *   openBoxscore(game, buttonRef.current)
  */
 
-import { createContext, ReactNode, useCallback, useContext, useRef, useState } from "react"
+import {createContext, ReactNode, useCallback, useContext, useRef, useState} from "react"
 
-import { Game } from "@/types/Game"
+import {Game} from "@/types/Game"
 
 // Modal types - extend this union as new modal types are added
-type ModalType = "boxscore" | null
+// type ModalType = "boxscore" | null
 
 type ModalState =
   | { type: "boxscore"; data: Game }

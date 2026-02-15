@@ -8,8 +8,8 @@
 import { Alert, Box, Button, Grid, Typography } from "@mui/material"
 
 import { useSeriesStats } from "@/hooks"
-import { Team } from "@/types/Team"
 import LabelPaper from "@/shared/components/LabelPaper"
+import { Team } from "@/types/Team"
 
 import { SeriesRecordSkeleton } from "./SeriesRecordSkeleton"
 

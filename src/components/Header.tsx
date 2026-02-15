@@ -1,7 +1,10 @@
-import { AppBar, Box, Toolbar, Typography } from "@mui/material"
+import Brightness4Icon from "@mui/icons-material/Brightness4"
+import Brightness7Icon from "@mui/icons-material/Brightness7"
+import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material"
 import { useParams } from "@tanstack/react-router"
 
 import { useInterestedTeam } from "@/context/InterestedTeamContext"
+import { useThemeMode } from "@/context/ThemeModeContext"
 
 import { HeaderName } from "./Header/HeaderName"
 import { SeasonPicker } from "./Header/SeasonPicker"
@@ -10,14 +13,15 @@ import { TeamPicker } from "./Header/TeamPicker"
 export const Header = () => {
   const { seasonId } = useParams({ strict: false })
   const selectedTeam = useInterestedTeam()
+  const { mode, toggleMode } = useThemeMode()
 
   return (
     <AppBar position="sticky" sx={{ marginBottom: 2 }}>
       <Toolbar sx={{ minWidth: 0, px: { xs: 0.5, sm: 2 } }}>
-        {/* Left: app name */}
+        {/* Left: app name — same flex as right so center is truly centered */}
         <Box
           sx={{
-            flex: "0 0 auto",
+            flex: "1 1 0",
             minWidth: 0,
             display: "flex",
             alignItems: "center",
@@ -30,8 +34,7 @@ export const Header = () => {
         {/* Center: season picker */}
         <Box
           sx={{
-            flex: "1 1 0",
-            minWidth: 0,
+            flex: "0 0 auto",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -41,16 +44,29 @@ export const Header = () => {
           <SeasonPicker />
         </Box>
 
-        {/* Right: team picker (with cancel when team selected) */}
+        {/* Right: dark mode toggle + team picker — same flex as left */}
         <Box
           sx={{
-            flex: "0 0 auto",
+            flex: "1 1 0",
             minWidth: 0,
             display: "flex",
             alignItems: "center",
             justifyContent: "flex-end",
+            gap: 0.5,
           }}
         >
+          <IconButton
+            color="inherit"
+            onClick={toggleMode}
+            aria-label={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            size="small"
+          >
+            {mode === "dark" ? (
+              <Brightness7Icon aria-hidden />
+            ) : (
+              <Brightness4Icon aria-hidden />
+            )}
+          </IconButton>
           <TeamPicker />
         </Box>
       </Toolbar>

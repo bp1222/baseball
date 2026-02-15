@@ -15,8 +15,8 @@ export const Footer = () => {
         paddingRight={1}
         border={0.5}
         borderRadius={1}
-        borderColor={'primary.main.dark'}
-        bgcolor={'Background'}>
+        borderColor={'divider'}
+        bgcolor={'background.paper'}>
         <Grid>
           <Typography noWrap align={'center'}>
             Made in <img width={12} height={12} src={img} alt={'Colorado style C'}/>

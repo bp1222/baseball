@@ -8,6 +8,8 @@ export type Team = {
   abbreviation?: string
   league: number
   division?: number
+  /** Spring training league: GL = Grapefruit, CL = Cactus */
+  springLeagueAbbreviation?: string
 }
 
 export const TeamFromMLBTeam = (team: MLBTeam): Team => {
@@ -19,5 +21,6 @@ export const TeamFromMLBTeam = (team: MLBTeam): Team => {
     abbreviation: team.abbreviation,
     league: team.league!.id,
     division: team.division?.id,
+    springLeagueAbbreviation: team.springLeague?.abbreviation,
   })
 }

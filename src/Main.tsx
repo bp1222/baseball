@@ -10,8 +10,8 @@ import timezone from "dayjs/plugin/timezone"
 import utc from "dayjs/plugin/utc"
 import {createRoot} from "react-dom/client"
 
-import { routeTree } from "@/routeTree.gen"
 import type { RouterContext } from "@/router/context"
+import { routeTree } from "@/routeTree.gen"
 
 dayjs.locale("en")
 

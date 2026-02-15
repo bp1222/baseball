@@ -5,11 +5,11 @@
  * Teams are static within a season, so we use Infinity stale time.
  */
 
-import { queryOptions, useQuery } from "@tanstack/react-query"
+import {queryOptions, useQuery} from "@tanstack/react-query"
 
-import { useSeason } from "@/queries/season"
-import { api } from "@/services/MlbAPI"
-import { TeamFromMLBTeam } from "@/types/Team"
+import {useSeason} from "@/queries/season"
+import {api} from "@/services/MlbAPI"
+import {TeamFromMLBTeam} from "@/types/Team"
 
 /**
  * Stale time: Infinity (static)
@@ -28,7 +28,7 @@ export const teamsOptions = (seasonId?: string) =>
         season: seasonId!,
         fields: [
           "teams", "id", "name", "teamName", "shortName", "abbreviation", "franchiseName",
-          "league", "division", "nameShort",
+          "league", "division", "nameShort", "springLeague"
         ],
         hydrate: "division",
       })

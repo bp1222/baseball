@@ -1,5 +1,5 @@
+import { Box, Typography } from "@mui/material"
 import { Fragment } from "react"
-import { Box, Grid, Typography } from "@mui/material"
 
 import { Game } from "@/types/Game"
 

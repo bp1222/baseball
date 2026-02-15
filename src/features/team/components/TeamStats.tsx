@@ -3,11 +3,12 @@ import { Alert, Box, Button, Stack } from "@mui/material"
 import { DivisionStandings } from "@/features/standings/components/DivisionStandings"
 import { LeagueStandings } from "@/features/standings/components/LeagueStandings"
 import { StandingsSkeleton } from "@/features/standings/components/StandingsSkeleton"
+import { useStandings } from "@/queries/standings"
+import { useTeam } from "@/queries/team"
+
 import { SeriesRecordSkeleton } from "./SeriesRecordSkeleton"
 import { TeamRanking } from "./TeamRanking"
 import { TeamSeriesRecord } from "./TeamSeriesRecord"
-import { useStandings } from "@/queries/standings"
-import { useTeam } from "@/queries/team"
 
 type TeamStatsProps = {
   seasonId?: string

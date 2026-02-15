@@ -1,11 +1,11 @@
 import { Grid, Typography } from "@mui/material"
 
 import { useTeam } from "@/queries/team"
+import { GetTeamImage } from "@/shared/components/GetTeamImage"
 import { GetSeriesHomeAway, GetSeriesWins, Series } from "@/types/Series"
 import { SeriesHomeAway } from "@/types/Series/SeriesHomeAway"
 import { SeriesType } from "@/types/Series/SeriesType"
 import { Team } from "@/types/Team"
-import { GetTeamImage } from "@/shared/components/GetTeamImage"
 
 type SeriesTeamProps = {
   series: Series

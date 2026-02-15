@@ -2,12 +2,13 @@
  * Series generator — build app Series from MLB API schedule (pure logic, no I/O)
  */
 
-import { Game, GameStatusCode, GameTeam, GameType } from "@bp1222/stats-api"
+import {Game, GameStatusCode, GameTeam, GameType} from "@bp1222/stats-api"
 import dayjs from "dayjs"
 
-import { GameFromMLBGame } from "@/types/Game"
-import { Series } from "@/types/Series"
-import { SeriesType } from "@/types/Series/SeriesType"
+import {GameFromMLBGame} from "@/types/Game"
+import type {Team} from "@/types/Team"
+import {Series, SpringLeague} from "@/types/Series"
+import {SeriesType} from "@/types/Series/SeriesType"
 
 const seriesPk = (
   teamA: GameTeam,
@@ -15,6 +16,13 @@ const seriesPk = (
   seriesType: SeriesType
 ): string => {
   return `${teamA.team.id}-${teamA.seriesNumber}-${teamB.team.id}-${teamB.seriesNumber}-${seriesType}`
+}
+
+/** Map team spring league abbreviation to our SpringLeague. GL = Grapefruit, CL = Cactus. */
+function springLeagueFromAbbreviation(abbr: string | undefined): SpringLeague {
+  if (abbr === "GL") return "grapefruit"
+  if (abbr === "CL") return "cactus"
+  return "cactus"
 }
 
 const gameToSeriesType = (game: Game): SeriesType => {
@@ -39,8 +47,13 @@ const gameToSeriesType = (game: Game): SeriesType => {
 /**
  * Build season series list from a flat list of MLB schedule games.
  * Filters out spring training/exhibition and postponed games; deduplicates by gamePk.
+ * When teams are provided, spring training league (grapefruit/cactus) is determined from
+ * the home team's springLeague.abbreviation (GL = Grapefruit, CL = Cactus).
  */
-export function SeriesFromMLBSchedule(schedule: Game[]): Series[] {
+export function SeriesFromMLBSchedule(schedule: Game[], teams?: Team[]): Series[] {
+  const teamById = teams?.length
+    ? new Map(teams.map((t) => [t.id, t]))
+    : undefined
   const seasonSeries: Series[] = []
   const seenGames: number[] = []
 
@@ -71,11 +84,16 @@ export function SeriesFromMLBSchedule(schedule: Game[]): Series[] {
     return currentSeries
   }
 
+  const setSpringLeagueIfNeeded = (series: Series, game: Game) => {
+    if (series.type === SeriesType.SpringTraining && series.games.length === 0) {
+      const homeTeamId = game.teams.home.team.id
+      const abbr = teamById?.get(homeTeamId)?.springLeagueAbbreviation
+      series.springLeague = springLeagueFromAbbreviation(abbr)
+    }
+  }
+
   for (const game of schedule) {
-    if (
-      game.gameType === GameType.SpringTraining ||
-      game.gameType === GameType.Exhibition
-    ) {
+    if (game.gameType === GameType.Exhibition) {
       continue
     }
     if (game.status?.codedGameState === GameStatusCode.Postponed) {
@@ -91,6 +109,7 @@ export function SeriesFromMLBSchedule(schedule: Game[]): Series[] {
     if (currentSeries.games.length === 0) {
       currentSeries.type = gameToSeriesType(game)
       currentSeries.startDate = dayjs(game.gameDate)
+      setSpringLeagueIfNeeded(currentSeries, game)
     }
     currentSeries.endDate = dayjs(game.gameDate)
     currentSeries.games.push(GameFromMLBGame(game))

@@ -2,11 +2,11 @@
  * Scorecard hero — prominent score and matchup at top of boxscore
  */
 
-import { Box, Typography } from "@mui/material"
+import { Box, Typography, useTheme } from "@mui/material"
 import dayjs from "dayjs"
 
-import { GetTeamImage } from "@/shared/components/GetTeamImage"
 import { useTeams } from "@/queries/team"
+import { GetTeamImage } from "@/shared/components/GetTeamImage"
 import { Game } from "@/types/Game"
 import { GameStatus } from "@/types/Game/GameStatus"
 
@@ -15,9 +15,11 @@ type ScorecardHeroProps = {
 }
 
 export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
+  const theme = useTheme()
   const { data: teams } = useTeams()
   const awayTeam = teams?.find((t) => t.id === game.away.teamId)
   const homeTeam = teams?.find((t) => t.id === game.home.teamId)
+  const isDark = theme.palette.mode === "dark"
 
   const awayScore = game.away.score ?? 0
   const homeScore = game.home.score ?? 0
@@ -49,7 +51,7 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
         width: "100%",
         borderRadius: 2,
         overflow: "hidden",
-        bgcolor: "grey.50",
+        bgcolor: "action.hover",
         border: 1,
         borderColor: "divider",
       }}
@@ -126,10 +128,18 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
                   game.gameStatus === GameStatus.InProgress
                     ? "success.main"
                     : game.gameStatus === GameStatus.Final
-                      ? "grey.400"
-                      : "grey.300",
+                      ? isDark
+                        ? "grey.600"
+                        : "grey.400"
+                      : isDark
+                        ? "grey.700"
+                        : "grey.300",
                 color:
-                  game.gameStatus === GameStatus.InProgress ? "white" : "grey.800",
+                  game.gameStatus === GameStatus.InProgress
+                    ? "success.contrastText"
+                    : isDark
+                      ? "grey.100"
+                      : "grey.800",
               }}
             >
               <Typography variant="caption" fontWeight={700} sx={{ fontSize: { xs: "0.65rem", sm: "inherit" } }}>

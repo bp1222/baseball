@@ -7,10 +7,10 @@ import { GetTeamTheme } from "@/colors"
 import { useInterestedTeam } from "@/context/InterestedTeamContext"
 import { useSchedule } from "@/queries/schedule"
 import { useTeams } from "@/queries/team"
+import LabelPaper from "@/shared/components/LabelPaper"
 import { GameStatus } from "@/types/Game/GameStatus"
 import { GameType } from "@/types/Game/GameType"
 import { Team } from "@/types/Team"
-import LabelPaper from "@/shared/components/LabelPaper"
 
 type TeamDailyTally = {
   teamId: number

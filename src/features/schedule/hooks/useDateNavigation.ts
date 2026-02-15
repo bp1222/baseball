@@ -56,25 +56,23 @@ export const useDateNavigation = (): UseDateNavigationResult => {
   }, [location.search])
 
   const minDate = useMemo(
-    () => dayjs(season?.seasonStartDate),
-    [season?.seasonStartDate]
+    () => dayjs((season as { preSeasonStartDate?: string } | undefined)?.preSeasonStartDate ?? season?.seasonStartDate),
+    [season]
   )
   const maxDate = useMemo(
     () => dayjs(season?.postSeasonEndDate),
     [season?.postSeasonEndDate]
   )
 
-  // Compute default date: today if within season, otherwise season start/end
+  // Compute default date: today if within [minDate, maxDate], otherwise clamp to range
   const defaultDate = useMemo(() => {
     const today = dayjs()
-    if (today.isBetween(dayjs(season?.regularSeasonStartDate), dayjs(season?.postSeasonEndDate))) {
-      return today
-    }
-    if (today.isBefore(dayjs(season?.regularSeasonStartDate))) {
-      return dayjs(season?.regularSeasonStartDate)
-    }
-    return dayjs(season?.postSeasonEndDate ?? season?.seasonEndDate)
-  }, [season])
+    const min = minDate
+    const max = maxDate
+    if (today.isBefore(min)) return min
+    if (today.isAfter(max)) return max
+    return today
+  }, [minDate, maxDate])
 
   // Get selected date from URL or use default
   const selectedDate = useMemo(() => {

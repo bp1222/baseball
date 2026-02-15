@@ -1,4 +1,4 @@
-import { Box, Paper, Typography } from "@mui/material"
+import { Box, Paper, Typography, useTheme } from "@mui/material"
 import { ReactNode } from "react"
 
 type LabelPaperProps = {
@@ -7,6 +7,9 @@ type LabelPaperProps = {
 }
 
 const LabelPaper = ({ label, children }: LabelPaperProps) => {
+  const theme = useTheme()
+  const isDark = theme.palette.mode === "dark"
+
   return (
     <Paper
       elevation={0}
@@ -26,9 +29,10 @@ const LabelPaper = ({ label, children }: LabelPaperProps) => {
           px: 1.5,
           fontWeight: 700,
           textAlign: "center",
-          color: "primary.main",
-          bgcolor: "primary.50",
           letterSpacing: "0.02em",
+          ...(isDark
+            ? { bgcolor: "primary.dark", color: "primary.contrastText" }
+            : { bgcolor: "primary.50", color: "primary.main" }),
         }}
       >
         {label}
