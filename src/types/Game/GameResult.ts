@@ -41,7 +41,8 @@ export const GameTileDarkColorsMap: Record<GameTileDarkKey, GameTileDarkColors> 
   tie: { bg: '#1a1a2e', border: '#2d2d4a', badgeBg: '#2d2d4a', text: '#b8b8d4' },
   // No team selected: slightly lighter than series card (grey[800]) so tile is discernible
   unknown: { bg: '#4a4a4a', border: '#5c5c5c', badgeBg: '#555555', text: '#e0e0e0' },
-  inProgress: { bg: '#251a2e', border: '#3d2d4a', badgeBg: '#3d2d4a', text: '#d4b8e0' },
+  // In progress: grey tones; all slightly lighter than unknown
+  inProgress: { bg: '#5c5c5c', border: '#666666', badgeBg: '#5c5c5c', text: '#e8e8e8' },
   canceled: { bg: '#2e251a', border: '#4a3d2d', badgeBg: '#4a3d2d', text: '#e0d4b8' },
 }
 

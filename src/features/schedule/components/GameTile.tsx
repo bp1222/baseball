@@ -62,7 +62,20 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
       ? GetGameStatusColor(game.gameStatus)
       : DefaultGameResultColor
 
-  const darkColors = isDark ? GameTileDarkColorsMap[getGameTileDarkKey(game, interestedTeam ?? undefined)] : null
+  const tileDarkKey = isDark ? getGameTileDarkKey(game, interestedTeam ?? undefined) : null
+  const darkColors = isDark && tileDarkKey ? GameTileDarkColorsMap[tileDarkKey] : null
+
+  // For finished games with no team selected, use per-row win/loss (like light mode)
+  const awayScoreDarkKey =
+    isDark && !interestedTeam && game.gameStatus === GameStatus.Final
+      ? getGameTileDarkKey(game, teams?.find((t) => t.id === game.away.teamId))
+      : tileDarkKey
+  const homeScoreDarkKey =
+    isDark && !interestedTeam && game.gameStatus === GameStatus.Final
+      ? getGameTileDarkKey(game, teams?.find((t) => t.id === game.home.teamId))
+      : tileDarkKey
+  const awayScoreDarkColors = isDark && awayScoreDarkKey ? GameTileDarkColorsMap[awayScoreDarkKey] : undefined
+  const homeScoreDarkColors = isDark && homeScoreDarkKey ? GameTileDarkColorsMap[homeScoreDarkKey] : undefined
 
   const tileBg = gameIsToday ? 'primary.50' : darkColors ? darkColors.bg : gameTileColor[50]
   const tileBorder = gameIsToday ? 'primary.main' : darkColors ? darkColors.border : gameTileColor[400]
@@ -141,7 +154,9 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
           color={GetGameResultColor(game, interestedTeam ?? teams?.find((t) => t.id == game.away.teamId))}
           darkMode={isDark}
           darkModeColors={
-            darkColors ? { bg: darkColors.bg, border: darkColors.border, text: darkColors.text } : undefined
+            awayScoreDarkColors
+              ? { bg: awayScoreDarkColors.bg, border: awayScoreDarkColors.border, text: awayScoreDarkColors.text }
+              : undefined
           }
         />
       </Grid>
@@ -151,7 +166,9 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
           color={GetGameResultColor(game, interestedTeam ?? teams?.find((t) => t.id == game.home.teamId))}
           darkMode={isDark}
           darkModeColors={
-            darkColors ? { bg: darkColors.bg, border: darkColors.border, text: darkColors.text } : undefined
+            homeScoreDarkColors
+              ? { bg: homeScoreDarkColors.bg, border: homeScoreDarkColors.border, text: homeScoreDarkColors.text }
+              : undefined
           }
         />
       </Grid>
