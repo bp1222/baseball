@@ -1,9 +1,9 @@
-import { Chip } from "@mui/material"
+import { Chip } from '@mui/material'
 
-import { GetBadgeColors } from "@/colors"
-import { useThemeMode } from "@/context/ThemeModeContext"
-import { SeriesResult } from "@/types/Series/SeriesResult"
-import { SeriesType } from "@/types/Series/SeriesType"
+import { GetBadgeColors } from '@/colors'
+import { useThemeMode } from '@/context/ThemeModeContext'
+import { SeriesResult } from '@/types/Series/SeriesResult'
+import { SeriesType } from '@/types/Series/SeriesType'
 
 type ResultBadgeProps = {
   result: SeriesResult
@@ -11,13 +11,13 @@ type ResultBadgeProps = {
 }
 
 const RESULT_LABELS: Record<SeriesResult, string> = {
-  [SeriesResult.Win]: "Win",
-  [SeriesResult.Loss]: "Loss",
-  [SeriesResult.Sweep]: "Sweep",
-  [SeriesResult.Swept]: "Swept",
-  [SeriesResult.Tie]: "Tie",
-  [SeriesResult.InProgress]: "In progress",
-  [SeriesResult.Unplayed]: "",
+  [SeriesResult.Win]: 'Win',
+  [SeriesResult.Loss]: 'Loss',
+  [SeriesResult.Sweep]: 'Sweep',
+  [SeriesResult.Swept]: 'Swept',
+  [SeriesResult.Tie]: 'Tie',
+  [SeriesResult.InProgress]: 'In progress',
+  [SeriesResult.Unplayed]: '',
 }
 
 export const ResultBadge = ({ result, type }: ResultBadgeProps) => {
@@ -26,7 +26,7 @@ export const ResultBadge = ({ result, type }: ResultBadgeProps) => {
   if (!label) return null
 
   const { background, border } = GetBadgeColors(type, result, mode)
-  const isDark = mode === "dark"
+  const isDark = mode === 'dark'
 
   return (
     <Chip
@@ -35,14 +35,14 @@ export const ResultBadge = ({ result, type }: ResultBadgeProps) => {
       variant="filled"
       sx={{
         height: 22,
-        fontSize: "0.7rem",
+        fontSize: '0.7rem',
         fontWeight: 600,
         borderRadius: 0.5,
         bgcolor: background,
-        color: isDark ? "grey.100" : "grey.900",
-        border: "1px solid",
+        color: isDark ? 'grey.100' : 'grey.900',
+        border: '1px solid',
         borderColor: border,
-        "& .MuiChip-label": {
+        '& .MuiChip-label': {
           px: 1,
         },
       }}

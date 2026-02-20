@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const reds = createTheme({
   palette: {
     primary: {
-      main: "#C6011F",
+      main: '#C6011F',
     },
     secondary: {
-      main: "#000000",
+      main: '#000000',
     },
   },
 })

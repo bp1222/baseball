@@ -6,12 +6,12 @@
  * - Quick navigation buttons (Today, Prev/Next game day)
  */
 
-import {Box, Button, Grid} from "@mui/material"
-import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers"
-import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs"
-import dayjs from "dayjs"
+import { Box, Button, Grid } from '@mui/material'
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import dayjs from 'dayjs'
 
-import {GameDay} from "./GameDay"
+import { GameDay } from './GameDay'
 
 type DateNavigationProps = {
   /** Currently selected date */
@@ -45,8 +45,6 @@ type DateNavigationProps = {
 export const DateNavigation = ({
   selectedDate,
   onDateChange,
-  onPrevDay,
-  onNextDay,
   onToday,
   onPrevGameDay,
   onNextGameDay,
@@ -70,17 +68,17 @@ export const DateNavigation = ({
         sx={{ minWidth: 0 }}
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Box sx={{ minWidth: 0, display: "flex", justifyContent: "center" }}>
+          <Box sx={{ minWidth: 0, display: 'flex', justifyContent: 'center' }}>
             <DatePicker
               label="Select Date"
-              views={["month", "day"]}
+              views={['month', 'day']}
               value={selectedDate}
               minDate={minDate}
               maxDate={maxDate}
               disabled={disabled}
               slots={{ day: GameDay }}
               slotProps={{
-                actionBar: { actions: ["today"] },
+                actionBar: { actions: ['today'] },
                 day: { datesWithGames } as Record<string, unknown>,
               }}
               onChange={(date, context) => {
@@ -94,34 +92,14 @@ export const DateNavigation = ({
       </Grid>
 
       {/* Quick navigation buttons */}
-      <Grid
-        container
-        justifyContent="center"
-        paddingBottom={2}
-        sx={{ gap: 1, minWidth: 0, flexWrap: "wrap" }}
-      >
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={onPrevGameDay}
-          disabled={disabled || !hasPrevGameDay}
-        >
+      <Grid container justifyContent="center" paddingBottom={2} sx={{ gap: 1, minWidth: 0, flexWrap: 'wrap' }}>
+        <Button size="small" variant="outlined" onClick={onPrevGameDay} disabled={disabled || !hasPrevGameDay}>
           Prev game day
         </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={onToday}
-          disabled={disabled}
-        >
+        <Button size="small" variant="outlined" onClick={onToday} disabled={disabled}>
           Today
         </Button>
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={onNextGameDay}
-          disabled={disabled || !hasNextGameDay}
-        >
+        <Button size="small" variant="outlined" onClick={onNextGameDay} disabled={disabled || !hasNextGameDay}>
           Next game day
         </Button>
       </Grid>

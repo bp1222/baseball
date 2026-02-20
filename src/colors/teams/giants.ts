@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const giants = createTheme({
   palette: {
     primary: {
-      main: "#FD5A1E",
+      main: '#FD5A1E',
     },
     secondary: {
-      main: "#27251F",
+      main: '#27251F',
     },
   },
 })

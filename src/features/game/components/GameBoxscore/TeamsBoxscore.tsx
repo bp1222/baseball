@@ -1,56 +1,43 @@
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from "@mui/material"
-import { useState } from "react"
+import { Alert, Box, Button, CircularProgress, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { useState } from 'react'
 
-import { useBoxscore } from "@/queries/boxscore"
-import { useTeam } from "@/queries/team"
-import { Game } from "@/types/Game"
-import { GameStatus } from "@/types/Game/GameStatus"
+import { useBoxscore } from '@/queries/boxscore'
+import { useTeam } from '@/queries/team'
+import { Game } from '@/types/Game'
+import { GameStatus } from '@/types/Game/GameStatus'
 
-import { TeamBoxscore } from "./TeamsBoxscore/TeamBoxscore"
+import { TeamBoxscore } from './TeamsBoxscore/TeamBoxscore'
 
 type TeamsBoxscoreProps = {
   game: Game
 }
 
-type TeamTab = "away" | "home"
+type TeamTab = 'away' | 'home'
 
 const teamCardSx = {
   p: 1.5,
   borderRadius: 1.5,
-  bgcolor: "action.hover",
+  bgcolor: 'action.hover',
   border: 1,
-  borderColor: "divider",
+  borderColor: 'divider',
 }
 
 const teamLabelSx = {
-  color: "text.secondary",
+  color: 'text.secondary',
   fontWeight: 600,
   mb: 1,
   pb: 0.5,
   borderBottom: 1,
-  borderColor: "divider",
+  borderColor: 'divider',
 }
 
 export const TeamsBoxscore = ({ game }: TeamsBoxscoreProps) => {
   const { data: homeTeam } = useTeam(game.home.teamId)
   const { data: awayTeam } = useTeam(game.away.teamId)
   const isLive = game.gameStatus === GameStatus.InProgress
-  const {
-    data: boxscore,
-    isPending,
-    isError,
-    refetch: refetchBoxscore,
-  } = useBoxscore(game.pk, isLive)
+  const { data: boxscore, isPending, isError, refetch: refetchBoxscore } = useBoxscore(game.pk, isLive)
 
-  const [teamTab, setTeamTab] = useState<TeamTab>("away")
+  const [teamTab, setTeamTab] = useState<TeamTab>('away')
 
   if (isPending) {
     return (
@@ -62,14 +49,8 @@ export const TeamsBoxscore = ({ game }: TeamsBoxscoreProps) => {
   if (isError) {
     return (
       <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
-        <Alert severity="error">
-          Error loading boxscore. Check back later or try again.
-        </Alert>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => void refetchBoxscore()}
-        >
+        <Alert severity="error">Error loading boxscore. Check back later or try again.</Alert>
+        <Button variant="contained" size="small" onClick={() => void refetchBoxscore()}>
           Retry
         </Button>
       </Box>
@@ -83,7 +64,7 @@ export const TeamsBoxscore = ({ game }: TeamsBoxscoreProps) => {
   const awayCard = (
     <Box sx={teamCardSx}>
       <Typography variant="subtitle2" sx={teamLabelSx}>
-        {awayTeam?.abbreviation ?? "AWAY"}
+        {awayTeam?.abbreviation ?? 'AWAY'}
       </Typography>
       <TeamBoxscore boxscore={boxscore.away} />
     </Box>
@@ -92,19 +73,19 @@ export const TeamsBoxscore = ({ game }: TeamsBoxscoreProps) => {
   const homeCard = (
     <Box sx={teamCardSx}>
       <Typography variant="subtitle2" sx={teamLabelSx}>
-        {homeTeam?.abbreviation ?? "HOME"}
+        {homeTeam?.abbreviation ?? 'HOME'}
       </Typography>
       <TeamBoxscore boxscore={boxscore.home} />
     </Box>
   )
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: '100%' }}>
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "center",
-          mb: 2,
+          display: 'flex',
+          justifyContent: 'center',
+          mb: 1,
         }}
       >
         <ToggleButtonGroup
@@ -114,7 +95,7 @@ export const TeamsBoxscore = ({ game }: TeamsBoxscoreProps) => {
           aria-label="Select team"
           size="small"
           sx={{
-            "& .MuiToggleButtonGroup-grouped": {
+            '& .MuiToggleButtonGroup-grouped': {
               border: 1,
               px: 2,
               py: 1,
@@ -122,15 +103,15 @@ export const TeamsBoxscore = ({ game }: TeamsBoxscoreProps) => {
           }}
         >
           <ToggleButton value="away" aria-label="Away team">
-            {awayTeam?.abbreviation ?? "AWAY"}
+            {awayTeam?.abbreviation ?? 'AWAY'}
           </ToggleButton>
           <ToggleButton value="home" aria-label="Home team">
-            {homeTeam?.abbreviation ?? "HOME"}
+            {homeTeam?.abbreviation ?? 'HOME'}
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
 
-      {teamTab === "away" ? awayCard : homeCard}
+      {teamTab === 'away' ? awayCard : homeCard}
     </Box>
   )
 }

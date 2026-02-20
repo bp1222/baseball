@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const pirates = createTheme({
   palette: {
     primary: {
-      main: "#FDB827",
+      main: '#FDB827',
     },
     secondary: {
-      main: "#27251F",
+      main: '#27251F',
     },
   },
 })

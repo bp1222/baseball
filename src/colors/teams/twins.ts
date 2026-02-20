@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const twins = createTheme({
   palette: {
     primary: {
-      main: "#002B5C",
+      main: '#002B5C',
     },
     secondary: {
-      main: "#D31145",
+      main: '#D31145',
     },
   },
 })

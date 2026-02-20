@@ -1,10 +1,10 @@
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle"
-import { Button, Grid, Menu, MenuItem } from "@mui/material"
-import { useNavigate, useParams } from "@tanstack/react-router"
-import { useState } from "react"
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
+import { Button, Grid, Menu, MenuItem } from '@mui/material'
+import { useNavigate, useParams } from '@tanstack/react-router'
+import { useState } from 'react'
 
-import { useInterestedTeamContext } from "@/context/InterestedTeamContext"
-import { useTeams } from "@/queries/team"
+import { useInterestedTeamContext } from '@/context/InterestedTeamContext'
+import { useTeams } from '@/queries/team'
 
 export const TeamPicker = () => {
   const { seasonId } = useParams({ strict: false })
@@ -19,33 +19,31 @@ export const TeamPicker = () => {
     if (seasonId == null) return
     if (newTeamId != null) {
       void navigate({
-        to: "/{$seasonId}/{$teamId}",
+        to: '/{$seasonId}/{$teamId}',
         params: { seasonId, teamId: String(newTeamId) },
       })
     } else {
       void navigate({
-        to: "/{$seasonId}",
+        to: '/{$seasonId}',
         params: { seasonId },
       })
     }
   }
 
   return (
-    <Grid container
-           alignItems={'center'}
-    >
+    <Grid container alignItems={'center'}>
       <Grid>
         <Button
           variant="text"
           color="inherit"
           size="large"
           sx={{
-            alignItems: "center",
+            alignItems: 'center',
             minHeight: 44,
             minWidth: 44,
-            maxWidth: { xs: 140, sm: "none" },
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            maxWidth: { xs: 140, sm: 'none' },
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           }}
           endIcon={
             teamId ? (
@@ -59,21 +57,23 @@ export const TeamPicker = () => {
           }
           onClick={(event) => setAnchorEl(event.currentTarget)}
         >
-          {interestedTeam?.name ?? "Select Team"}
+          {interestedTeam?.name ?? 'Select Team'}
         </Button>
       </Grid>
-      <Menu anchorEl={anchorEl}
-            open={isOpen}
-            onClose={() => setAnchorEl(null)}>
-        {teams?.filter((t) => t.id < 1000).map((t) => (
-          <MenuItem key={t.name}
-                    onClick={() => {
-                      setTeam(t.id)
-                      setAnchorEl(null)
-                    }}>
-            {t.name}
-          </MenuItem>
-        ))}
+      <Menu anchorEl={anchorEl} open={isOpen} onClose={() => setAnchorEl(null)}>
+        {teams
+          ?.filter((t) => t.id < 1000)
+          .map((t) => (
+            <MenuItem
+              key={t.name}
+              onClick={() => {
+                setTeam(t.id)
+                setAnchorEl(null)
+              }}
+            >
+              {t.name}
+            </MenuItem>
+          ))}
       </Menu>
     </Grid>
   )

@@ -5,11 +5,11 @@
  * is managed centrally via ModalContext.
  */
 
-import dayjs from "dayjs"
+import dayjs from 'dayjs'
 
-import { Game } from "@/types/Game"
+import { Game } from '@/types/Game'
 
-import { GameTile } from "./GameTile"
+import { GameTile } from './GameTile'
 
 type GameItemProps = {
   game: Game
@@ -20,18 +20,6 @@ type GameItemProps = {
   gamesInSeries?: number
 }
 
-export const GameItem = ({
-  game,
-  selectedDate,
-  gameNumber,
-  gamesInSeries,
-}: GameItemProps) => {
-  return (
-    <GameTile
-      game={game}
-      selectedDate={selectedDate}
-      gameNumber={gameNumber}
-      gamesInSeries={gamesInSeries}
-    />
-  )
+export const GameItem = ({ game, selectedDate, gameNumber, gamesInSeries }: GameItemProps) => {
+  return <GameTile game={game} selectedDate={selectedDate} gameNumber={gameNumber} gamesInSeries={gamesInSeries} />
 }

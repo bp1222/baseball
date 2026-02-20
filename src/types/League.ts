@@ -1,4 +1,4 @@
-import {League as MLBLeague} from "@bp1222/stats-api"
+import { League as MLBLeague } from '@bp1222/stats-api'
 
 export type League = {
   id: number
@@ -8,7 +8,6 @@ export type League = {
 
 export const LeagueFromMLBLeague = (league: MLBLeague): League => ({
   id: league.id,
-  name: league.name,
+  name: league.name ?? '',
   abbreviation: league.abbreviation,
 })
-

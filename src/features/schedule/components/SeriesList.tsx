@@ -1,9 +1,9 @@
-import { Grid } from "@mui/material"
-import dayjs from "dayjs"
+import { Grid } from '@mui/material'
+import dayjs from 'dayjs'
 
-import { Series } from "@/types/Series"
+import { Series } from '@/types/Series'
 
-import { SeriesItem } from "./SeriesItem"
+import { SeriesItem } from './SeriesItem'
 
 type SeriesListProps = {
   series: Series[]
@@ -30,7 +30,7 @@ export const SeriesList = ({ series, selectedDate }: SeriesListProps) => {
           justifyContent="center"
           flexGrow={1}
           minWidth={0}
-          sx={{ position: "relative" }}
+          sx={{ position: 'relative' }}
         >
           <SeriesItem series={s} selectedDate={selectedDate} />
         </Grid>

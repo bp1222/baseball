@@ -10,14 +10,14 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from "@mui/material"
+} from '@mui/material'
 
-import { useLinescore } from "@/queries/linescore"
-import { useTeam } from "@/queries/team"
-import { Game } from "@/types/Game"
-import { GameStatus } from "@/types/Game/GameStatus"
-import { LinescoreTeam } from "@/types/Linescore"
-import { Team } from "@/types/Team"
+import { useLinescore } from '@/queries/linescore'
+import { useTeam } from '@/queries/team'
+import { Game } from '@/types/Game'
+import { GameStatus } from '@/types/Game/GameStatus'
+import { LinescoreTeam } from '@/types/Linescore'
+import { Team } from '@/types/Team'
 
 type GameLinescoreProps = {
   game: Game
@@ -27,42 +27,25 @@ export const GameLinescore = ({ game }: GameLinescoreProps) => {
   const { data: homeTeam } = useTeam(game.home.teamId)
   const { data: awayTeam } = useTeam(game.away.teamId)
   const isLive = game.gameStatus === GameStatus.InProgress
-  const {
-    data: linescore,
-    isPending,
-    isError,
-    refetch: refetchLinescore,
-  } = useLinescore(game.pk, isLive)
+  const { data: linescore, isPending, isError, refetch: refetchLinescore } = useLinescore(game.pk, isLive)
 
-  const inningCount = linescore
-    ? Math.max(linescore.innings?.length ?? 0, linescore.scheduledInnings ?? 9)
-    : 9
+  const inningCount = linescore ? Math.max(linescore.innings?.length ?? 0, linescore.scheduledInnings ?? 9) : 9
 
-  const teamRow = (
-    team: Team | undefined,
-    teamInnings: LinescoreTeam[],
-    teamTotal: LinescoreTeam
-  ) => (
-    <TableRow sx={{ "&:last-child td": { borderBottom: 0 } }}>
+  const teamRow = (team: Team | undefined, teamInnings: LinescoreTeam[], teamTotal: LinescoreTeam) => (
+    <TableRow sx={{ '&:last-child td': { borderBottom: 0 } }}>
       <TableCell sx={{ fontWeight: 600 }}>{team?.abbreviation}</TableCell>
       {Array.from({ length: inningCount }, (_, index) => {
         switch (game?.gameStatus) {
           case GameStatus.Scheduled:
           case GameStatus.InProgress:
             return (
-              <TableCell
-                key={game.pk + "-linescore-" + team?.id + "-" + index}
-                align="center"
-              >
-                {teamInnings?.[index]?.runs ?? ""}
+              <TableCell key={game.pk + '-linescore-' + team?.id + '-' + index} align="center">
+                {teamInnings?.[index]?.runs ?? ''}
               </TableCell>
             )
           default:
             return (
-              <TableCell
-                key={game.pk + "-linescore-" + team?.id + "-" + index}
-                align="center"
-              >
+              <TableCell key={game.pk + '-linescore-' + team?.id + '-' + index} align="center">
                 {linescore?.innings?.length != null &&
                 linescore?.away?.runs != null &&
                 linescore?.home?.runs != null &&
@@ -70,8 +53,8 @@ export const GameLinescore = ({ game }: GameLinescoreProps) => {
                 index + 1 === linescore.innings.length &&
                 linescore.home.runs > linescore.away.runs &&
                 teamInnings?.[index]?.runs == null
-                  ? "X"
-                  : teamInnings?.[index]?.runs ?? 0}
+                  ? 'X'
+                  : (teamInnings?.[index]?.runs ?? 0)}
               </TableCell>
             )
         }
@@ -95,14 +78,8 @@ export const GameLinescore = ({ game }: GameLinescoreProps) => {
   if (isError) {
     return (
       <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
-        <Alert severity="error">
-          Error loading linescore. Check back later or try again.
-        </Alert>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => void refetchLinescore()}
-        >
+        <Alert severity="error">Error loading linescore. Check back later or try again.</Alert>
+        <Button variant="contained" size="small" onClick={() => void refetchLinescore()}>
           Retry
         </Button>
       </Box>
@@ -117,30 +94,30 @@ export const GameLinescore = ({ game }: GameLinescoreProps) => {
       elevation={0}
       sx={{
         border: 1,
-        borderColor: "divider",
+        borderColor: 'divider',
         borderRadius: 1.5,
-        overflowX: "auto",
-        overflowY: "hidden",
+        overflowX: 'auto',
+        overflowY: 'hidden',
         // Ensure horizontal scroll on narrow viewports; no horizontal scroll on wide
-        maxWidth: "100%",
-        "&::-webkit-scrollbar": { height: 6 },
-        "&::-webkit-scrollbar-thumb": { borderRadius: 3, bgcolor: "divider" },
+        maxWidth: '100%',
+        '&::-webkit-scrollbar': { height: 6 },
+        '&::-webkit-scrollbar-thumb': { borderRadius: 3, bgcolor: 'divider' },
       }}
     >
       <Table size="small" padding="normal" sx={{ minWidth: minTableWidth }}>
         <TableHead>
-          <TableRow sx={{ bgcolor: "action.hover" }}>
+          <TableRow sx={{ bgcolor: 'action.hover' }}>
             <TableCell sx={{ fontWeight: 600, width: 48, minWidth: 48 }} />
             {Array.from({ length: inningCount }, (_, index) => (
               <TableCell
-                key={game.pk + "-linescore-" + index}
+                key={game.pk + '-linescore-' + index}
                 align="center"
                 sx={{
                   width: 28,
                   minWidth: 28,
                   fontWeight: 600,
-                  color: "text.secondary",
-                  fontSize: "0.75rem",
+                  color: 'text.secondary',
+                  fontSize: '0.75rem',
                 }}
               >
                 {index + 1}
@@ -159,8 +136,16 @@ export const GameLinescore = ({ game }: GameLinescoreProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {teamRow(awayTeam, linescore!.innings.map((i) => i.away), linescore!.away)}
-          {teamRow(homeTeam, linescore!.innings.map((i) => i.home), linescore!.home)}
+          {teamRow(
+            awayTeam,
+            linescore!.innings.map((i) => i.away),
+            linescore!.away,
+          )}
+          {teamRow(
+            homeTeam,
+            linescore!.innings.map((i) => i.home),
+            linescore!.home,
+          )}
         </TableBody>
       </Table>
     </TableContainer>

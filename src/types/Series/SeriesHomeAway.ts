@@ -4,4 +4,3 @@ export enum SeriesHomeAway {
   Away,
   Split,
 }
-

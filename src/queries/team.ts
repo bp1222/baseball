@@ -5,11 +5,11 @@
  * Teams are static within a season, so we use Infinity stale time.
  */
 
-import {queryOptions, useQuery} from "@tanstack/react-query"
+import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import {useSeason} from "@/queries/season"
-import {api} from "@/services/MlbAPI"
-import {TeamFromMLBTeam} from "@/types/Team"
+import { useSeason } from '@/queries/season'
+import { api } from '@/services/MlbAPI'
+import { TeamFromMLBTeam } from '@/types/Team'
 
 /**
  * Stale time: Infinity (static)
@@ -19,7 +19,7 @@ const TEAMS_STALE_TIME = Infinity
 
 export const teamsOptions = (seasonId?: string) =>
   queryOptions({
-    queryKey: ["teams", seasonId],
+    queryKey: ['teams', seasonId],
     staleTime: TEAMS_STALE_TIME,
     enabled: !!seasonId,
     queryFn: async () => {
@@ -27,14 +27,21 @@ export const teamsOptions = (seasonId?: string) =>
         sportId: 1,
         season: seasonId!,
         fields: [
-          "teams", "id", "name", "teamName", "shortName", "abbreviation", "franchiseName",
-          "league", "division", "nameShort", "springLeague"
+          'teams',
+          'id',
+          'name',
+          'teamName',
+          'shortName',
+          'abbreviation',
+          'franchiseName',
+          'league',
+          'division',
+          'nameShort',
+          'springLeague',
         ],
-        hydrate: "division",
+        hydrate: 'division',
       })
-      return teams
-        .sort((a, b) => a.name.localeCompare(b.name) ?? 0)
-        .map((t) => TeamFromMLBTeam(t))
+      return teams.sort((a, b) => a.name.localeCompare(b.name) ?? 0).map((t) => TeamFromMLBTeam(t))
     },
   })
 

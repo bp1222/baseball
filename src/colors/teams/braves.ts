@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const braves = createTheme({
   palette: {
     primary: {
-      main: "#13274F",
+      main: '#13274F',
     },
     secondary: {
-      main: "#CE1141",
+      main: '#CE1141',
     },
   },
 })

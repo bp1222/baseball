@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const cubs = createTheme({
   palette: {
     primary: {
-      main: "#0E3386",
+      main: '#0E3386',
     },
     secondary: {
-      main: "#CC3433",
+      main: '#CC3433',
     },
   },
 })

@@ -1,11 +1,11 @@
-import { Grid, Typography } from "@mui/material"
+import { Grid, Typography } from '@mui/material'
 
-import { useTeam } from "@/queries/team"
-import { GetTeamImage } from "@/shared/components/GetTeamImage"
-import { GetSeriesHomeAway, GetSeriesWins, Series } from "@/types/Series"
-import { SeriesHomeAway } from "@/types/Series/SeriesHomeAway"
-import { SeriesType } from "@/types/Series/SeriesType"
-import { Team } from "@/types/Team"
+import { useTeam } from '@/queries/team'
+import { GetTeamImage } from '@/shared/components/GetTeamImage'
+import { GetSeriesHomeAway, GetSeriesWins, Series } from '@/types/Series'
+import { SeriesHomeAway } from '@/types/Series/SeriesHomeAway'
+import { SeriesType } from '@/types/Series/SeriesType'
+import { Team } from '@/types/Team'
 
 type SeriesTeamProps = {
   series: Series
@@ -24,34 +24,36 @@ export const SeriesTeam = ({ series, team }: SeriesTeamProps) => {
   const homeaway = GetSeriesHomeAway(series, team)
   const teamWins = GetSeriesWins(series, team)
   const againstWins = against ? GetSeriesWins(series, against) : 0
-  const isPostseason = [
-    SeriesType.WildCard,
-    SeriesType.Division,
-    SeriesType.League,
-    SeriesType.World,
-  ].includes(series.type)
+  const isPostseason = [SeriesType.WildCard, SeriesType.Division, SeriesType.League, SeriesType.World].includes(
+    series.type,
+  )
 
   return (
     <Grid container flexDirection="column" alignItems="center" sx={{ minWidth: 0 }}>
       <Grid marginBottom={-0.5}>{GetTeamImage(against)}</Grid>
-      <Grid sx={{ minWidth: 0, width: "100%", textAlign: "center" }}>
-        <Typography display="inline" variant="caption" sx={{ fontSize: "0.65rem" }}>
+      <Grid sx={{ minWidth: 0, width: '100%', textAlign: 'center' }}>
+        <Typography display="inline" variant="caption" sx={{ fontSize: '0.65rem' }}>
           {homeaway === SeriesHomeAway.Home
-            ? "vs "
+            ? 'vs '
             : homeaway === SeriesHomeAway.Away
-              ? "@ "
+              ? '@ '
               : isPostseason
                 ? series.games[0].away.teamId === team.id
-                  ? "@ "
-                  : "vs "
-                : "against "}
+                  ? '@ '
+                  : 'vs '
+                : 'against '}
         </Typography>
-        <Typography display="inline" variant="caption" noWrap sx={{ maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis" }}>
+        <Typography
+          display="inline"
+          variant="caption"
+          noWrap
+          sx={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}
+        >
           {against?.franchiseName}
         </Typography>
       </Grid>
-      <Grid sx={{ minWidth: 0, width: "100%", textAlign: "center" }}>
-        <Typography variant="body2" fontWeight="bold" noWrap sx={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+      <Grid sx={{ minWidth: 0, width: '100%', textAlign: 'center' }}>
+        <Typography variant="body2" fontWeight="bold" noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {against?.teamName?.toUpperCase()}
         </Typography>
       </Grid>

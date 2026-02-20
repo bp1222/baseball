@@ -1,14 +1,14 @@
-import Brightness4Icon from "@mui/icons-material/Brightness4"
-import Brightness7Icon from "@mui/icons-material/Brightness7"
-import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material"
-import { useParams } from "@tanstack/react-router"
+import Brightness4Icon from '@mui/icons-material/Brightness4'
+import Brightness7Icon from '@mui/icons-material/Brightness7'
+import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
+import { useParams } from '@tanstack/react-router'
 
-import { useInterestedTeam } from "@/context/InterestedTeamContext"
-import { useThemeMode } from "@/context/ThemeModeContext"
+import { useInterestedTeam } from '@/context/InterestedTeamContext'
+import { useThemeMode } from '@/context/ThemeModeContext'
 
-import { HeaderName } from "./Header/HeaderName"
-import { SeasonPicker } from "./Header/SeasonPicker"
-import { TeamPicker } from "./Header/TeamPicker"
+import { HeaderName } from './Header/HeaderName'
+import { SeasonPicker } from './Header/SeasonPicker'
+import { TeamPicker } from './Header/TeamPicker'
 
 export const Header = () => {
   const { seasonId } = useParams({ strict: false })
@@ -21,11 +21,11 @@ export const Header = () => {
         {/* Left: app name — same flex as right so center is truly centered */}
         <Box
           sx={{
-            flex: "1 1 0",
+            flex: '1 1 0',
             minWidth: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-start",
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
           }}
         >
           <HeaderName />
@@ -34,10 +34,10 @@ export const Header = () => {
         {/* Center: season picker */}
         <Box
           sx={{
-            flex: "0 0 auto",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            flex: '0 0 auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             px: 0.5,
           }}
         >
@@ -47,25 +47,21 @@ export const Header = () => {
         {/* Right: dark mode toggle + team picker — same flex as left */}
         <Box
           sx={{
-            flex: "1 1 0",
+            flex: '1 1 0',
             minWidth: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
             gap: 0.5,
           }}
         >
           <IconButton
             color="inherit"
             onClick={toggleMode}
-            aria-label={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             size="small"
           >
-            {mode === "dark" ? (
-              <Brightness7Icon aria-hidden />
-            ) : (
-              <Brightness4Icon aria-hidden />
-            )}
+            {mode === 'dark' ? <Brightness7Icon aria-hidden /> : <Brightness4Icon aria-hidden />}
           </IconButton>
           <TeamPicker />
         </Box>
@@ -74,8 +70,8 @@ export const Header = () => {
       {seasonId && selectedTeam && (
         <Box
           sx={{
-            display: "flex",
-            justifyContent: "center",
+            display: 'flex',
+            justifyContent: 'center',
             pb: 0.5,
             px: 1,
           }}
@@ -85,10 +81,10 @@ export const Header = () => {
             component="span"
             sx={{
               opacity: 0.9,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "100%",
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              maxWidth: '100%',
             }}
           >
             {seasonId} • {selectedTeam.name}

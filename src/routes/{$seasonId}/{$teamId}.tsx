@@ -1,22 +1,21 @@
-import {Box, Grid, ToggleButton, ToggleButtonGroup} from "@mui/material"
-import {createFileRoute} from "@tanstack/react-router"
-import {useState} from "react"
+import { Box, Grid, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
 
-import {SeriesCardSkeleton, SeriesList} from "@/features/schedule"
-import {StandingsSkeleton} from "@/features/standings"
-import {SeriesRecordSkeleton, TeamStats} from "@/features/team"
-import {scheduleOptions, useSchedule} from "@/queries/schedule"
-import {seasonsOptions} from "@/queries/season"
-import {teamsOptions} from "@/queries/team"
-import {SeriesType} from "@/types/Series/SeriesType"
+import { SeriesCardSkeleton, SeriesList } from '@/features/schedule'
+import { StandingsSkeleton } from '@/features/standings'
+import { SeriesRecordSkeleton, TeamStats } from '@/features/team'
+import { scheduleOptions, useSchedule } from '@/queries/schedule'
+import { seasonsOptions } from '@/queries/season'
+import { teamsOptions } from '@/queries/team'
+import { SeriesType } from '@/types/Series/SeriesType'
 
-type TeamViewTab = "schedule" | "stats"
+type TeamViewTab = 'schedule' | 'stats'
 
 const TeamComponent = () => {
   const { seasonId, teamId: teamIdParam } = Route.useParams()
-  const interestedTeamId =
-    teamIdParam != null ? Number(teamIdParam) : undefined
-  const [narrowTab, setNarrowTab] = useState<TeamViewTab>("schedule")
+  const interestedTeamId = teamIdParam != null ? Number(teamIdParam) : undefined
+  const [narrowTab, setNarrowTab] = useState<TeamViewTab>('schedule')
   const { data: scheduleData, isPending: isSchedulePending } = useSchedule()
   let seasonSeries = scheduleData
 
@@ -24,19 +23,15 @@ const TeamComponent = () => {
     seasonSeries = seasonSeries.filter(
       (s) =>
         s.type !== SeriesType.SpringTraining &&
-        s.games.some(
-          (g) =>
-            g.away.teamId === interestedTeamId ||
-            g.home.teamId === interestedTeamId
-        )
+        s.games.some((g) => g.away.teamId === interestedTeamId || g.home.teamId === interestedTeamId),
     )
   }
 
   if (isSchedulePending) {
     return (
-      <Box sx={{ width: "100%", minWidth: 0, overflow: "hidden" }}>
+      <Box sx={{ width: '100%', minWidth: 0, overflow: 'hidden' }}>
         {/* Narrow: toggle + single panel */}
-        <Box sx={{ display: { xs: "block", md: "none" }, width: "100%", minWidth: 0 }}>
+        <Box sx={{ display: { xs: 'block', md: 'none' }, width: '100%', minWidth: 0 }}>
           <ToggleButtonGroup
             value={narrowTab}
             exclusive
@@ -45,11 +40,15 @@ const TeamComponent = () => {
             fullWidth
             sx={{ mb: 1.5 }}
           >
-            <ToggleButton value="schedule" aria-label="Schedule">Schedule</ToggleButton>
-            <ToggleButton value="stats" aria-label="Team stats">Team stats</ToggleButton>
+            <ToggleButton value="schedule" aria-label="Schedule">
+              Schedule
+            </ToggleButton>
+            <ToggleButton value="stats" aria-label="Team stats">
+              Team stats
+            </ToggleButton>
           </ToggleButtonGroup>
-          {narrowTab === "schedule" && (
-            <Box sx={{ paddingLeft: 2, minWidth: 0, overflow: "hidden" }}>
+          {narrowTab === 'schedule' && (
+            <Box sx={{ paddingLeft: 2, minWidth: 0, overflow: 'hidden' }}>
               <Grid container width="100%" minWidth={0} spacing={1.5} columns={{ xs: 1, md: 2 }}>
                 {[1, 2, 3].map((i) => (
                   <Grid key={i} container size={1} justifyContent="center" flexGrow={1} minWidth={0}>
@@ -59,7 +58,7 @@ const TeamComponent = () => {
               </Grid>
             </Box>
           )}
-          {narrowTab === "stats" && (
+          {narrowTab === 'stats' && (
             <Box sx={{ minWidth: 0 }}>
               <Grid container justifyContent="center" flexGrow={1}>
                 <Grid>
@@ -75,16 +74,16 @@ const TeamComponent = () => {
         <Grid
           container
           justifyContent="center"
-          sx={{ width: "100%", minWidth: 0, display: { xs: "none", md: "flex" } }}
+          sx={{ width: '100%', minWidth: 0, display: { xs: 'none', md: 'flex' } }}
         >
           <Grid
             container
             flexGrow={1}
             columnSpacing={2}
             columns={3}
-            sx={{ flexDirection: "row", width: "100%", maxWidth: "100%", minWidth: 0 }}
+            sx={{ flexDirection: 'row', width: '100%', maxWidth: '100%', minWidth: 0 }}
           >
-            <Grid size={2} sx={{ minWidth: 0, overflow: "hidden", paddingLeft: 2 }}>
+            <Grid size={2} sx={{ minWidth: 0, overflow: 'hidden', paddingLeft: 2 }}>
               <Grid container width="100%" minWidth={0} spacing={1.5} columns={2}>
                 {[1, 2, 3].map((i) => (
                   <Grid key={i} container size={1} justifyContent="center" flexGrow={1} minWidth={0}>
@@ -115,9 +114,9 @@ const TeamComponent = () => {
   )
 
   return (
-    <Box sx={{ width: "100%", minWidth: 0 }}>
+    <Box sx={{ width: '100%', minWidth: 0 }}>
       {/* Narrow: toggle + single panel */}
-      <Box sx={{ display: { xs: "block", md: "none" }, width: "100%", minWidth: 0 }}>
+      <Box sx={{ display: { xs: 'block', md: 'none' }, width: '100%', minWidth: 0 }}>
         <ToggleButtonGroup
           value={narrowTab}
           exclusive
@@ -126,15 +125,19 @@ const TeamComponent = () => {
           fullWidth
           sx={{ mb: 1.5 }}
         >
-          <ToggleButton value="schedule" aria-label="Schedule">Schedule</ToggleButton>
-          <ToggleButton value="stats" aria-label="Team stats">Team stats</ToggleButton>
+          <ToggleButton value="schedule" aria-label="Schedule">
+            Schedule
+          </ToggleButton>
+          <ToggleButton value="stats" aria-label="Team stats">
+            Team stats
+          </ToggleButton>
         </ToggleButtonGroup>
-        {narrowTab === "schedule" && (
+        {narrowTab === 'schedule' && (
           <Box sx={{ minWidth: 0 }}>
             {(seasonSeries?.length ?? 0) === 0 ? emptyMessage : <SeriesList series={seasonSeries!} />}
           </Box>
         )}
-        {narrowTab === "stats" && (
+        {narrowTab === 'stats' && (
           <Box sx={{ minWidth: 0 }}>
             <TeamStats seasonId={seasonId} teamId={interestedTeamId} />
           </Box>
@@ -142,11 +145,7 @@ const TeamComponent = () => {
       </Box>
 
       {/* Wide: two columns */}
-      <Grid
-        container
-        justifyContent="center"
-        sx={{ width: "100%", minWidth: 0, display: { xs: "none", md: "flex" } }}
-      >
+      <Grid container justifyContent="center" sx={{ width: '100%', minWidth: 0, display: { xs: 'none', md: 'flex' } }}>
         {(seasonSeries?.length ?? 0) === 0 ? (
           emptyMessage
         ) : (
@@ -155,12 +154,12 @@ const TeamComponent = () => {
             flexGrow={1}
             columnSpacing={2}
             columns={3}
-            sx={{ flexDirection: "row", width: "100%", maxWidth: "100%", minWidth: 0 }}
+            sx={{ flexDirection: 'row', width: '100%', maxWidth: '100%', minWidth: 0 }}
           >
-            <Grid size={2} sx={{ minWidth: 0, paddingTop: 1.5, alignSelf: "flex-start" }}>
+            <Grid size={2} sx={{ minWidth: 0, paddingTop: 1.5, alignSelf: 'flex-start' }}>
               <SeriesList series={seasonSeries!} />
             </Grid>
-            <Grid size={1} sx={{ minWidth: 0, paddingTop: 1.5, alignSelf: "flex-start" }}>
+            <Grid size={1} sx={{ minWidth: 0, paddingTop: 1.5, alignSelf: 'flex-start' }}>
               <TeamStats seasonId={seasonId} teamId={interestedTeamId} />
             </Grid>
           </Grid>
@@ -170,18 +169,13 @@ const TeamComponent = () => {
   )
 }
 
-export const Route = createFileRoute("/{$seasonId}/{$teamId}")({
-  loader: async ({
-    context: { queryClient, defaultSeason },
-    params: { seasonId },
-  }) => {
+export const Route = createFileRoute('/{$seasonId}/{$teamId}')({
+  loader: async ({ context: { queryClient, defaultSeason }, params: { seasonId } }) => {
     const seasons = await queryClient.ensureQueryData(seasonsOptions)
     const season = seasons.find((s) => s.seasonId === (seasonId ?? defaultSeason))
     await Promise.all([
       queryClient.ensureQueryData(teamsOptions(seasonId ?? defaultSeason)),
-      season
-        ? queryClient.ensureQueryData(scheduleOptions(season))
-        : Promise.resolve(),
+      season ? queryClient.ensureQueryData(scheduleOptions(season)) : Promise.resolve(),
     ])
   },
   component: TeamComponent,

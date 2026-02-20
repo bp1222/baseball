@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const bluejays = createTheme({
   palette: {
     primary: {
-      main: "#134A8E",
+      main: '#134A8E',
     },
     secondary: {
-      main: "#E8291C",
+      main: '#E8291C',
     },
   },
 })

@@ -10,13 +10,13 @@
  * - Refresh persistence
  */
 
-import { useLocation, useRouter } from "@tanstack/react-router"
-import dayjs from "dayjs"
-import { useCallback, useMemo } from "react"
+import { useLocation, useRouter } from '@tanstack/react-router'
+import dayjs from 'dayjs'
+import { useCallback, useMemo } from 'react'
 
-import { useSeason } from "@/queries/season"
+import { useSeason } from '@/queries/season'
 
-import { useDatesWithGames } from "./useDatesWithGames"
+import { useDatesWithGames } from './useDatesWithGames'
 
 type UseDateNavigationResult = {
   /** Currently selected date */
@@ -52,17 +52,14 @@ export const useDateNavigation = (): UseDateNavigationResult => {
   // Parse date from URL search params
   const searchParams = useMemo(() => {
     const params = new URLSearchParams(location.search)
-    return { date: params.get("date") }
+    return { date: params.get('date') }
   }, [location.search])
 
   const minDate = useMemo(
     () => dayjs((season as { preSeasonStartDate?: string } | undefined)?.preSeasonStartDate ?? season?.seasonStartDate),
-    [season]
+    [season],
   )
-  const maxDate = useMemo(
-    () => dayjs(season?.postSeasonEndDate),
-    [season?.postSeasonEndDate]
-  )
+  const maxDate = useMemo(() => dayjs(season?.postSeasonEndDate), [season?.postSeasonEndDate])
 
   // Compute default date: today if within [minDate, maxDate], otherwise clamp to range
   const defaultDate = useMemo(() => {
@@ -86,62 +83,56 @@ export const useDateNavigation = (): UseDateNavigationResult => {
   const setSelectedDate = useCallback(
     (date: dayjs.Dayjs) => {
       const newSearch = new URLSearchParams(location.search)
-      newSearch.set("date", date.format("YYYY-MM-DD"))
+      newSearch.set('date', date.format('YYYY-MM-DD'))
       router.history.push(`${location.pathname}?${newSearch.toString()}`)
     },
-    [router.history, location.pathname, location.search]
+    [router.history, location.pathname, location.search],
   )
 
   const goToToday = useCallback(() => {
-    const today = dayjs().startOf("day")
-    const clamped = today.isBefore(minDate)
-      ? minDate
-      : today.isAfter(maxDate)
-        ? maxDate
-        : today
+    const today = dayjs().startOf('day')
+    const clamped = today.isBefore(minDate) ? minDate : today.isAfter(maxDate) ? maxDate : today
     setSelectedDate(clamped)
-  }, [minDate, maxDate])
+  }, [setSelectedDate, minDate, maxDate])
 
   const goToNextGameDay = useCallback(() => {
     if (!selectedDate || sortedDates.length === 0) return
-    const next = sortedDates.find((d) => d.isAfter(selectedDate.startOf("day")))
+    const next = sortedDates.find((d) => d.isAfter(selectedDate.startOf('day')))
     if (next) {
       setSelectedDate(next)
     } else {
       // Fallback: just go to next day
-      setSelectedDate(selectedDate.clone().add(1, "day"))
+      setSelectedDate(selectedDate.clone().add(1, 'day'))
     }
-  }, [selectedDate, sortedDates])
+  }, [setSelectedDate, selectedDate, sortedDates])
 
   const goToPrevGameDay = useCallback(() => {
     if (!selectedDate || sortedDates.length === 0) return
-    const prev = [...sortedDates]
-      .reverse()
-      .find((d) => d.isBefore(selectedDate.startOf("day")))
+    const prev = [...sortedDates].reverse().find((d) => d.isBefore(selectedDate.startOf('day')))
     if (prev) {
       setSelectedDate(prev)
     } else {
       // Fallback: just go to previous day
-      setSelectedDate(selectedDate.clone().subtract(1, "day"))
+      setSelectedDate(selectedDate.clone().subtract(1, 'day'))
     }
-  }, [selectedDate, sortedDates])
+  }, [setSelectedDate, selectedDate, sortedDates])
 
   const goToNextDay = useCallback(() => {
-    setSelectedDate(selectedDate.clone().add(1, "day"))
-  }, [selectedDate])
+    setSelectedDate(selectedDate.clone().add(1, 'day'))
+  }, [setSelectedDate, selectedDate])
 
   const goToPrevDay = useCallback(() => {
-    setSelectedDate(selectedDate.clone().subtract(1, "day"))
-  }, [selectedDate])
+    setSelectedDate(selectedDate.clone().subtract(1, 'day'))
+  }, [setSelectedDate, selectedDate])
 
   const hasPrevGameDay = useMemo(
-    () => sortedDates.some((d) => d.isBefore(selectedDate?.startOf("day"))),
-    [sortedDates, selectedDate]
+    () => sortedDates.some((d) => d.isBefore(selectedDate?.startOf('day'))),
+    [sortedDates, selectedDate],
   )
 
   const hasNextGameDay = useMemo(
-    () => sortedDates.some((d) => d.isAfter(selectedDate?.startOf("day"))),
-    [sortedDates, selectedDate]
+    () => sortedDates.some((d) => d.isAfter(selectedDate?.startOf('day'))),
+    [sortedDates, selectedDate],
   )
 
   return {

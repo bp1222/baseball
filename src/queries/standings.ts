@@ -5,10 +5,10 @@
  * Standings update throughout the season as games complete.
  */
 
-import { queryOptions, useQuery } from "@tanstack/react-query"
+import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import { api } from "@/services/MlbAPI"
-import { StandingsFromMLBDivisionStandingsList } from "@/types/Standings"
+import { api } from '@/services/MlbAPI'
+import { StandingsFromMLBDivisionStandingsList } from '@/types/Standings'
 
 /**
  * Stale time: 1 hour
@@ -19,7 +19,7 @@ const STANDINGS_STALE_TIME = 1000 * 60 * 60
 
 export const standingsOptions = (seasonId?: string, leagueId?: number) =>
   queryOptions({
-    queryKey: ["standings", seasonId, leagueId],
+    queryKey: ['standings', seasonId, leagueId],
     staleTime: STANDINGS_STALE_TIME,
     enabled: !!seasonId && !!leagueId,
     queryFn: async () => {
@@ -27,11 +27,27 @@ export const standingsOptions = (seasonId?: string, leagueId?: number) =>
         season: seasonId!,
         leagueId: leagueId!,
         fields: [
-          "records", "standingsType", "league", "division", "id", "teamRecords",
-          "team", "divisionRank", "leagueRank", "leagueGamesBack", "wildCardGamesBack",
-          "leagueGamesBack", "divisionGamesBack", "gamesBack", "eliminationNumber",
-          "wildCardEliminationNumber", "wins", "losses", "winningPercentage",
-          "clinched", "wildCardClinched",
+          'records',
+          'standingsType',
+          'league',
+          'division',
+          'id',
+          'teamRecords',
+          'team',
+          'divisionRank',
+          'leagueRank',
+          'leagueGamesBack',
+          'wildCardGamesBack',
+          'leagueGamesBack',
+          'divisionGamesBack',
+          'gamesBack',
+          'eliminationNumber',
+          'wildCardEliminationNumber',
+          'wins',
+          'losses',
+          'winningPercentage',
+          'clinched',
+          'wildCardClinched',
         ],
       })
       return StandingsFromMLBDivisionStandingsList(standings)

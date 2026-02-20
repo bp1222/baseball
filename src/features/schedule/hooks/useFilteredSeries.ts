@@ -7,13 +7,13 @@
  * 3. Home team name (alphabetically)
  */
 
-import dayjs from "dayjs"
-import { useMemo } from "react"
+import dayjs from 'dayjs'
+import { useMemo } from 'react'
 
-import { useSchedule } from "@/queries/schedule"
-import { useTeams } from "@/queries/team"
-import { Series } from "@/types/Series"
-import { SeriesType } from "@/types/Series/SeriesType"
+import { useSchedule } from '@/queries/schedule'
+import { useTeams } from '@/queries/team'
+import { Series } from '@/types/Series'
+import { SeriesType } from '@/types/Series/SeriesType'
 
 type UseFilteredSeriesResult = {
   /** All series that span the selected date */
@@ -32,9 +32,7 @@ type UseFilteredSeriesResult = {
   refetch: () => void
 }
 
-export const useFilteredSeries = (
-  selectedDate: dayjs.Dayjs | undefined
-): UseFilteredSeriesResult => {
+export const useFilteredSeries = (selectedDate: dayjs.Dayjs | undefined): UseFilteredSeriesResult => {
   const { data: seasonSeries, isPending, isError, refetch } = useSchedule()
   const { data: teams } = useTeams()
 
@@ -42,20 +40,13 @@ export const useFilteredSeries = (
     if (!seasonSeries?.length || !selectedDate) return []
 
     return seasonSeries
-      .filter((s) =>
-        selectedDate.isBetween(dayjs(s.startDate), dayjs(s.endDate), "day", "[]")
-      )
+      .filter((s) => selectedDate.isBetween(dayjs(s.startDate), dayjs(s.endDate), 'day', '[]'))
       .sort((a, b) => {
         const aHome = teams?.find((t) => t.id === a.games[0].home.teamId)
         const bHome = teams?.find((t) => t.id === b.games[0].home.teamId)
 
         // Sort playoff series by league
-        const playoffTypes = [
-          SeriesType.WildCard,
-          SeriesType.Division,
-          SeriesType.League,
-          SeriesType.World,
-        ]
+        const playoffTypes = [SeriesType.WildCard, SeriesType.Division, SeriesType.League, SeriesType.World]
         if (playoffTypes.includes(a.type)) {
           if (aHome?.league && bHome?.league) {
             return aHome.league < bHome.league ? -1 : 1
@@ -63,13 +54,9 @@ export const useFilteredSeries = (
         }
 
         // For current/future dates, sort by game time
-        if (!selectedDate.isBefore(dayjs(), "day")) {
-          const aGame = a.games.find((g) =>
-            selectedDate.isSame(dayjs(g.gameDate), "day")
-          )
-          const bGame = b.games.find((g) =>
-            selectedDate.isSame(dayjs(g.gameDate), "day")
-          )
+        if (!selectedDate.isBefore(dayjs(), 'day')) {
+          const aGame = a.games.find((g) => selectedDate.isSame(dayjs(g.gameDate), 'day'))
+          const bGame = b.games.find((g) => selectedDate.isSame(dayjs(g.gameDate), 'day'))
 
           if (aGame && bGame) {
             if (aGame.gameDate < bGame.gameDate) return -1
@@ -78,26 +65,21 @@ export const useFilteredSeries = (
         }
 
         // Fall back to alphabetical by home team name
-        return aHome?.name.localeCompare(bHome?.name ?? "") ?? 0
+        return aHome?.name.localeCompare(bHome?.name ?? '') ?? 0
       })
   }, [seasonSeries, teams, selectedDate])
 
   const seriesWithGameToday = useMemo(() => {
     if (!selectedDate) return []
-    return allSeries.filter((s) =>
-      s.games.some((g) => selectedDate.isSame(dayjs(g.gameDate), "day"))
-    )
+    return allSeries.filter((s) => s.games.some((g) => selectedDate.isSame(dayjs(g.gameDate), 'day')))
   }, [allSeries, selectedDate])
 
   const seriesInProgressOnly = useMemo(() => {
     if (!selectedDate) return []
-    return allSeries.filter(
-      (s) => !s.games.some((g) => selectedDate.isSame(dayjs(g.gameDate), "day"))
-    )
+    return allSeries.filter((s) => !s.games.some((g) => selectedDate.isSame(dayjs(g.gameDate), 'day')))
   }, [allSeries, selectedDate])
 
-  const showGroups =
-    seriesWithGameToday.length > 0 && seriesInProgressOnly.length > 0
+  const showGroups = seriesWithGameToday.length > 0 && seriesInProgressOnly.length > 0
 
   return {
     allSeries,

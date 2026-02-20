@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const brewers = createTheme({
   palette: {
     primary: {
-      main: "#0A2351",
+      main: '#0A2351',
     },
     secondary: {
-      main: "#B6922C",
+      main: '#B6922C',
     },
   },
 })

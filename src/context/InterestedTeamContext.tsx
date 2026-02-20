@@ -9,11 +9,11 @@
  *   // Returns Team | undefined
  */
 
-import { useParams } from "@tanstack/react-router"
-import { createContext, ReactNode, useContext } from "react"
+import { useParams } from '@tanstack/react-router'
+import { createContext, ReactNode, useContext } from 'react'
 
-import { useTeam } from "@/queries/team"
-import { Team } from "@/types/Team"
+import { useTeam } from '@/queries/team'
+import { Team } from '@/types/Team'
 
 type InterestedTeamContextValue = {
   /** The currently selected team, or undefined if none selected */

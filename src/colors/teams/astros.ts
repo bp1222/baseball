@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const astros = createTheme({
   palette: {
     primary: {
-      main: "#002D62",
+      main: '#002D62',
     },
     secondary: {
-      main: "#EB6E1F",
+      main: '#EB6E1F',
     },
   },
 })

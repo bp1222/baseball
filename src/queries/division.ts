@@ -5,11 +5,11 @@
  * Divisions are static within a season.
  */
 
-import { queryOptions, useQuery, UseQueryResult } from "@tanstack/react-query"
+import { queryOptions, useQuery, UseQueryResult } from '@tanstack/react-query'
 
-import { useSeason } from "@/queries/season"
-import { api } from "@/services/MlbAPI"
-import { Division, DivisionFromMLBDivision } from "@/types/Division"
+import { useSeason } from '@/queries/season'
+import { api } from '@/services/MlbAPI'
+import { Division, DivisionFromMLBDivision } from '@/types/Division'
 
 /**
  * Stale time: Infinity (static)
@@ -19,7 +19,7 @@ const DIVISIONS_STALE_TIME = Infinity
 
 export const divisionsOptions = (seasonId?: string) =>
   queryOptions({
-    queryKey: ["divisions", seasonId],
+    queryKey: ['divisions', seasonId],
     staleTime: DIVISIONS_STALE_TIME,
     enabled: !!seasonId,
     queryFn: async () => {
@@ -41,8 +41,7 @@ export const useDivisions = (): {
   const divisions = useQuery(divisionsOptions(season?.seasonId))
 
   return {
-    getDivision: (divisionId: number | undefined) =>
-      divisions.data?.find((d) => d.id === divisionId),
+    getDivision: (divisionId: number | undefined) => divisions.data?.find((d) => d.id === divisionId),
     data: divisions,
   }
 }

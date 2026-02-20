@@ -7,17 +7,20 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
-} from "@mui/material"
+  Typography,
+} from '@mui/material'
 
-import { BoxscoreTeam } from "@/types/Boxscore"
-import {Player} from "@/types/Player.ts"
+import { useModal } from '@/context/ModalContext'
+import { BoxscoreTeam } from '@/types/Boxscore'
+import { Player } from '@/types/Player'
 
 type BattersBoxscoreProps = {
   boxscore: BoxscoreTeam
 }
 
-export const BattersBoxscore = ({boxscore}: BattersBoxscoreProps) => {
+export const BattersBoxscore = ({ boxscore }: BattersBoxscoreProps) => {
+  const { openPlayer } = useModal()
+
   const getBatter = (b: Player) => {
     if (b.battingOrder == 0) return
 
@@ -26,35 +29,52 @@ export const BattersBoxscore = ({boxscore}: BattersBoxscoreProps) => {
     return (
       <TableRow key={boxscore.teamId + '-batter-' + b.id}>
         <TableCell>
-          <Typography fontSize={"small"} marginLeft={indent} display={"inline"}>
+          <Typography
+            component="button"
+            fontSize="small"
+            sx={{
+              marginLeft: indent,
+              display: 'inline',
+              border: 0,
+              background: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              color: 'primary.main',
+              textDecoration: 'underline',
+              textUnderlineOffset: 2,
+              font: 'inherit',
+              '&:hover': { color: 'primary.dark' },
+            }}
+            onClick={() => openPlayer(b.id)}
+          >
             {b.name}
           </Typography>
-          <Typography fontSize={"x-small"} marginLeft={1} display={"inline"}>
+          <Typography fontSize="x-small" marginLeft={1} display="inline">
             {b.position}
           </Typography>
         </TableCell>
-        <TableCell align={"right"} padding={"checkbox"}>
+        <TableCell align={'right'} padding={'checkbox'}>
           {b.stats.batting.atBats}
         </TableCell>
-        <TableCell align={"right"} padding={"checkbox"}>
+        <TableCell align={'right'} padding={'checkbox'}>
           {b.stats.batting.runs}
         </TableCell>
-        <TableCell align={"right"} padding={"checkbox"}>
+        <TableCell align={'right'} padding={'checkbox'}>
           {b.stats.batting.hits}
         </TableCell>
-        <TableCell align={"right"} padding={"checkbox"}>
+        <TableCell align={'right'} padding={'checkbox'}>
           {b.stats.batting.rbi}
         </TableCell>
-        <TableCell align={"right"} padding={"checkbox"}>
+        <TableCell align={'right'} padding={'checkbox'}>
           {b.stats.batting.baseOnBalls}
         </TableCell>
-        <TableCell align={"right"} padding={"checkbox"}>
+        <TableCell align={'right'} padding={'checkbox'}>
           {b.stats.batting.strikeOuts}
         </TableCell>
-        <TableCell align={"right"} padding={"checkbox"}>
+        <TableCell align={'right'} padding={'checkbox'}>
           {b.stats.batting.avg}
         </TableCell>
-        <TableCell align={"right"} padding={"checkbox"}>
+        <TableCell align={'right'} padding={'checkbox'}>
           {b.stats.batting.ops}
         </TableCell>
       </TableRow>
@@ -64,43 +84,39 @@ export const BattersBoxscore = ({boxscore}: BattersBoxscoreProps) => {
   return (
     <Card>
       <CardContent>
-        <Typography>
-          Batters
-        </Typography>
-        <TableContainer>
-          <Table stickyHeader size={"small"}>
+        <Typography>Batters</Typography>
+        <TableContainer sx={{ overflowX: 'auto', maxWidth: '100%' }}>
+          <Table stickyHeader size={'small'} sx={{ minWidth: 400 }}>
             <TableHead>
               <TableRow>
-                <TableCell/>
-                <TableCell align={"right"} padding={"checkbox"}>
+                <TableCell />
+                <TableCell align={'right'} padding={'checkbox'}>
                   AB
                 </TableCell>
-                <TableCell align={"right"} padding={"checkbox"}>
+                <TableCell align={'right'} padding={'checkbox'}>
                   R
                 </TableCell>
-                <TableCell align={"right"} padding={"checkbox"}>
+                <TableCell align={'right'} padding={'checkbox'}>
                   H
                 </TableCell>
-                <TableCell align={"right"} padding={"checkbox"}>
+                <TableCell align={'right'} padding={'checkbox'}>
                   RBI
                 </TableCell>
-                <TableCell align={"right"} padding={"checkbox"}>
+                <TableCell align={'right'} padding={'checkbox'}>
                   BB
                 </TableCell>
-                <TableCell align={"right"} padding={"checkbox"}>
+                <TableCell align={'right'} padding={'checkbox'}>
                   K
                 </TableCell>
-                <TableCell align={"right"} padding={"checkbox"}>
+                <TableCell align={'right'} padding={'checkbox'}>
                   AVG
                 </TableCell>
-                <TableCell align={"right"} padding={"checkbox"}>
+                <TableCell align={'right'} padding={'checkbox'}>
                   OPS
                 </TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              {boxscore.batters.map((b) => getBatter(boxscore.players[b]))}
-            </TableBody>
+            <TableBody>{boxscore.batters.map((b) => getBatter(boxscore.players[b]))}</TableBody>
           </Table>
         </TableContainer>
       </CardContent>

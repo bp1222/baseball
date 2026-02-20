@@ -1,4 +1,4 @@
-import {Team as MLBTeam} from "@bp1222/stats-api"
+import { Team as MLBTeam } from '@bp1222/stats-api'
 
 export type Team = {
   id: number
@@ -13,7 +13,7 @@ export type Team = {
 }
 
 export const TeamFromMLBTeam = (team: MLBTeam): Team => {
-  return ({
+  return {
     id: team.id,
     name: team.name,
     franchiseName: team.franchiseName,
@@ -22,5 +22,5 @@ export const TeamFromMLBTeam = (team: MLBTeam): Team => {
     league: team.league!.id,
     division: team.division?.id,
     springLeagueAbbreviation: team.springLeague?.abbreviation,
-  })
+  }
 }
