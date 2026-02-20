@@ -1,4 +1,4 @@
 export type ResultColors = {
-  background: string,
-  border: string,
+  background: string
+  border: string
 }

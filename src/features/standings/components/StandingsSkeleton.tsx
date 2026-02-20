@@ -1,31 +1,15 @@
-import {
-  Paper,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material"
+import { Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 
-import LabelPaper from "@/shared/components/LabelPaper"
+import LabelPaper from '@/shared/components/LabelPaper'
 
 type StandingsSkeletonProps = {
   label: string
   rows?: number
 }
 
-export const StandingsSkeleton = ({
-  label,
-  rows = 5,
-}: StandingsSkeletonProps) => (
+export const StandingsSkeleton = ({ label, rows = 5 }: StandingsSkeletonProps) => (
   <LabelPaper label={label}>
-    <TableContainer
-      component={Paper}
-      elevation={0}
-      sx={{ maxHeight: 425 }}
-    >
+    <TableContainer component={Paper} elevation={0} sx={{ maxHeight: 425 }}>
       <Table stickyHeader>
         <TableHead>
           <TableRow>
@@ -44,19 +28,19 @@ export const StandingsSkeleton = ({
                 <Skeleton variant="text" width={100} height={20} />
               </TableCell>
               <TableCell align="right">
-                <Skeleton variant="text" width={24} height={20} sx={{ ml: "auto" }} />
+                <Skeleton variant="text" width={24} height={20} sx={{ ml: 'auto' }} />
               </TableCell>
               <TableCell align="right">
-                <Skeleton variant="text" width={24} height={20} sx={{ ml: "auto" }} />
+                <Skeleton variant="text" width={24} height={20} sx={{ ml: 'auto' }} />
               </TableCell>
               <TableCell align="right">
-                <Skeleton variant="text" width={36} height={20} sx={{ ml: "auto" }} />
+                <Skeleton variant="text" width={36} height={20} sx={{ ml: 'auto' }} />
               </TableCell>
               <TableCell align="right">
-                <Skeleton variant="text" width={28} height={20} sx={{ ml: "auto" }} />
+                <Skeleton variant="text" width={28} height={20} sx={{ ml: 'auto' }} />
               </TableCell>
               <TableCell align="right">
-                <Skeleton variant="text" width={28} height={20} sx={{ ml: "auto" }} />
+                <Skeleton variant="text" width={28} height={20} sx={{ ml: 'auto' }} />
               </TableCell>
             </TableRow>
           ))}

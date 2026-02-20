@@ -2,27 +2,23 @@
  * Series generator — build app Series from MLB API schedule (pure logic, no I/O)
  */
 
-import {Game, GameStatusCode, GameTeam, GameType} from "@bp1222/stats-api"
-import dayjs from "dayjs"
+import { Game, GameStatusCode, GameTeam, GameType } from '@bp1222/stats-api'
+import dayjs from 'dayjs'
 
-import {GameFromMLBGame} from "@/types/Game"
-import type {Team} from "@/types/Team"
-import {Series, SpringLeague} from "@/types/Series"
-import {SeriesType} from "@/types/Series/SeriesType"
+import { GameFromMLBGame } from '@/types/Game'
+import { Series, SpringLeague } from '@/types/Series'
+import { SeriesType } from '@/types/Series/SeriesType'
+import type { Team } from '@/types/Team'
 
-const seriesPk = (
-  teamA: GameTeam,
-  teamB: GameTeam,
-  seriesType: SeriesType
-): string => {
+const seriesPk = (teamA: GameTeam, teamB: GameTeam, seriesType: SeriesType): string => {
   return `${teamA.team.id}-${teamA.seriesNumber}-${teamB.team.id}-${teamB.seriesNumber}-${seriesType}`
 }
 
 /** Map team spring league abbreviation to our SpringLeague. GL = Grapefruit, CL = Cactus. */
 function springLeagueFromAbbreviation(abbr: string | undefined): SpringLeague {
-  if (abbr === "GL") return "grapefruit"
-  if (abbr === "CL") return "cactus"
-  return "cactus"
+  if (abbr === 'GL') return 'grapefruit'
+  if (abbr === 'CL') return 'cactus'
+  return 'cactus'
 }
 
 const gameToSeriesType = (game: Game): SeriesType => {
@@ -51,15 +47,13 @@ const gameToSeriesType = (game: Game): SeriesType => {
  * the home team's springLeague.abbreviation (GL = Grapefruit, CL = Cactus).
  */
 export function SeriesFromMLBSchedule(schedule: Game[], teams?: Team[]): Series[] {
-  const teamById = teams?.length
-    ? new Map(teams.map((t) => [t.id, t]))
-    : undefined
+  const teamById = teams?.length ? new Map(teams.map((t) => [t.id, t])) : undefined
   const seasonSeries: Series[] = []
   const seenGames: number[] = []
 
   const getCurrentSeries = (game: Game): Series => {
     if (game.teams == null) {
-      throw new Error("Game has no teams")
+      throw new Error('Game has no teams')
     }
 
     const home = game.teams.home
@@ -67,9 +61,7 @@ export function SeriesFromMLBSchedule(schedule: Game[], teams?: Team[]): Series[
     const type = gameToSeriesType(game)
 
     let currentSeries = seasonSeries.find(
-      (s) =>
-        s.pk === seriesPk(home, away, type) ||
-        s.pk === seriesPk(away, home, type)
+      (s) => s.pk === seriesPk(home, away, type) || s.pk === seriesPk(away, home, type),
     )
 
     if (currentSeries == null) {
@@ -125,7 +117,7 @@ export function SeriesFromMLBSchedule(schedule: Game[], teams?: Team[]): Series[
       prev.games[0].away.teamId === cur.games[0].away.teamId
     ) {
       prev.games = [...prev.games, ...cur.games]
-      prev.games.sort((a, b) => a.gameDate.diff(b.gameDate, "minute"))
+      prev.games.sort((a, b) => a.gameDate.diff(b.gameDate, 'minute'))
     } else {
       filtered.push(cur)
     }

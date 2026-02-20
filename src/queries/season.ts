@@ -5,11 +5,11 @@
  * Seasons are static data that never changes.
  */
 
-import { queryOptions, useQuery } from "@tanstack/react-query"
-import { useParams } from "@tanstack/react-router"
+import { queryOptions, useQuery } from '@tanstack/react-query'
+import { useParams } from '@tanstack/react-router'
 
-import { Route } from "@/routes/__root"
-import { api } from "@/services/MlbAPI"
+import { Route } from '@/routes/__root'
+import { api } from '@/services/MlbAPI'
 
 /**
  * Stale time: Infinity (static)
@@ -23,13 +23,11 @@ const SEASONS_STALE_TIME = Infinity
 const MIN_SEASON_YEAR = 1921
 
 export const seasonsOptions = queryOptions({
-  queryKey: ["seasons"],
+  queryKey: ['seasons'],
   staleTime: SEASONS_STALE_TIME,
   queryFn: async () => {
     const { seasons } = await api.getAllSeasons({ sportId: 1 })
-    return seasons
-      .filter((s) => parseInt(s.seasonId) > MIN_SEASON_YEAR)
-      .reverse()
+    return seasons.filter((s) => parseInt(s.seasonId) > MIN_SEASON_YEAR).reverse()
   },
 })
 

@@ -1,6 +1,6 @@
-import {GameStatusCode} from "@bp1222/stats-api"
-import {Color} from "@mui/material"
-import {blue, brown, deepPurple, grey} from "@mui/material/colors"
+import { GameStatusCode } from '@bp1222/stats-api'
+import { Color } from '@mui/material'
+import { blue, brown, deepPurple, grey } from '@mui/material/colors'
 
 export enum GameStatus {
   Final,

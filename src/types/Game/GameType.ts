@@ -1,4 +1,4 @@
-import {GameType as MLBGameType} from "@bp1222/stats-api"
+import { GameType as MLBGameType } from '@bp1222/stats-api'
 
 export enum GameType {
   Exhibition,

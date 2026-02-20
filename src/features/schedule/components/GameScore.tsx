@@ -1,8 +1,8 @@
-import { Color, Grid } from "@mui/material"
+import { Color, Grid } from '@mui/material'
 
-import { useTeam } from "@/queries/team"
-import { DefaultGameResultColor } from "@/types/Game/GameResult"
-import { GameTeam } from "@/types/GameTeam"
+import { useTeam } from '@/queries/team'
+import { DefaultGameResultColor } from '@/types/Game/GameResult'
+import { GameTeam } from '@/types/GameTeam'
 
 type GameScoreProps = {
   gameTeam: GameTeam
@@ -13,12 +13,7 @@ type GameScoreProps = {
   darkModeColors?: { bg: string; border: string; text: string }
 }
 
-export const GameScore = ({
-  gameTeam,
-  color,
-  darkMode = false,
-  darkModeColors,
-}: GameScoreProps) => {
+export const GameScore = ({ gameTeam, color, darkMode = false, darkModeColors }: GameScoreProps) => {
   const isTbd = /[\d/]/
   const { data: team } = useTeam(gameTeam.teamId)
 
@@ -30,23 +25,23 @@ export const GameScore = ({
   const text = useMuted ? darkModeColors.text : scoreColor[darkMode ? 100 : 700]
 
   return (
-    <Grid container textAlign="center" sx={{ fontSize: "0.75rem", minWidth: 0 }}>
+    <Grid container textAlign="center" sx={{ fontSize: '0.75rem', minWidth: 0 }}>
       <Grid
         borderRight={1}
         borderBottom={1}
         borderColor={border}
         bgcolor={bg}
-        sx={{ width: "70%", minWidth: 0, paddingTop: 0.1, color: text }}
+        sx={{ width: '70%', minWidth: 0, paddingTop: 0.1, color: text }}
       >
-        {isTbd.test(team?.abbreviation ?? "") ? "TBD" : team?.abbreviation}
+        {isTbd.test(team?.abbreviation ?? '') ? 'TBD' : team?.abbreviation}
       </Grid>
       <Grid
         borderBottom={1}
         borderColor={border}
         bgcolor={bg}
-        sx={{ width: "30%", minWidth: 0, paddingTop: 0.1, color: text }}
+        sx={{ width: '30%', minWidth: 0, paddingTop: 0.1, color: text }}
       >
-        {gameTeam.score ?? "-"}
+        {gameTeam.score ?? '-'}
       </Grid>
     </Grid>
   )

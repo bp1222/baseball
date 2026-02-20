@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const phillies = createTheme({
   palette: {
     primary: {
-      main: "#6f263d",
+      main: '#6f263d',
     },
     secondary: {
-      main: "#6bace4",
+      main: '#6bace4',
     },
   },
   components: {

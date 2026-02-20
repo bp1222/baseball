@@ -1,1 +1,1 @@
-export { useSeriesStats } from "./useSeriesStats"
+export { useSeriesStats } from './useSeriesStats'

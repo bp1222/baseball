@@ -2,11 +2,11 @@
  * Theme mode (light/dark) with persistence to localStorage.
  */
 
-import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from "react"
+import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 
-const STORAGE_KEY = "themeMode"
+const STORAGE_KEY = 'themeMode'
 
-export type ThemeMode = "light" | "dark"
+export type ThemeMode = 'light' | 'dark'
 
 type ThemeModeContextValue = {
   mode: ThemeMode
@@ -15,16 +15,16 @@ type ThemeModeContextValue = {
 }
 
 const ThemeModeContext = createContext<ThemeModeContextValue>({
-  mode: "light",
+  mode: 'light',
   setMode: () => {},
   toggleMode: () => {},
 })
 
 function readStoredMode(): ThemeMode {
-  if (typeof window === "undefined") return "light"
+  if (typeof window === 'undefined') return 'light'
   const stored = localStorage.getItem(STORAGE_KEY)
-  if (stored === "dark" || stored === "light") return stored
-  return "light"
+  if (stored === 'dark' || stored === 'light') return stored
+  return 'light'
 }
 
 type ThemeModeProviderProps = {
@@ -41,28 +41,21 @@ export const ThemeModeProvider = ({ children }: ThemeModeProviderProps) => {
 
   const toggleMode = useCallback(() => {
     setModeState((prev) => {
-      const next = prev === "light" ? "dark" : "light"
+      const next = prev === 'light' ? 'dark' : 'light'
       localStorage.setItem(STORAGE_KEY, next)
       return next
     })
   }, [])
 
-  const value = useMemo(
-    () => ({ mode, setMode, toggleMode }),
-    [mode, setMode, toggleMode]
-  )
+  const value = useMemo(() => ({ mode, setMode, toggleMode }), [mode, setMode, toggleMode])
 
-  return (
-    <ThemeModeContext.Provider value={value}>
-      {children}
-    </ThemeModeContext.Provider>
-  )
+  return <ThemeModeContext.Provider value={value}>{children}</ThemeModeContext.Provider>
 }
 
 export const useThemeMode = (): ThemeModeContextValue => {
   const ctx = useContext(ThemeModeContext)
   if (ctx == null) {
-    throw new Error("useThemeMode must be used within ThemeModeProvider")
+    throw new Error('useThemeMode must be used within ThemeModeProvider')
   }
   return ctx
 }

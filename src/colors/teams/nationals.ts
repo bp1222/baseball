@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const nationals = createTheme({
   palette: {
     primary: {
-      main: "#AB0003",
+      main: '#AB0003',
     },
     secondary: {
-      main: "#14225A",
+      main: '#14225A',
     },
   },
 })

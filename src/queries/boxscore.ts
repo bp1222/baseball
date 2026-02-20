@@ -5,10 +5,10 @@
  * Used in the game detail modal.
  */
 
-import { queryOptions, useQuery } from "@tanstack/react-query"
+import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import { api } from "@/services/MlbAPI"
-import { BoxscoreFromMLBBoxscore } from "@/types/Boxscore"
+import { api } from '@/services/MlbAPI'
+import { BoxscoreFromMLBBoxscore } from '@/types/Boxscore'
 
 /**
  * Stale times based on game status:
@@ -20,7 +20,7 @@ const BOXSCORE_STALE_TIME_FINAL = 1000 * 60 * 60
 
 export const boxscoreOptions = (gamePk: number, isLive: boolean = false) =>
   queryOptions({
-    queryKey: ["boxscore", gamePk],
+    queryKey: ['boxscore', gamePk],
     staleTime: isLive ? BOXSCORE_STALE_TIME_LIVE : BOXSCORE_STALE_TIME_FINAL,
     // Auto-refresh live games every 30 seconds
     refetchInterval: isLive ? BOXSCORE_STALE_TIME_LIVE : false,

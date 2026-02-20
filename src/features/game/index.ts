@@ -2,4 +2,4 @@
  * Game feature - boxscore and game detail
  */
 
-export { GameBoxscore } from "./components/GameBoxscore"
+export { GameBoxscore } from './components/GameBoxscore'

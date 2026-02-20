@@ -1,12 +1,12 @@
-import { Box } from "@mui/material"
+import { Box } from '@mui/material'
 
-import { Team } from "@/types/Team"
+import { Team } from '@/types/Team'
 
 export const GetTeamImage = (team?: Team, dead?: boolean) => {
   if (team == undefined) return null
 
   let teamId = team.id
-  let src = "https://www.mlbstatic.com/team-logos/team-cap-on-light/" + teamId + ".svg"
+  let src = 'https://www.mlbstatic.com/team-logos/team-cap-on-light/' + teamId + '.svg'
 
   // Teams in 4xxx range are returned for teams in the postseason before
   // a specific team qualifies for the spot. Problem is the images served
@@ -19,7 +19,7 @@ export const GetTeamImage = (team?: Team, dead?: boolean) => {
     if (team.league == 103) {
       teamId = 4944
     }
-    src = "https://midfield.mlbstatic.com/v1/team/" + teamId + "/spots/128"
+    src = 'https://midfield.mlbstatic.com/v1/team/' + teamId + '/spots/128'
   }
 
   return (
@@ -27,7 +27,7 @@ export const GetTeamImage = (team?: Team, dead?: boolean) => {
       component="img"
       src={src}
       sx={{
-        filter: dead ? "grayscale(1)" : undefined,
+        filter: dead ? 'grayscale(1)' : undefined,
         height: 24,
         width: 24,
       }}

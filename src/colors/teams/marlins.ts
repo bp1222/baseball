@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const marlins = createTheme({
   palette: {
     primary: {
-      main: "#00A3E0",
+      main: '#00A3E0',
     },
     secondary: {
-      main: "#EF3340",
+      main: '#EF3340',
     },
   },
 })

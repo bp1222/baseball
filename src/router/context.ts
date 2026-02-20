@@ -1,4 +1,4 @@
-import type { QueryClient } from "@tanstack/react-query"
+import type { QueryClient } from '@tanstack/react-query'
 
 /**
  * Context provided to the TanStack Router tree.

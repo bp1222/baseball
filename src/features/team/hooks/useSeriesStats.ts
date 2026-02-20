@@ -5,14 +5,14 @@
  * from the team's regular season series.
  */
 
-import { useMemo } from "react"
+import { useMemo } from 'react'
 
-import { calculateStreak, seriesResultToChar } from "@/domain/series/stats"
-import { useSchedule } from "@/queries/schedule"
-import { GetSeriesResult } from "@/types/Series"
-import { SeriesResult } from "@/types/Series/SeriesResult"
-import { SeriesType } from "@/types/Series/SeriesType"
-import { Team } from "@/types/Team"
+import { calculateStreak, seriesResultToChar } from '@/domain/series/stats'
+import { useSchedule } from '@/queries/schedule'
+import { GetSeriesResult } from '@/types/Series'
+import { SeriesResult } from '@/types/Series/SeriesResult'
+import { SeriesType } from '@/types/Series/SeriesType'
+import { Team } from '@/types/Team'
 
 type SeriesStats = {
   /** Number of series wins (including sweeps) */
@@ -49,27 +49,19 @@ export const useSeriesStats = (team: Team | undefined): SeriesStats => {
         ties: 0,
         pct: NaN,
         last10: [],
-        streak: "",
+        streak: '',
       }
     }
 
     // Get regular season series results for this team
     const results = seasonSeries
       .filter((s) => s.type === SeriesType.Regular)
-      .filter((s) =>
-        s.games.some(
-          (g) => g.away.teamId === team.id || g.home.teamId === team.id
-        )
-      )
+      .filter((s) => s.games.some((g) => g.away.teamId === team.id || g.home.teamId === team.id))
       .map((s) => GetSeriesResult(s, team))
 
     // Count wins, losses, ties
-    const wins = results.filter(
-      (r) => r === SeriesResult.Win || r === SeriesResult.Sweep
-    ).length
-    const losses = results.filter(
-      (r) => r === SeriesResult.Loss || r === SeriesResult.Swept
-    ).length
+    const wins = results.filter((r) => r === SeriesResult.Win || r === SeriesResult.Sweep).length
+    const losses = results.filter((r) => r === SeriesResult.Loss || r === SeriesResult.Swept).length
     const ties = results.filter((r) => r === SeriesResult.Tie).length
 
     // Calculate winning percentage

@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const dodgers = createTheme({
   palette: {
     primary: {
-      main: "#005A9C",
+      main: '#005A9C',
     },
     secondary: {
-      main: "#FFFFFF",
+      main: '#FFFFFF',
     },
   },
 })

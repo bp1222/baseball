@@ -1,4 +1,4 @@
-import {Player as MLBPlayer} from "@bp1222/stats-api"
+import { Player as MLBPlayer } from '@bp1222/stats-api'
 
 export type Player = {
   id: string
@@ -16,7 +16,7 @@ export type Player = {
       strikeOuts?: number
       avg?: string
       ops?: string
-    },
+    }
     pitching: {
       strikes?: number
       balls?: number
@@ -36,7 +36,7 @@ export type Player = {
 export const PlayerFromMLBPlayer = (player: MLBPlayer): Player => ({
   id: player.person.id,
   name: player.person.fullName,
-  jerseyNumber: player.jerseyNumber ?? "X",
+  jerseyNumber: player.jerseyNumber ?? 'X',
   battingOrder: player.battingOrder ?? 0,
   position: player.position.abbreviation,
   stats: {
@@ -62,6 +62,6 @@ export const PlayerFromMLBPlayer = (player: MLBPlayer): Player => ({
       inningsPitched: player.stats.pitching.inningsPitched,
       strikeouts: player.stats.pitching.strikeOuts,
       walks: player.stats.pitching.baseOnBalls,
-    }
-  }
+    },
+  },
 })

@@ -5,21 +5,20 @@
  * Uses the useSeriesStats hook for data calculation.
  */
 
-import { Alert, Box, Button, Grid, Typography } from "@mui/material"
+import { Alert, Box, Button, Grid, Typography } from '@mui/material'
 
-import { useSeriesStats } from "@/hooks"
-import LabelPaper from "@/shared/components/LabelPaper"
-import { Team } from "@/types/Team"
+import { useSeriesStats } from '@/hooks'
+import LabelPaper from '@/shared/components/LabelPaper'
+import { Team } from '@/types/Team'
 
-import { SeriesRecordSkeleton } from "./SeriesRecordSkeleton"
+import { SeriesRecordSkeleton } from './SeriesRecordSkeleton'
 
 type TeamSeriesRecordProps = {
   team: Team
 }
 
 export const TeamSeriesRecord = ({ team }: TeamSeriesRecordProps) => {
-  const { wins, losses, ties, pct, last10, streak, isPending, isError, refetch } =
-    useSeriesStats(team)
+  const { wins, losses, ties, pct, last10, streak, isPending, isError, refetch } = useSeriesStats(team)
 
   if (isPending) {
     return <SeriesRecordSkeleton />
@@ -28,9 +27,7 @@ export const TeamSeriesRecord = ({ team }: TeamSeriesRecordProps) => {
   if (isError) {
     return (
       <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
-        <Alert severity="error">
-          Unable to load series record. Check back later or try again.
-        </Alert>
+        <Alert severity="error">Unable to load series record. Check back later or try again.</Alert>
         <Button variant="contained" size="small" onClick={() => void refetch()}>
           Retry
         </Button>
@@ -74,7 +71,7 @@ export const TeamSeriesRecord = ({ team }: TeamSeriesRecordProps) => {
           <Typography variant="body2" textAlign="center" color="text.secondary">
             <Box component="span" fontWeight={700} color="text.primary">
               {pct === 1 ? pct.toFixed(3) : pct.toFixed(3).substring(1)}
-            </Box>{" "}
+            </Box>{' '}
             series win pct
           </Typography>
         )}
@@ -85,17 +82,17 @@ export const TeamSeriesRecord = ({ team }: TeamSeriesRecordProps) => {
             sx={{
               pt: 1,
               borderTop: 1,
-              borderColor: "divider",
-              textAlign: "center",
+              borderColor: 'divider',
+              textAlign: 'center',
             }}
           >
             {last10.length > 0 && (
               <Typography variant="caption" color="text.secondary" display="block">
-                Last 10: {last10.join("–")}
+                Last 10: {last10.join('–')}
               </Typography>
             )}
             {streak && (
-              <Typography variant="caption" fontWeight={600} sx={{ display: "block", mt: 0.25 }}>
+              <Typography variant="caption" fontWeight={600} sx={{ display: 'block', mt: 0.25 }}>
                 {streak}
               </Typography>
             )}

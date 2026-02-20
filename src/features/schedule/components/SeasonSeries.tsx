@@ -7,14 +7,14 @@
  * - NoGamesMessage: Empty state when no games found
  */
 
-import {Alert, Box, Button, Grid} from "@mui/material"
+import { Alert, Box, Button, Grid } from '@mui/material'
 
-import {useDateNavigation, useDatesWithGames, useFilteredSeries} from "@/hooks"
+import { useDateNavigation, useDatesWithGames, useFilteredSeries } from '@/hooks'
 
-import {DateNavigation} from "./DateNavigation"
-import {NoGamesMessage} from "./NoGamesMessage"
-import {SeriesCardSkeleton} from "./SeriesCardSkeleton"
-import {SeriesGroups} from "./SeriesGroups"
+import { DateNavigation } from './DateNavigation'
+import { NoGamesMessage } from './NoGamesMessage'
+import { SeriesCardSkeleton } from './SeriesCardSkeleton'
+import { SeriesGroups } from './SeriesGroups'
 
 export const SeasonSeries = () => {
   const {
@@ -33,22 +33,15 @@ export const SeasonSeries = () => {
 
   const { datesSet } = useDatesWithGames()
 
-  const {
-    allSeries,
-    seriesWithGameToday,
-    seriesInProgressOnly,
-    showGroups,
-    isPending,
-    isError,
-    refetch,
-  } = useFilteredSeries(selectedDate)
+  const { allSeries, seriesWithGameToday, seriesInProgressOnly, showGroups, isPending, isError, refetch } =
+    useFilteredSeries(selectedDate)
 
-  const contentMaxWidth = "80%"
+  const contentMaxWidth = '80%'
 
   // Loading state
   if (isPending) {
     return (
-      <Box sx={{ width: "100%", maxWidth: { xs: "100%", md: contentMaxWidth }, mx: "auto", minWidth: 0 }}>
+      <Box sx={{ width: '100%', maxWidth: { xs: '100%', md: contentMaxWidth }, mx: 'auto', minWidth: 0 }}>
         <DateNavigation
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
@@ -86,17 +79,9 @@ export const SeasonSeries = () => {
   // Error state
   if (isError) {
     return (
-      <Box sx={{ width: "100%", maxWidth: { xs: "100%", md: contentMaxWidth }, mx: "auto", minWidth: 0 }}>
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          gap={2}
-          padding={2}
-        >
-          <Alert severity="error">
-            Error loading schedule. Check back later or try again.
-          </Alert>
+      <Box sx={{ width: '100%', maxWidth: { xs: '100%', md: contentMaxWidth }, mx: 'auto', minWidth: 0 }}>
+        <Box display="flex" flexDirection="column" alignItems="center" gap={2} padding={2}>
+          <Alert severity="error">Error loading schedule. Check back later or try again.</Alert>
           <Button variant="contained" onClick={() => void refetch()} size="small">
             Retry
           </Button>
@@ -108,7 +93,7 @@ export const SeasonSeries = () => {
   // Empty state
   if (allSeries.length === 0) {
     return (
-      <Box sx={{ width: "100%", maxWidth: { xs: "100%", md: contentMaxWidth }, mx: "auto", minWidth: 0 }}>
+      <Box sx={{ width: '100%', maxWidth: { xs: '100%', md: contentMaxWidth }, mx: 'auto', minWidth: 0 }}>
         <DateNavigation
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
@@ -130,7 +115,7 @@ export const SeasonSeries = () => {
 
   // Normal state with series
   return (
-    <Box sx={{ width: "100%", maxWidth: { xs: "100%", md: contentMaxWidth }, mx: "auto", minWidth: 0 }}>
+    <Box sx={{ width: '100%', maxWidth: { xs: '100%', md: contentMaxWidth }, mx: 'auto', minWidth: 0 }}>
       <DateNavigation
         selectedDate={selectedDate}
         onDateChange={setSelectedDate}

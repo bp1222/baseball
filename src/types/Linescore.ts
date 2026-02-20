@@ -1,4 +1,4 @@
-import {Inning as MLBInning, Linescore as MLBLinescore, LinescoreTeam as MLBLinescoreTeam} from "@bp1222/stats-api"
+import { Inning as MLBInning, Linescore as MLBLinescore, LinescoreTeam as MLBLinescoreTeam } from '@bp1222/stats-api'
 
 export type LinescoreTeam = {
   runs: number

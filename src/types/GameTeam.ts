@@ -1,4 +1,4 @@
-import {GameTeam as MLBGameTeam} from "@bp1222/stats-api"
+import { GameTeam as MLBGameTeam } from '@bp1222/stats-api'
 
 export type GameTeam = {
   teamId: number
@@ -27,5 +27,5 @@ export const GameTeamFromMLBGameTeam = (gameTeam: MLBGameTeam, isHome: boolean =
     losses: gameTeam.leagueRecord?.losses,
     ties: gameTeam.leagueRecord?.ties,
     pct: gameTeam.leagueRecord?.pct,
-  }
+  },
 })

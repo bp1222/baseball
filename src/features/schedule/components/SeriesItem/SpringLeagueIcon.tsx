@@ -1,7 +1,7 @@
-import { Box } from "@mui/material"
-import { useState } from "react"
+import { Box } from '@mui/material'
+import { useState } from 'react'
 
-import type { SpringLeague } from "@/types/Series"
+import type { SpringLeague } from '@/types/Series'
 
 type SpringLeagueIconProps = {
   league: SpringLeague
@@ -12,11 +12,11 @@ type SpringLeagueIconProps = {
 /** Small grapefruit or cactus icon. Uses GIF from public/ if present, else inline SVG. */
 export const SpringLeagueIcon = ({ league, size = 28 }: SpringLeagueIconProps) => {
   const [imgFailed, setImgFailed] = useState(false)
-  const gifSrc = league === "grapefruit" ? "/grapefruit.gif" : "/cactus.gif"
+  const gifSrc = league === 'grapefruit' ? '/grapefruit.gif' : '/cactus.gif'
   const alt =
-    league === "grapefruit"
-      ? "Grapefruit League – Spring training, Florida"
-      : "Cactus League – Spring training, Arizona"
+    league === 'grapefruit'
+      ? 'Grapefruit League – Spring training, Florida'
+      : 'Cactus League – Spring training, Arizona'
 
   if (!imgFailed) {
     return (
@@ -27,8 +27,8 @@ export const SpringLeagueIcon = ({ league, size = 28 }: SpringLeagueIconProps) =
         sx={{
           width: size,
           height: size,
-          display: "block",
-          objectFit: "contain",
+          display: 'block',
+          objectFit: 'contain',
         }}
         onError={() => setImgFailed(true)}
       />
@@ -37,7 +37,7 @@ export const SpringLeagueIcon = ({ league, size = 28 }: SpringLeagueIconProps) =
 
   // SVG fallback when GIF is missing or fails
   const s = size
-  if (league === "grapefruit") {
+  if (league === 'grapefruit') {
     return (
       <Box
         component="svg"
@@ -45,7 +45,7 @@ export const SpringLeagueIcon = ({ league, size = 28 }: SpringLeagueIconProps) =
         height={s}
         viewBox="0 0 32 32"
         fill="none"
-        sx={{ display: "block" }}
+        sx={{ display: 'block' }}
         role="img"
         aria-label={alt}
       >
@@ -62,7 +62,7 @@ export const SpringLeagueIcon = ({ league, size = 28 }: SpringLeagueIconProps) =
       height={s}
       viewBox="0 0 32 32"
       fill="none"
-      sx={{ display: "block" }}
+      sx={{ display: 'block' }}
       role="img"
       aria-label={alt}
     >
@@ -73,12 +73,7 @@ export const SpringLeagueIcon = ({ league, size = 28 }: SpringLeagueIconProps) =
         stroke="#1B5E20"
         strokeWidth="1"
       />
-      <path
-        d="M16 14v14M12 18h8M10 22h12M11 26h10"
-        stroke="#388E3C"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
+      <path d="M16 14v14M12 18h8M10 22h12M11 26h10" stroke="#388E3C" strokeWidth="1.5" strokeLinecap="round" />
       <circle cx="16" cy="8" r="2" fill="#66BB6A" />
     </Box>
   )

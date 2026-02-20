@@ -1,16 +1,16 @@
-import { Box, useMediaQuery, useTheme } from "@mui/material"
-import { LineChart, LineSeriesType } from "@mui/x-charts"
-import dayjs from "dayjs"
-import { useMemo } from "react"
+import { Box, useMediaQuery, useTheme } from '@mui/material'
+import { LineChart, LineSeriesType } from '@mui/x-charts'
+import dayjs from 'dayjs'
+import { useMemo } from 'react'
 
-import { GetTeamTheme } from "@/colors"
-import { useInterestedTeam } from "@/context/InterestedTeamContext"
-import { useSchedule } from "@/queries/schedule"
-import { useTeams } from "@/queries/team"
-import LabelPaper from "@/shared/components/LabelPaper"
-import { GameStatus } from "@/types/Game/GameStatus"
-import { GameType } from "@/types/Game/GameType"
-import { Team } from "@/types/Team"
+import { GetTeamTheme } from '@/colors'
+import { useInterestedTeam } from '@/context/InterestedTeamContext'
+import { useSchedule } from '@/queries/schedule'
+import { useTeams } from '@/queries/team'
+import LabelPaper from '@/shared/components/LabelPaper'
+import { GameStatus } from '@/types/Game/GameStatus'
+import { GameType } from '@/types/Game/GameType'
+import { Team } from '@/types/Team'
 
 type TeamDailyTally = {
   teamId: number
@@ -25,8 +25,8 @@ type DailyTally = {
 
 export const TeamRanking = () => {
   const theme = useTheme()
-  const isXs = useMediaQuery(theme.breakpoints.down("sm"))
-  const isMd = useMediaQuery(theme.breakpoints.up("md"))
+  const isXs = useMediaQuery(theme.breakpoints.down('sm'))
+  const isMd = useMediaQuery(theme.breakpoints.up('md'))
   const chartHeight = isMd ? 500 : isXs ? 280 : 400
   const interestedTeam = useInterestedTeam()
   const { data: teams } = useTeams()
@@ -42,15 +42,17 @@ export const TeamRanking = () => {
 
     const getEmptyDivisionTally = (): TeamDailyTally[] => {
       const retval: TeamDailyTally[] = []
-      teams?.filter((t) => t.id < 1000).forEach((t) => {
-        if (t.division != undefined) {
-          if (t.division == team.division) {
-            retval.push({teamId: t.id, team: t.name, gameDifference: 0})
+      teams
+        ?.filter((t) => t.id < 1000)
+        .forEach((t) => {
+          if (t.division != undefined) {
+            if (t.division == team.division) {
+              retval.push({ teamId: t.id, team: t.name, gameDifference: 0 })
+            }
+          } else if (t.league == team.league) {
+            retval.push({ teamId: t.id, team: t.name, gameDifference: 0 })
           }
-        } else if (t.league == team.league) {
-          retval.push({teamId: t.id, team: t.name, gameDifference: 0})
-        }
-      })
+        })
       return retval
     }
 
@@ -58,11 +60,11 @@ export const TeamRanking = () => {
       // Init where necessary
       let teamRunningTally = runningTallies.find((t) => t.teamId == tallyTeam.id)
       if (teamRunningTally == undefined) {
-        teamRunningTally = {teamId: tallyTeam.id, team: tallyTeam.name, gameDifference: 0}
+        teamRunningTally = { teamId: tallyTeam.id, team: tallyTeam.name, gameDifference: 0 }
         runningTallies.push(teamRunningTally)
       }
 
-      let dailyTally = dailyTallies.find((t) => t.date.isSame(date, "day"))
+      let dailyTally = dailyTallies.find((t) => t.date.isSame(date, 'day'))
       if (dailyTally == undefined) {
         let init: TeamDailyTally[]
 
@@ -72,7 +74,7 @@ export const TeamRanking = () => {
           init = JSON.parse(JSON.stringify(getEmptyDivisionTally()))
         }
 
-        dailyTally = {date: date, teams: init}
+        dailyTally = { date: date, teams: init }
         dailyTallies.push(dailyTally)
       }
 
@@ -88,54 +90,54 @@ export const TeamRanking = () => {
     }
 
     seasonSeries
-    ?.flatMap((s) => s.games)
-    .sort((a, b) => a.gameDate.diff(b.gameDate, "minute"))
-    .filter((game) => {
-      // Filter out games not regular, and not final
-      if (game.gameType != GameType.Regular || game.gameStatus != GameStatus.Final) {
-        return false
-      }
+      ?.flatMap((s) => s.games)
+      .sort((a, b) => a.gameDate.diff(b.gameDate, 'minute'))
+      .filter((game) => {
+        // Filter out games not regular, and not final
+        if (game.gameType != GameType.Regular || game.gameStatus != GameStatus.Final) {
+          return false
+        }
 
-      // Denote this as a seen game (for postponed game situations)
-      if (seenGames.indexOf(game.pk) > 0) {
-        return false
-      }
-      seenGames.push(game.pk)
+        // Denote this as a seen game (for postponed game situations)
+        if (seenGames.indexOf(game.pk) > 0) {
+          return false
+        }
+        seenGames.push(game.pk)
 
-      // Filter out games that are not in the same division (if divisions exist) or in the same league.
-      const awayTeam = teams?.find((t) => t.id == game.away.teamId)
-      const homeTeam = teams?.find((t) => t.id == game.home.teamId)
-      if (awayTeam?.division != undefined) {
-        return awayTeam?.division == team.division || homeTeam?.division == team.division
-      }
-      return awayTeam?.league == team.league || homeTeam?.league == team.league
-    })
+        // Filter out games that are not in the same division (if divisions exist) or in the same league.
+        const awayTeam = teams?.find((t) => t.id == game.away.teamId)
+        const homeTeam = teams?.find((t) => t.id == game.home.teamId)
+        if (awayTeam?.division != undefined) {
+          return awayTeam?.division == team.division || homeTeam?.division == team.division
+        }
+        return awayTeam?.league == team.league || homeTeam?.league == team.league
+      })
 
-    // Tally up their records
-    .forEach((game) => {
-      const awayTeam = teams?.find((t) => t.id == game.away.teamId)
-      const homeTeam = teams?.find((t) => t.id == game.home.teamId)
+      // Tally up their records
+      .forEach((game) => {
+        const awayTeam = teams?.find((t) => t.id == game.away.teamId)
+        const homeTeam = teams?.find((t) => t.id == game.home.teamId)
 
-      if (awayTeam?.division != undefined) {
-        // Tally if the away team was in this division
-        if (awayTeam?.division == team.division) {
+        if (awayTeam?.division != undefined) {
+          // Tally if the away team was in this division
+          if (awayTeam?.division == team.division) {
+            tallyGame(game.gameDate, awayTeam, game.away.isWinner)
+          }
+        } else if (awayTeam?.league == team.league) {
+          // Tally if the away team was in this league
           tallyGame(game.gameDate, awayTeam, game.away.isWinner)
         }
-      } else if (awayTeam?.league == team.league) {
-        // Tally if the away team was in this league
-        tallyGame(game.gameDate, awayTeam, game.away.isWinner)
-      }
 
-      if (homeTeam?.division != undefined) {
-        // Tally if the home team was in this division
-        if (homeTeam.division == team.division) {
+        if (homeTeam?.division != undefined) {
+          // Tally if the home team was in this division
+          if (homeTeam.division == team.division) {
+            tallyGame(game.gameDate, homeTeam, game.home.isWinner)
+          }
+        } else if (homeTeam?.league == team.league) {
+          // Tally if the home team was in this league
           tallyGame(game.gameDate, homeTeam, game.home.isWinner)
         }
-      } else if (homeTeam?.league == team.league) {
-        // Tally if the home team was in this league
-        tallyGame(game.gameDate, homeTeam, game.home.isWinner)
-      }
-    })
+      })
 
     // Normalize the tallies to have division leader at zero, and the rest of the teams relative to that
     dailyTallies.forEach((dailyTally) => {
@@ -163,10 +165,7 @@ export const TeamRanking = () => {
       ret.push({
         type: 'line',
         data: standings?.map(
-          (t) => t.teams.filter(
-            (team) => team.teamId == teamId
-          ).map(
-            (team) => team.gameDifference)[0]
+          (t) => t.teams.filter((team) => team.teamId == teamId).map((team) => team.gameDifference)[0],
         ),
         label: team.name,
         showMark: false,
@@ -177,36 +176,31 @@ export const TeamRanking = () => {
     return ret
   }
 
-
-
   return (
     <LabelPaper label="Games Behind">
-      <Box sx={{ minWidth: 0, overflowX: "auto" }}>
+      <Box sx={{ minWidth: 0, overflowX: 'auto' }}>
         <LineChart
           height={chartHeight}
           series={getSeries()}
           grid={{ horizontal: true }}
           yAxis={[
-                     {
-                       label: 'Games Back',
-                       scaleType: 'linear',
-                       reverse: true,
-                     }
-                   ]}
-                   xAxis={[
-                     {
-                       label: 'Day',
-                       scaleType: 'band',
-                       data: standings?.map((t) => t.date),
-                       tickInterval: (date) => date?.get("date") == 1,
-                       tickLabelInterval: (date) => date?.get("date") == 1,
-                       valueFormatter: (date, context) =>
-                         context.location === 'tick'
-                           ? date.format("MMM")
-                           : date.format("MMMM DD")
-                     }
-                   ]}
-
+            {
+              label: 'Games Back',
+              scaleType: 'linear',
+              reverse: true,
+            },
+          ]}
+          xAxis={[
+            {
+              label: 'Day',
+              scaleType: 'band',
+              data: standings?.map((t) => t.date),
+              tickInterval: (date) => date?.get('date') == 1,
+              tickLabelInterval: (date) => date?.get('date') == 1,
+              valueFormatter: (date, context) =>
+                context.location === 'tick' ? date.format('MMM') : date.format('MMMM DD'),
+            },
+          ]}
         />
       </Box>
     </LabelPaper>

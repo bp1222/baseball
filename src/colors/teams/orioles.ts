@@ -1,12 +1,12 @@
-import { createTheme } from "@mui/material"
+import { createTheme } from '@mui/material'
 
 const orioles = createTheme({
   palette: {
     primary: {
-      main: "#DF4601",
+      main: '#DF4601',
     },
     secondary: {
-      main: "#000000",
+      main: '#000000',
     },
   },
 })

@@ -1,4 +1,4 @@
-import { Grid, Skeleton } from "@mui/material"
+import { Grid, Skeleton } from '@mui/material'
 
 export const SeriesCardSkeleton = () => (
   <Grid
@@ -8,19 +8,19 @@ export const SeriesCardSkeleton = () => (
     borderColor="divider"
     bgcolor="action.hover"
     flexWrap="nowrap"
-    sx={{ width: "100%", maxWidth: { xs: "100%", sm: "35em" }, minWidth: 0, flexGrow: 1 }}
+    sx={{ width: '100%', maxWidth: { xs: '100%', sm: '35em' }, minWidth: 0, flexGrow: 1 }}
   >
     <Grid alignContent="center" minWidth={120} maxWidth={120} sx={{ flexShrink: 0 }}>
       <Grid container paddingTop={1} paddingBottom={1} justifyContent="center">
         <Grid>
-          <Skeleton variant="text" width={80} height={24} sx={{ mx: "auto" }} />
-          <Skeleton variant="text" width={60} height={20} sx={{ mx: "auto", mt: 0.5 }} />
+          <Skeleton variant="text" width={80} height={24} sx={{ mx: 'auto' }} />
+          <Skeleton variant="text" width={60} height={20} sx={{ mx: 'auto', mt: 0.5 }} />
         </Grid>
         <Grid paddingTop={1}>
-          <Skeleton variant="rounded" width={64} height={20} sx={{ mx: "auto" }} />
+          <Skeleton variant="rounded" width={64} height={20} sx={{ mx: 'auto' }} />
         </Grid>
         <Grid paddingTop={0.5}>
-          <Skeleton variant="text" width={70} height={16} sx={{ mx: "auto" }} />
+          <Skeleton variant="text" width={70} height={16} sx={{ mx: 'auto' }} />
         </Grid>
       </Grid>
     </Grid>

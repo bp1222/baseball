@@ -1,15 +1,15 @@
-import dayjs from "dayjs"
+import dayjs from 'dayjs'
 
-import {GameResult, GetGameResult} from "@/types/Game/GameResult.ts"
-import {SeriesHomeAway} from "@/types/Series/SeriesHomeAway.ts"
-import {SeriesResult} from "@/types/Series/SeriesResult.ts"
-import {Team} from "@/types/Team.ts"
+import { GameResult, GetGameResult } from '@/types/Game/GameResult.ts'
+import { SeriesHomeAway } from '@/types/Series/SeriesHomeAway.ts'
+import { SeriesResult } from '@/types/Series/SeriesResult.ts'
+import { Team } from '@/types/Team.ts'
 
-import {Game} from "./Game"
-import {SeriesType} from "./Series/SeriesType"
+import { Game } from './Game'
+import { SeriesType } from './Series/SeriesType'
 
 /** Grapefruit League = Florida, Cactus League = Arizona */
-export type SpringLeague = "grapefruit" | "cactus"
+export type SpringLeague = 'grapefruit' | 'cactus'
 
 export type Series = {
   pk: string
@@ -57,15 +57,19 @@ export const GetSeriesHomeAway = (series: Series, team?: Team) => {
 }
 
 export const GetSeriesWins = (series: Series, team: Team): number => {
-  return series.games.filter((game) =>
-    ((game.home.teamId == team.id) && (GetGameResult(game) == GameResult.Home)) ||
-    ((game.away.teamId == team.id) && (GetGameResult(game) == GameResult.Away))).length
+  return series.games.filter(
+    (game) =>
+      (game.home.teamId == team.id && GetGameResult(game) == GameResult.Home) ||
+      (game.away.teamId == team.id && GetGameResult(game) == GameResult.Away),
+  ).length
 }
 
 export const GetSeriesLosses = (series: Series, team: Team): number => {
-  return series.games.filter((game) =>
-    ((game.home.teamId == team.id) && (GetGameResult(game) == GameResult.Away)) ||
-    ((game.away.teamId == team.id) && (GetGameResult(game) == GameResult.Home))).length
+  return series.games.filter(
+    (game) =>
+      (game.home.teamId == team.id && GetGameResult(game) == GameResult.Away) ||
+      (game.away.teamId == team.id && GetGameResult(game) == GameResult.Home),
+  ).length
 }
 
 export const GetSeriesResult = (series: Series, team?: Team): SeriesResult => {

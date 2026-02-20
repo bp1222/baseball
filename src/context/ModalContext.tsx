@@ -1,34 +1,30 @@
 /**
  * Modal Context - Centralized modal state management
  *
- * Benefits:
- * - Single modal instance rendered at root level
- * - Centralized focus management (returns focus to trigger on close)
- * - Easy to add new modal types
- * - Better performance (no modal JSX in every list item)
+ * Modals are stacked: e.g. boxscore then player on top. Closing the player
+ * returns to the boxscore; closing the boxscore closes to the page.
  *
  * Usage:
- *   const { openBoxscore, close } = useModal()
+ *   const { openBoxscore, openPlayer, close } = useModal()
  *   openBoxscore(game, buttonRef.current)
+ *   openPlayer(personId)  // from inside boxscore – stacks on top
  */
 
-import {createContext, ReactNode, useCallback, useContext, useRef, useState} from "react"
+import { createContext, ReactNode, useCallback, useContext, useRef, useState } from 'react'
 
-import {Game} from "@/types/Game"
+import { Game } from '@/types/Game'
 
-// Modal types - extend this union as new modal types are added
-// type ModalType = "boxscore" | null
-
-type ModalState =
-  | { type: "boxscore"; data: Game }
-  | { type: null; data: null }
+// One item in the modal stack (bottom to top)
+export type ModalStackItem = { type: 'boxscore'; data: Game } | { type: 'player'; data: string }
 
 type ModalContextValue = {
-  /** Current modal state */
-  state: ModalState
-  /** Open the boxscore modal for a game */
+  /** Stack of open modals (bottom to top). Empty = no modal. */
+  stack: ModalStackItem[]
+  /** Open the boxscore modal (replaces stack with just this modal) */
   openBoxscore: (game: Game, trigger?: HTMLElement | null) => void
-  /** Close the current modal */
+  /** Open the player modal on top of the current stack (e.g. on top of boxscore) */
+  openPlayer: (personId: string, trigger?: HTMLElement | null) => void
+  /** Close the topmost modal; if stack becomes empty, returns focus to trigger */
   close: () => void
 }
 
@@ -39,30 +35,32 @@ type ModalProviderProps = {
 }
 
 export const ModalProvider = ({ children }: ModalProviderProps) => {
-  const [state, setState] = useState<ModalState>({ type: null, data: null })
+  const [stack, setStack] = useState<ModalStackItem[]>([])
   const triggerRef = useRef<HTMLElement | null>(null)
 
   const openBoxscore = useCallback((game: Game, trigger?: HTMLElement | null) => {
     triggerRef.current = trigger ?? null
-    setState({ type: "boxscore", data: game })
+    setStack([{ type: 'boxscore', data: game }])
+  }, [])
+
+  const openPlayer = useCallback((personId: string, _trigger?: HTMLElement | null) => {
+    setStack((prev) => [...prev, { type: 'player', data: personId }])
   }, [])
 
   const close = useCallback(() => {
-    setState({ type: null, data: null })
-    // Return focus to the trigger element (accessibility)
-    if (triggerRef.current) {
-      requestAnimationFrame(() => {
-        triggerRef.current?.focus()
-        triggerRef.current = null
-      })
-    }
+    setStack((prev) => {
+      const next = prev.slice(0, -1)
+      if (next.length === 0 && triggerRef.current) {
+        requestAnimationFrame(() => {
+          triggerRef.current?.focus()
+          triggerRef.current = null
+        })
+      }
+      return next
+    })
   }, [])
 
-  return (
-    <ModalContext.Provider value={{ state, openBoxscore, close }}>
-      {children}
-    </ModalContext.Provider>
-  )
+  return <ModalContext.Provider value={{ stack, openBoxscore, openPlayer, close }}>{children}</ModalContext.Provider>
 }
 
 /**
@@ -72,15 +70,15 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
 export const useModal = (): ModalContextValue => {
   const context = useContext(ModalContext)
   if (!context) {
-    throw new Error("useModal must be used within a ModalProvider")
+    throw new Error('useModal must be used within a ModalProvider')
   }
   return context
 }
 
 /**
- * Hook to get just the modal state (for AppModals component)
+ * Hook to get the modal stack and close (for AppModals component)
  */
 export const useModalState = () => {
-  const { state, close } = useModal()
-  return { state, close }
+  const { stack, close } = useModal()
+  return { stack, close }
 }

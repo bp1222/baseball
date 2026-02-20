@@ -1,4 +1,4 @@
-import {Division as MLBDivision} from "@bp1222/stats-api"
+import { Division as MLBDivision } from '@bp1222/stats-api'
 
 export type Division = {
   id: number
@@ -11,4 +11,3 @@ export const DivisionFromMLBDivision = (division: MLBDivision): Division => ({
   name: division.name,
   abbreviation: division.abbreviation,
 })
-

@@ -7,12 +7,12 @@
  * - Or just a flat list if there's only one group
  */
 
-import { Box } from "@mui/material"
-import dayjs from "dayjs"
+import { Box } from '@mui/material'
+import dayjs from 'dayjs'
 
-import { Series } from "@/types/Series"
+import { Series } from '@/types/Series'
 
-import { SeriesList } from "./SeriesList"
+import { SeriesList } from './SeriesList'
 
 type SeriesGroupsProps = {
   /** All series to display */
@@ -42,10 +42,7 @@ export const SeriesGroups = ({
     <>
       {seriesWithGameToday.length > 0 && (
         <Box component="section" marginTop={2} marginBottom={1} sx={{ minWidth: 0 }}>
-          <Box
-            component="h3"
-            sx={{ fontSize: "1rem", fontWeight: 600, marginBottom: 1 }}
-          >
+          <Box component="h3" sx={{ fontSize: '1rem', fontWeight: 600, marginBottom: 1 }}>
             Games today
           </Box>
           <SeriesList series={seriesWithGameToday} selectedDate={selectedDate} />
@@ -53,10 +50,7 @@ export const SeriesGroups = ({
       )}
       {seriesInProgressOnly.length > 0 && (
         <Box component="section" marginTop={3} marginBottom={1} sx={{ minWidth: 0 }}>
-          <Box
-            component="h3"
-            sx={{ fontSize: "1rem", fontWeight: 600, marginBottom: 1 }}
-          >
+          <Box component="h3" sx={{ fontSize: '1rem', fontWeight: 600, marginBottom: 1 }}>
             Series in progress (no game today)
           </Box>
           <SeriesList series={seriesInProgressOnly} selectedDate={selectedDate} />
