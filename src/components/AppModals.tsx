@@ -54,7 +54,6 @@ const SeasonStatsTable = ({
   const { data: teams } = useTeams()
   // Exclude season summary rows (no team, numTeams present) — keep only per-team lines
   const splits = (statItem.splits ?? []).filter((s) => s.team != undefined || s.numTeams == undefined)
-  console.log(splits)
 
   const teamAbbr = (split: PersonStatSplit) => {
     const teamId = split?.team?.id
@@ -302,29 +301,37 @@ const BoxscoreModalContent = ({ game, onClose }: { game: Game; onClose: () => vo
               : ''
 
   return (
-    <Modal open disableAutoFocus onClick={(e) => e.stopPropagation()} onClose={onClose}>
+    <Modal
+      open
+      disableAutoFocus
+      onClick={(e) => e.stopPropagation()}
+      onClose={onClose}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 1.5,
+        boxSizing: 'border-box',
+        paddingTop: 'max(12px, env(safe-area-inset-top, 0px))',
+        paddingBottom: 'max(12px, env(safe-area-inset-bottom, 0px))',
+      }}
+    >
       <Box
+        id={'boxscore-modal'}
         sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 'calc(100vw - 24px)',
+          width: '100%',
           maxWidth: 850,
-          maxHeight: 'calc(100vh - 24px)',
+          maxHeight: '100%',
           boxSizing: 'border-box',
           bgcolor: 'background.paper',
           border: '2px solid',
           borderColor: 'divider',
           borderRadius: 2,
           overflow: 'auto',
-          outline: 'none',
-          display: 'flex',
-          flexDirection: 'column',
         }}
       >
-        {/* Sticky header: stays at top while GameBoxscore scrolls underneath */}
         <Box
+          id={'boxscore-modal-header'}
           sx={{
             position: 'sticky',
             top: 0,
@@ -369,13 +376,23 @@ const BoxscoreModalContent = ({ game, onClose }: { game: Game; onClose: () => vo
               {statusLabel ? ` · ${statusLabel}` : ''}
             </Typography>
           </Box>
-          <IconButton aria-label="Close" onClick={onClose} sx={{ flexShrink: 0 }}>
-            <CloseIcon />
-          </IconButton>
+          <Box
+            sx={{
+              width: 48,
+              flexShrink: 0,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <IconButton aria-label="Close" onClick={onClose} sx={{ flexShrink: 0 }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
         </Box>
         <Box
           sx={{
             minWidth: 0,
+            minHeight: 0,
             flex: '1 1 0%',
             overflow: 'auto',
           }}

@@ -68,11 +68,17 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
   // For finished games with no team selected, use per-row win/loss (like light mode)
   const awayScoreDarkKey =
     isDark && !interestedTeam && game.gameStatus === GameStatus.Final
-      ? getGameTileDarkKey(game, teams?.find((t) => t.id === game.away.teamId))
+      ? getGameTileDarkKey(
+          game,
+          teams?.find((t) => t.id === game.away.teamId),
+        )
       : tileDarkKey
   const homeScoreDarkKey =
     isDark && !interestedTeam && game.gameStatus === GameStatus.Final
-      ? getGameTileDarkKey(game, teams?.find((t) => t.id === game.home.teamId))
+      ? getGameTileDarkKey(
+          game,
+          teams?.find((t) => t.id === game.home.teamId),
+        )
       : tileDarkKey
   const awayScoreDarkColors = isDark && awayScoreDarkKey ? GameTileDarkColorsMap[awayScoreDarkKey] : undefined
   const homeScoreDarkColors = isDark && homeScoreDarkKey ? GameTileDarkColorsMap[homeScoreDarkKey] : undefined

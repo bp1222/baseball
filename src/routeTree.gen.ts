@@ -18,18 +18,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Char123seasonIdChar125IndexRoute =
-  Char123seasonIdChar125IndexRouteImport.update({
-    id: '/{$seasonId}/',
-    path: '/{$seasonId}/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char123seasonIdChar125Char123teamIdChar125Route =
-  Char123seasonIdChar125Char123teamIdChar125RouteImport.update({
-    id: '/{$seasonId}/{$teamId}',
-    path: '/{$seasonId}/{$teamId}',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const Char123seasonIdChar125IndexRoute = Char123seasonIdChar125IndexRouteImport.update({
+  id: '/{$seasonId}/',
+  path: '/{$seasonId}/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char123seasonIdChar125Char123teamIdChar125Route = Char123seasonIdChar125Char123teamIdChar125RouteImport.update({
+  id: '/{$seasonId}/{$teamId}',
+  path: '/{$seasonId}/{$teamId}',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,10 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  Char123seasonIdChar125Char123teamIdChar125Route:
-    Char123seasonIdChar125Char123teamIdChar125Route,
+  Char123seasonIdChar125Char123teamIdChar125Route: Char123seasonIdChar125Char123teamIdChar125Route,
   Char123seasonIdChar125IndexRoute: Char123seasonIdChar125IndexRoute,
 }
-export const routeTree = rootRouteImport
-  ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+export const routeTree = rootRouteImport._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>()
