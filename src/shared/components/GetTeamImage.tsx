@@ -1,6 +1,6 @@
-import { Box } from '@mui/material'
+import {Box} from '@mui/material'
 
-import { Team } from '@/types/Team'
+import {Team} from '@/types/Team'
 
 export const GetTeamImage = (team?: Team, dead?: boolean) => {
   if (team == undefined) return null
@@ -30,6 +30,8 @@ export const GetTeamImage = (team?: Team, dead?: boolean) => {
         filter: dead ? 'grayscale(1)' : undefined,
         height: 24,
         width: 24,
+        display: 'block',
+        objectFit: 'contain',
       }}
       alt={team.name}
     />

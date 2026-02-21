@@ -1,18 +1,18 @@
-import { Grid, Typography, useTheme } from '@mui/material'
+import {Grid, Typography, useTheme} from '@mui/material'
 import dayjs from 'dayjs'
 
-import { useInterestedTeam } from '@/context/InterestedTeamContext'
-import { useThemeMode } from '@/context/ThemeModeContext'
-import { GetSeriesResult, Series } from '@/types/Series'
-import { GetSeriesColors } from '@/types/Series/SeriesResult'
-import { SeriesType } from '@/types/Series/SeriesType'
+import {useInterestedTeam} from '@/context/InterestedTeamContext'
+import {useThemeMode} from '@/context/ThemeModeContext'
+import {GameTile} from "@/features/schedule/components/GameTile.tsx"
+import {GetSeriesResult, Series} from '@/types/Series'
+import {GetSeriesColors} from '@/types/Series/SeriesResult'
+import {SeriesType} from '@/types/Series/SeriesType'
 
-import { GameItem } from './GameItem'
-import { ResultBadge } from './SeriesItem/ResultBadge'
-import { SeriesBadge } from './SeriesItem/SeriesBadge'
-import { SeriesTeam } from './SeriesItem/SeriesTeam'
-import { SeriesTeams } from './SeriesItem/SeriesTeams'
-import { SpringLeagueIcon } from './SeriesItem/SpringLeagueIcon'
+import {ResultBadge} from './SeriesItem/ResultBadge'
+import {SeriesBadge} from './SeriesItem/SeriesBadge'
+import {SeriesTeam} from './SeriesItem/SeriesTeam'
+import {SeriesTeams} from './SeriesItem/SeriesTeams'
+import {SpringLeagueIcon} from './SeriesItem/SpringLeagueIcon'
 
 type SeriesItemProps = {
   series: Series
@@ -85,7 +85,7 @@ export const SeriesItem = ({ series, selectedDate }: SeriesItemProps) => {
       {/* Spring league icon — to the left of games, same box */}
       {series.type === SeriesType.SpringTraining && series.springLeague && (
         <Grid sx={{ flexShrink: 0, alignSelf: 'center', paddingRight: 1 }}>
-          <SpringLeagueIcon league={series.springLeague} size={24} />
+          <SpringLeagueIcon league={series.springLeague} />
         </Grid>
       )}
 
@@ -100,7 +100,7 @@ export const SeriesItem = ({ series, selectedDate }: SeriesItemProps) => {
               SeriesType.World,
             ].includes(series.type)
             return (
-              <GameItem
+              <GameTile
                 key={g.pk}
                 game={g}
                 selectedDate={selectedDate}
