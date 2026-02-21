@@ -75,7 +75,7 @@ export const BoxscoreModal = ({ game, onClose }: BoxscoreModalProps) => {
           sx={{
             position: 'sticky',
             top: 0,
-            zIndex: 1,
+            zIndex: 10,
             flexShrink: 0,
             display: 'flex',
             alignItems: 'center',

@@ -1,6 +1,6 @@
-import {Box} from '@mui/material'
+import { Box } from '@mui/material'
 
-import {Team} from '@/types/Team'
+import { Team } from '@/types/Team'
 
 export const GetTeamImage = (team?: Team, dead?: boolean) => {
   if (team == undefined) return null

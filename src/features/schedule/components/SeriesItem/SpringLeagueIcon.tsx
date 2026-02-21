@@ -1,6 +1,6 @@
-import {Box} from '@mui/material'
+import { Box } from '@mui/material'
 
-import type {SpringLeague} from '@/types/Series'
+import type { SpringLeague } from '@/types/Series'
 
 type SpringLeagueIconProps = {
   league: SpringLeague

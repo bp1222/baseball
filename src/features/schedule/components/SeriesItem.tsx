@@ -1,18 +1,18 @@
-import {Grid, Typography, useTheme} from '@mui/material'
+import { Grid, Typography, useTheme } from '@mui/material'
 import dayjs from 'dayjs'
 
-import {useInterestedTeam} from '@/context/InterestedTeamContext'
-import {useThemeMode} from '@/context/ThemeModeContext'
-import {GameTile} from "@/features/schedule/components/GameTile.tsx"
-import {GetSeriesResult, Series} from '@/types/Series'
-import {GetSeriesColors} from '@/types/Series/SeriesResult'
-import {SeriesType} from '@/types/Series/SeriesType'
+import { useInterestedTeam } from '@/context/InterestedTeamContext'
+import { useThemeMode } from '@/context/ThemeModeContext'
+import { GameTile } from '@/features/schedule/components/GameTile.tsx'
+import { GetSeriesResult, Series } from '@/types/Series'
+import { GetSeriesColors } from '@/types/Series/SeriesResult'
+import { SeriesType } from '@/types/Series/SeriesType'
 
-import {ResultBadge} from './SeriesItem/ResultBadge'
-import {SeriesBadge} from './SeriesItem/SeriesBadge'
-import {SeriesTeam} from './SeriesItem/SeriesTeam'
-import {SeriesTeams} from './SeriesItem/SeriesTeams'
-import {SpringLeagueIcon} from './SeriesItem/SpringLeagueIcon'
+import { ResultBadge } from './SeriesItem/ResultBadge'
+import { SeriesBadge } from './SeriesItem/SeriesBadge'
+import { SeriesTeam } from './SeriesItem/SeriesTeam'
+import { SeriesTeams } from './SeriesItem/SeriesTeams'
+import { SpringLeagueIcon } from './SeriesItem/SpringLeagueIcon'
 
 type SeriesItemProps = {
   series: Series

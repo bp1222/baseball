@@ -192,12 +192,12 @@ export const PlayerModal = ({ personId, onClose }: PlayerModalProps) => {
         </Box>
 
         {seasons.length > 0 && (
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
             <FormControl size="small" sx={{ minWidth: 160 }}>
               <InputLabel id="game-log-season-label">Game log (by season)</InputLabel>
               <Select
                 labelId="game-log-season-label"
-                label="Game Log (by season)"
+                label="Game log (by season)"
                 value={selectedSeason ?? ''}
                 onChange={(e) => setSelectedSeason(e.target.value || null)}
               >
@@ -208,6 +208,11 @@ export const PlayerModal = ({ personId, onClose }: PlayerModalProps) => {
                 ))}
               </Select>
             </FormControl>
+            {selectedSeason && (
+              <Button size="small" variant="outlined" onClick={() => setSelectedSeason(null)}>
+                Clear
+              </Button>
+            )}
             {selectedSeason && (
               <Box sx={{ mt: 2 }}>
                 {(hittingStats && hittingGameLog.isPending) || (pitchingStats && pitchingGameLog.isPending) ? (
