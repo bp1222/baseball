@@ -36,3 +36,28 @@ export const personOptions = (personId: string) =>
 export const usePerson = (personId: string | null) => {
   return useQuery(personOptions(personId ?? ''))
 }
+
+export type PersonGameLogGroup = 'hitting' | 'pitching'
+
+export const personGameLogOptions = (personId: string | null, season: string | null, group: PersonGameLogGroup) =>
+  queryOptions({
+    queryKey: ['person', personId, 'gameLog', season, group],
+    staleTime: PERSON_STALE_TIME,
+    enabled: !!personId && !!season,
+    queryFn: async () => {
+      const res = await api.getPersonStats({
+        personId: Number(personId!),
+        stats: 'gameLog',
+        group,
+        season: season!,
+      })
+      const gameLog = res.stats?.find((s) => s.type?.displayName === 'gameLog' && s.group?.displayName === group)
+      return gameLog?.splits ?? []
+    },
+  })
+
+/**
+ * Get game-by-game stats for a player in a given season (hitting or pitching).
+ */
+export const usePersonGameLog = (personId: string | null, season: string | null, group: PersonGameLogGroup) =>
+  useQuery(personGameLogOptions(personId, season, group))

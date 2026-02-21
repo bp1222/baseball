@@ -22,6 +22,44 @@ const scheduleApi = new ScheduleApi().withPreMiddleware(noCacheMiddleware)
 const peopleApi = new PeopleApi().withPreMiddleware(noCacheMiddleware)
 const standingsApi = new StandingsApi().withPreMiddleware(noCacheMiddleware)
 
+const MLB_API_BASE = 'https://statsapi.mlb.com/api'
+
+export type PersonStatsParams = {
+  personId: number
+  stats: string
+  group: string
+  season: string
+}
+
+/** Person stats response (e.g. game log). Stats API has no generated client for this path. */
+export type PersonStatsResponse = {
+  copyright?: string
+  stats: Array<{
+    type?: { displayName?: string }
+    group?: { displayName?: string }
+    splits?: Array<{
+      season?: string
+      stat?: Record<string, unknown>
+      team?: { id?: number; name?: string; abbreviation?: string; link?: string }
+      opponent?: { id?: number; name?: string; abbreviation?: string; link?: string }
+      date?: string
+      isHome?: boolean
+      isWin?: boolean
+      game?: { gamePk?: number; link?: string }
+    }>
+  }>
+}
+
+async function getPersonStatsRaw(params: PersonStatsParams): Promise<PersonStatsResponse> {
+  const url = new URL(`${MLB_API_BASE}/v1/people/${params.personId}/stats`)
+  url.searchParams.set('stats', params.stats)
+  url.searchParams.set('group', params.group)
+  url.searchParams.set('season', params.season)
+  const res = await fetch(url.toString(), { cache: 'no-cache' })
+  if (!res.ok) throw new Error(`Person stats failed: ${res.status}`)
+  return res.json() as Promise<PersonStatsResponse>
+}
+
 /**
  * Unified API facade matching the shape expected by queries (getBoxscore, getSchedule, etc.)
  */
@@ -35,4 +73,5 @@ export const api = {
   getDivisions: (req: Parameters<ReferenceApi['getDivisions']>[0]) => referenceApi.getDivisions(req),
   getStandings: (req: Parameters<StandingsApi['getStandings']>[0]) => standingsApi.getStandings(req),
   getPerson: (req: Parameters<PeopleApi['getPerson']>[0]) => peopleApi.getPerson(req),
+  getPersonStats: (params: PersonStatsParams) => getPersonStatsRaw(params),
 }
