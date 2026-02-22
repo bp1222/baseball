@@ -3,10 +3,10 @@
  * Each modal is in its own file under modals/ for clarity.
  */
 
-import {useModalState} from '@/context/ModalContext'
+import { useModalState } from '@/context/ModalContext'
 
-import {BoxscoreModal} from './BoxscoreModal'
-import {PlayerModal} from './PlayerModal'
+import { BoxscoreModal } from './BoxscoreModal'
+import { PlayerModal } from './PlayerModal'
 
 /**
  * Renders the modal stack (e.g. boxscore with player on top).
@@ -29,4 +29,3 @@ export const AppModals = () => {
     </>
   )
 }
-
