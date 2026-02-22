@@ -43,25 +43,35 @@ export const PlayerModal = ({ personId, onClose }: PlayerModalProps) => {
   const hittingGameLog = usePersonGameLog(personId, selectedSeason, 'hitting')
   const pitchingGameLog = usePersonGameLog(personId, selectedSeason, 'pitching')
 
+  const modalSx = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 1.5,
+    boxSizing: 'border-box',
+    paddingTop: 'max(12px, env(safe-area-inset-top, 0px))',
+    paddingBottom: 'max(12px, env(safe-area-inset-bottom, 0px))',
+  }
+
+  const contentBoxSx = {
+    width: '100%',
+    maxWidth: 560,
+    maxHeight: '100%',
+    boxSizing: 'border-box',
+    bgcolor: 'background.paper',
+    border: '2px solid',
+    borderColor: 'divider',
+    borderRadius: 2,
+    overflow: 'auto',
+  }
+
   if (isPending) {
     return (
-      <Modal open disableAutoFocus onClose={onClose}>
+      <Modal open disableAutoFocus onClose={onClose} sx={modalSx}>
         <Box
           sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 'calc(100vw - 24px)',
-            maxWidth: 560,
-            maxHeight: 'calc(100vh - 24px)',
-            boxSizing: 'border-box',
-            bgcolor: 'background.paper',
-            border: '2px solid',
-            borderColor: 'divider',
-            borderRadius: 2,
-            overflow: 'auto',
-            outline: 'none',
+            ...contentBoxSx,
+            position: 'relative',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -79,24 +89,8 @@ export const PlayerModal = ({ personId, onClose }: PlayerModalProps) => {
 
   if (isError || !person) {
     return (
-      <Modal open disableAutoFocus onClose={onClose}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 'calc(100vw - 24px)',
-            maxWidth: 560,
-            boxSizing: 'border-box',
-            bgcolor: 'background.paper',
-            border: '2px solid',
-            borderColor: 'divider',
-            borderRadius: 2,
-            p: 2,
-            outline: 'none',
-          }}
-        >
+      <Modal open disableAutoFocus onClose={onClose} sx={modalSx}>
+        <Box sx={{ ...contentBoxSx, position: 'relative', p: 2 }}>
           <IconButton aria-label="Close" onClick={onClose} sx={{ position: 'absolute', top: 8, right: 8 }}>
             <CloseIcon />
           </IconButton>
@@ -153,45 +147,90 @@ export const PlayerModal = ({ personId, onClose }: PlayerModalProps) => {
   const team = person.currentTeam?.abbreviation ?? person.currentTeam?.teamName ?? ''
 
   return (
-    <Modal open disableAutoFocus onClick={(e) => e.stopPropagation()} onClose={onClose}>
+    <Modal open disableAutoFocus onClick={(e) => e.stopPropagation()} onClose={onClose} sx={modalSx}>
       <Box
+        id="player-modal"
         sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 'calc(100vw - 24px)',
-          maxWidth: 560,
-          maxHeight: 'calc(100vh - 24px)',
-          boxSizing: 'border-box',
-          bgcolor: 'background.paper',
-          border: '2px solid',
-          borderColor: 'divider',
-          borderRadius: 2,
-          overflow: 'auto',
-          outline: 'none',
-          px: 2,
-          py: 2,
+          ...contentBoxSx,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
-        <IconButton aria-label="Close" onClick={onClose} sx={{ position: 'absolute', top: 8, right: 8 }}>
-          <CloseIcon />
-        </IconButton>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', pb: 2, mb: 2 }}>
-          <Typography variant="h6" component="p">
-            {person.fullName}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {[position, team, person.primaryNumber ? `#${person.primaryNumber}` : ''].filter(Boolean).join(' · ')}
-          </Typography>
-          {(person.batSide?.description || person.pitchHand?.description) && (
-            <Typography variant="caption" color="text.secondary" display="block">
-              Bats: {person.batSide?.description ?? '—'} · Throws: {person.pitchHand?.description ?? '—'}
+        <Box
+          id="player-modal-header"
+          sx={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 1,
+            padding: { xs: 1.5, sm: 2 },
+            borderBottom: 1,
+            borderColor: 'divider',
+            bgcolor: 'background.paper',
+          }}
+        >
+          <Box sx={{ width: 48, flexShrink: 0 }} aria-hidden />
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+            }}
+          >
+            <Typography
+              variant="h6"
+              component="p"
+              sx={{
+                fontSize: { xs: '1rem', sm: 'inherit' },
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {person.fullName}
             </Typography>
-          )}
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.875rem', sm: 'inherit' } }}>
+              {[position, team, person.primaryNumber ? `#${person.primaryNumber}` : ''].filter(Boolean).join(' · ')}
+            </Typography>
+            {(person.batSide?.description || person.pitchHand?.description) && (
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: { xs: '0.75rem', sm: 'inherit' } }}>
+                Bats: {person.batSide?.description ?? '—'} · Throws: {person.pitchHand?.description ?? '—'}
+              </Typography>
+            )}
+          </Box>
+          <Box
+            sx={{
+              width: 48,
+              flexShrink: 0,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <IconButton aria-label="Close" onClick={onClose} sx={{ flexShrink: 0 }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
         </Box>
-
-        {seasons.length > 0 && (
+        <Box
+          sx={{
+            minWidth: 0,
+            minHeight: 0,
+            flex: '1 1 0%',
+            overflow: 'auto',
+            px: 2,
+            py: 2,
+          }}
+        >
+          {seasons.length > 0 && (
           <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
             <FormControl size="small" sx={{ minWidth: 160 }}>
               <InputLabel id="game-log-season-label">Game log (by season)</InputLabel>
@@ -263,6 +302,7 @@ export const PlayerModal = ({ personId, onClose }: PlayerModalProps) => {
             No season stats available.
           </Typography>
         )}
+        </Box>
       </Box>
     </Modal>
   )
