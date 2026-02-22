@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box, Tooltip } from '@mui/material'
 
 import { Team } from '@/types/Team'
 
@@ -23,17 +23,19 @@ export const GetTeamImage = (team?: Team, dead?: boolean) => {
   }
 
   return (
-    <Box
-      component="img"
-      src={src}
-      sx={{
-        filter: dead ? 'grayscale(1)' : undefined,
-        height: 24,
-        width: 24,
-        display: 'block',
-        objectFit: 'contain',
-      }}
-      alt={team.name}
-    />
+    <Tooltip title={team.name} enterDelay={500} enterNextDelay={500} leaveDelay={200}>
+      <Box
+        component="img"
+        src={src}
+        sx={{
+          filter: dead ? 'grayscale(1)' : undefined,
+          height: 24,
+          width: 24,
+          display: 'block',
+          objectFit: 'contain',
+        }}
+        alt={team.name}
+      />
+    </Tooltip>
   )
 }

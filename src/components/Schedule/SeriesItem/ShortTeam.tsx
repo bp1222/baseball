@@ -1,4 +1,4 @@
-import { Grid, Tooltip, Typography } from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 
 import { GetTeamImage } from '@/components/Shared/GetTeamImage'
 import { Team } from '@/types/Team.ts'
@@ -16,13 +16,11 @@ const ShortTeam = ({ team, dead, showAbbreviation = true }: ShortTeamProps) => {
 
   return (
     <Grid container justifyContent="center" alignItems="center" flexDirection="column" sx={{ minWidth: 0 }}>
-      <Tooltip title={team.name} enterDelay={500} enterNextDelay={500} leaveDelay={200}>
-        <Typography fontSize="smaller" noWrap sx={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {GetTeamImage(team, dead)}
-          {showAbbreviation &&
-            (isTbd.test(team.abbreviation ?? '') ? 'TBD' : (team.abbreviation?.toUpperCase() ?? 'TBD'))}
-        </Typography>
-      </Tooltip>
+      <Typography fontSize="smaller" noWrap sx={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {GetTeamImage(team, dead)}
+        {showAbbreviation &&
+          (isTbd.test(team.abbreviation ?? '') ? 'TBD' : (team.abbreviation?.toUpperCase() ?? 'TBD'))}
+      </Typography>
     </Grid>
   )
 }

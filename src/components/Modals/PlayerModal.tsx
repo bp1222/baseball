@@ -202,7 +202,12 @@ export const PlayerModal = ({ personId, onClose }: PlayerModalProps) => {
               {[position, team, person.primaryNumber ? `#${person.primaryNumber}` : ''].filter(Boolean).join(' · ')}
             </Typography>
             {(person.batSide?.description || person.pitchHand?.description) && (
-              <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: { xs: '0.75rem', sm: 'inherit' } }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                display="block"
+                sx={{ fontSize: { xs: '0.75rem', sm: 'inherit' } }}
+              >
                 Bats: {person.batSide?.description ?? '—'} · Throws: {person.pitchHand?.description ?? '—'}
               </Typography>
             )}
@@ -231,77 +236,77 @@ export const PlayerModal = ({ personId, onClose }: PlayerModalProps) => {
           }}
         >
           {seasons.length > 0 && (
-          <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-            <FormControl size="small" sx={{ minWidth: 160 }}>
-              <InputLabel id="game-log-season-label">Game log (by season)</InputLabel>
-              <Select
-                labelId="game-log-season-label"
-                label="Game log (by season)"
-                value={selectedSeason ?? ''}
-                onChange={(e) => setSelectedSeason(e.target.value || null)}
-              >
-                {seasons.map((s) => (
-                  <MenuItem key={s} value={s}>
-                    {s}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            {selectedSeason && (
-              <Button size="small" variant="outlined" onClick={() => setSelectedSeason(null)}>
-                Clear
-              </Button>
-            )}
-            {selectedSeason && (
-              <Box sx={{ mt: 2 }}>
-                {(hittingStats && hittingGameLog.isPending) || (pitchingStats && pitchingGameLog.isPending) ? (
-                  <Box display="flex" justifyContent="center" py={2}>
-                    <CircularProgress size={24} />
-                  </Box>
-                ) : (
-                  <>
-                    {hittingStats && hittingGameLog.data != null && hittingGameLog.data.length > 0 && (
-                      <GameLogTable
-                        title={`Hitting game log · ${selectedSeason}`}
-                        splits={hittingGameLog.data as GameLogSplit[]}
-                        group="hitting"
-                      />
-                    )}
-                    {pitchingStats && pitchingGameLog.data != null && pitchingGameLog.data.length > 0 && (
-                      <GameLogTable
-                        title={`Pitching game log · ${selectedSeason}`}
-                        splits={pitchingGameLog.data as GameLogSplit[]}
-                        group="pitching"
-                      />
-                    )}
-                    {(hittingStats && hittingGameLog.data?.length === 0 && !pitchingStats) ||
-                    (pitchingStats && pitchingGameLog.data?.length === 0 && !hittingStats) ||
-                    (hittingStats &&
-                      pitchingStats &&
-                      hittingGameLog.data?.length === 0 &&
-                      pitchingGameLog.data?.length === 0) ? (
-                      <Typography variant="body2" color="text.secondary">
-                        No game log for {selectedSeason}.
-                      </Typography>
-                    ) : null}
-                  </>
-                )}
-              </Box>
-            )}
-          </Box>
-        )}
+            <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+              <FormControl size="small" sx={{ minWidth: 160 }}>
+                <InputLabel id="game-log-season-label">Game log (by season)</InputLabel>
+                <Select
+                  labelId="game-log-season-label"
+                  label="Game log (by season)"
+                  value={selectedSeason ?? ''}
+                  onChange={(e) => setSelectedSeason(e.target.value || null)}
+                >
+                  {seasons.map((s) => (
+                    <MenuItem key={s} value={s}>
+                      {s}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              {selectedSeason && (
+                <Button size="small" variant="outlined" onClick={() => setSelectedSeason(null)}>
+                  Clear
+                </Button>
+              )}
+              {selectedSeason && (
+                <Box sx={{ mt: 2 }}>
+                  {(hittingStats && hittingGameLog.isPending) || (pitchingStats && pitchingGameLog.isPending) ? (
+                    <Box display="flex" justifyContent="center" py={2}>
+                      <CircularProgress size={24} />
+                    </Box>
+                  ) : (
+                    <>
+                      {hittingStats && hittingGameLog.data != null && hittingGameLog.data.length > 0 && (
+                        <GameLogTable
+                          title={`Hitting game log · ${selectedSeason}`}
+                          splits={hittingGameLog.data as GameLogSplit[]}
+                          group="hitting"
+                        />
+                      )}
+                      {pitchingStats && pitchingGameLog.data != null && pitchingGameLog.data.length > 0 && (
+                        <GameLogTable
+                          title={`Pitching game log · ${selectedSeason}`}
+                          splits={pitchingGameLog.data as GameLogSplit[]}
+                          group="pitching"
+                        />
+                      )}
+                      {(hittingStats && hittingGameLog.data?.length === 0 && !pitchingStats) ||
+                      (pitchingStats && pitchingGameLog.data?.length === 0 && !hittingStats) ||
+                      (hittingStats &&
+                        pitchingStats &&
+                        hittingGameLog.data?.length === 0 &&
+                        pitchingGameLog.data?.length === 0) ? (
+                        <Typography variant="body2" color="text.secondary">
+                          No game log for {selectedSeason}.
+                        </Typography>
+                      ) : null}
+                    </>
+                  )}
+                </Box>
+              )}
+            </Box>
+          )}
 
-        {!selectedSeason && hittingStats && (
-          <SeasonStatsTable statItem={hittingStats} title="Hitting (by season)" statColumns={hittingColumns} />
-        )}
-        {!selectedSeason && pitchingStats && (
-          <SeasonStatsTable statItem={pitchingStats} title="Pitching (by season)" statColumns={pitchingColumns} />
-        )}
-        {!selectedSeason && !hittingStats && !pitchingStats && (
-          <Typography variant="body2" color="text.secondary">
-            No season stats available.
-          </Typography>
-        )}
+          {!selectedSeason && hittingStats && (
+            <SeasonStatsTable statItem={hittingStats} title="Hitting (by season)" statColumns={hittingColumns} />
+          )}
+          {!selectedSeason && pitchingStats && (
+            <SeasonStatsTable statItem={pitchingStats} title="Pitching (by season)" statColumns={pitchingColumns} />
+          )}
+          {!selectedSeason && !hittingStats && !pitchingStats && (
+            <Typography variant="body2" color="text.secondary">
+              No season stats available.
+            </Typography>
+          )}
         </Box>
       </Box>
     </Modal>

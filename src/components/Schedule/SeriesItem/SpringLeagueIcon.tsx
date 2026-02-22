@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box, Tooltip } from '@mui/material'
 
 import type { SpringLeague } from '@/types/Series'
 
@@ -11,16 +11,18 @@ export const SpringLeagueIcon = ({ league }: SpringLeagueIconProps) => {
   const alt = league === 'grapefruit' ? 'Grapefruit League' : 'Cactus League'
 
   return (
-    <Box
-      component="img"
-      src={src}
-      sx={{
-        width: 16,
-        height: 16,
-        display: 'block',
-        objectFit: 'contain',
-      }}
-      alt={alt}
-    />
+    <Tooltip title={alt} enterDelay={500} enterNextDelay={500} leaveDelay={200}>
+      <Box
+        component="img"
+        src={src}
+        alt={alt}
+        sx={{
+          width: 16,
+          height: 16,
+          display: 'inline-block',
+          lineHeight: 0,
+        }}
+      />
+    </Tooltip>
   )
 }
