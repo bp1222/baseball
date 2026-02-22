@@ -1,10 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router'
+import {createFileRoute} from '@tanstack/react-router'
 import dayjs from 'dayjs'
 
-import { SeasonSeries } from '@/features/schedule'
-import { scheduleOptions } from '@/queries/schedule'
-import { seasonsOptions } from '@/queries/season'
-import { teamsOptions } from '@/queries/team'
+import {SeasonSeries} from '@/components/Schedule'
+import {scheduleOptions} from '@/queries/schedule'
+import {seasonsOptions} from '@/queries/season'
+import {teamsOptions} from '@/queries/team'
 
 /**
  * Search params schema for the season route

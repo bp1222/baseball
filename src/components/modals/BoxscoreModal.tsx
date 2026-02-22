@@ -9,7 +9,7 @@ import { GameStatus } from '@/types/Game/GameStatus'
 import type { Team } from '@/types/Team'
 
 const GameBoxscore = lazy(() =>
-  import('@/features/game/components/GameBoxscore').then((module) => ({
+  import('@/components/Game/GameBoxscore').then((module) => ({
     default: module.GameBoxscore,
   })),
 )

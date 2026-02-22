@@ -5,13 +5,14 @@
  * This is the primary data source for both day view and team view.
  */
 
-import { GameType, Season } from '@bp1222/stats-api'
-import { queryOptions, useQuery } from '@tanstack/react-query'
+import {GameType, Season} from '@bp1222/stats-api'
+import {queryOptions, useQuery} from '@tanstack/react-query'
 
-import { SeriesFromMLBSchedule } from '@/domain/series'
-import { useSeason } from '@/queries/season'
-import { api } from '@/services/MlbAPI'
-import { TeamFromMLBTeam } from '@/types/Team'
+import {useSeason} from '@/queries/season'
+import {useTeams} from "@/queries/team.ts"
+import {api} from '@/services/MlbAPI'
+import {SeriesFromMLBSchedule} from '@/types/Series'
+import {Team} from '@/types/Team'
 
 /**
  * Stale time: 1 hour
@@ -52,14 +53,13 @@ const baseGameFields = [
   'venue',
 ]
 
-export const scheduleOptions = (season?: Season) =>
+export const scheduleOptions = (season?: Season, teams?: Team[]) =>
   queryOptions({
     queryKey: ['schedule', season?.seasonId],
     staleTime: SCHEDULE_STALE_TIME,
-    enabled: !!season?.seasonId,
+    enabled: !!season?.seasonId && !!teams?.length,
     queryFn: async () => {
-      const [scheduleData, { teams: mlbTeams }] = await Promise.all([
-        api.getSchedule({
+      const scheduleData = await api.getSchedule({
           sportId: 1,
           gameTypes: [
             GameType.SpringTraining,
@@ -72,27 +72,7 @@ export const scheduleOptions = (season?: Season) =>
           startDate: season?.preSeasonStartDate ?? season?.seasonStartDate,
           endDate: season?.postSeasonEndDate ?? season?.seasonEndDate,
           fields: baseGameFields,
-        }),
-        api.getTeams({
-          sportId: 1,
-          season: season!.seasonId,
-          fields: [
-            'teams',
-            'id',
-            'name',
-            'teamName',
-            'shortName',
-            'abbreviation',
-            'franchiseName',
-            'league',
-            'division',
-            'nameShort',
-            'springLeague',
-          ],
-          hydrate: 'division',
-        }),
-      ])
-      const teams = mlbTeams.sort((a, b) => a.name.localeCompare(b.name) ?? 0).map((t) => TeamFromMLBTeam(t))
+        })
       return SeriesFromMLBSchedule(
         scheduleData.dates.flatMap((d) => d.games),
         teams,
@@ -102,5 +82,7 @@ export const scheduleOptions = (season?: Season) =>
 
 export const useSchedule = () => {
   const { data: season } = useSeason()
-  return useQuery(scheduleOptions(season))
+  const { data: teams } = useTeams()
+  
+  return useQuery(scheduleOptions(season, teams))
 }
