@@ -15,11 +15,11 @@ import {SeriesFromMLBSchedule} from '@/types/Series'
 import {Team} from '@/types/Team'
 
 /**
- * Stale time: 1 hour
- * Schedule data changes infrequently (game scores update, but structure doesn't).
- * For live score updates, components fetch linescore separately.
+ * Stale time: 24 hours
+ * Schedule structure (who plays when, series metadata) rarely changes.
+ * Live scores are shown via linescore in GameTile (short stale + refetch when in progress).
  */
-const SCHEDULE_STALE_TIME = 1000 * 60 * 60
+const SCHEDULE_STALE_TIME = 1000 * 60 * 60 * 24
 
 /**
  * Fields requested for schedule/game endpoints

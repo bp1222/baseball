@@ -2,14 +2,15 @@
  * Scorecard hero — prominent score and matchup at top of boxscore
  */
 
-import { Box, Typography, useTheme } from '@mui/material'
+import {Box, Typography, useTheme} from '@mui/material'
 import dayjs from 'dayjs'
 
-import { GetTeamImage } from '@/components/Shared/GetTeamImage'
-import { useTeams } from '@/queries/team'
-import { Game } from '@/types/Game'
-import { GameStatus } from '@/types/Game/GameStatus'
-import { GameTeam } from '@/types/GameTeam'
+import {GetTeamImage} from '@/components/Shared/GetTeamImage'
+import {useLinescore} from '@/queries/linescore'
+import {useTeams} from '@/queries/team'
+import {Game} from '@/types/Game'
+import {GameStatus} from '@/types/Game/GameStatus'
+import {GameTeam} from '@/types/GameTeam'
 
 type ScorecardHeroProps = {
   game: Game
@@ -19,6 +20,12 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
   const theme = useTheme()
   const { data: teams } = useTeams()
   const isDark = theme.palette.mode === 'dark'
+
+  const isLive = game.gameStatus === GameStatus.InProgress
+  const { data: linescore } = useLinescore(game.pk, isLive)
+
+  const awayScore = isLive && linescore != null ? linescore.away.runs : (game.away.score ?? 0)
+  const homeScore = isLive && linescore != null ? linescore.home.runs : (game.home.score ?? 0)
 
   const statusLabel =
     game.gameStatus === GameStatus.Final
@@ -33,9 +40,8 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
               ? 'CANCELED'
               : ''
 
-  const getTeamGameComponent = (gameTeam: GameTeam) => {
+  const getTeamGameComponent = (gameTeam: GameTeam, score: number) => {
     const team = teams?.find((t) => t.id === gameTeam.teamId)
-    const score = gameTeam.score ?? 0
     const record =
       gameTeam.record.wins != null && gameTeam.record.losses != null
         ? `${gameTeam.record.wins}-${gameTeam.record.losses}`
@@ -106,7 +112,7 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
           minWidth: 0,
         }}
       >
-        {getTeamGameComponent(game.away)}
+        {getTeamGameComponent(game.away, awayScore)}
 
         <Box
           sx={{
@@ -116,6 +122,7 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
             justifyContent: 'center',
             px: { xs: 0.5, sm: 1.5 },
             flexShrink: 0,
+            gap: 0.5,
           }}
         >
           <Typography variant="body2" color="text.secondary" fontWeight={600}>
@@ -124,7 +131,11 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
           {statusLabel && (
             <Box
               sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 px: { xs: 0.5, sm: 1 },
+                py: 0.25,
                 borderRadius: 1,
                 bgcolor:
                   game.gameStatus === GameStatus.InProgress
@@ -142,17 +153,55 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
             >
               <Typography
                 variant="caption"
-                alignContent={'center'}
                 fontWeight={700}
-                sx={{ fontSize: { xs: '0.65rem', sm: 'inherit' } }}
+                sx={{
+                  fontSize: { xs: '0.65rem', sm: 'inherit' },
+                  lineHeight: 2,
+                  textAlign: 'center',
+                }}
               >
                 {statusLabel}
               </Typography>
             </Box>
           )}
+          {isLive && linescore != null && (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                px: { xs: 0.5, sm: 0.75 },
+                py: 0.5,
+                mt: 0.5,
+                borderRadius: 1,
+                bgcolor: isDark ? 'grey.800' : 'grey.200',
+                border: 1,
+                borderColor: 'divider',
+              }}
+            >
+              {(linescore.currentInning != null && linescore.isTopInning != null) && (
+                <Typography
+                  variant="caption"
+                  fontWeight={600}
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: '0.6rem', sm: '0.7rem' }, lineHeight: 1.4 }}
+                >
+                  {linescore.isTopInning ? 'Top' : 'Bottom'} {linescore.currentInningOrdinal ?? linescore.currentInning}
+                </Typography>
+              )}
+              <Typography
+                variant="caption"
+                color="text.primary"
+                sx={{ fontSize: { xs: '0.6rem', sm: '0.7rem' }, lineHeight: 1.4 }}
+              >
+                B: {linescore.balls ?? 0} · S: {linescore.strikes ?? 0} · O: {linescore.outs ?? 0}
+              </Typography>
+            </Box>
+          )}
         </Box>
 
-        {getTeamGameComponent(game.home)}
+        {getTeamGameComponent(game.home, homeScore)}
       </Box>
       {game.venue?.name && (
         <Box

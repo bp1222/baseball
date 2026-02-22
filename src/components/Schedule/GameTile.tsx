@@ -17,6 +17,7 @@ import { useRef } from 'react'
 import { useInterestedTeam } from '@/context/InterestedTeamContext'
 import { useModal } from '@/context/ModalContext'
 import { useThemeMode } from '@/context/ThemeModeContext'
+import { useLinescore } from '@/queries/linescore'
 import { useTeams } from '@/queries/team'
 import { Game } from '@/types/Game'
 import {
@@ -46,6 +47,11 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
   const { openBoxscore } = useModal()
   const tileRef = useRef<HTMLDivElement>(null)
   const isDark = mode === 'dark'
+
+  const isLive = game.gameStatus === GameStatus.InProgress
+  const { data: linescore } = useLinescore(game.pk, isLive)
+  const awayScoreOverride = isLive && linescore ? linescore.away.runs : undefined
+  const homeScoreOverride = isLive && linescore ? linescore.home.runs : undefined
 
   const gameIsToday = dayjs(game.gameDate).isSame(interestedTeam ? dayjs() : selectedDate, 'day')
 
@@ -157,6 +163,7 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
       <Grid>
         <GameScore
           gameTeam={game.away}
+          scoreOverride={awayScoreOverride}
           color={GetGameResultColor(game, interestedTeam ?? teams?.find((t) => t.id == game.away.teamId))}
           darkMode={isDark}
           darkModeColors={
@@ -169,6 +176,7 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
       <Grid>
         <GameScore
           gameTeam={game.home}
+          scoreOverride={homeScoreOverride}
           color={GetGameResultColor(game, interestedTeam ?? teams?.find((t) => t.id == game.home.teamId))}
           darkMode={isDark}
           darkModeColors={

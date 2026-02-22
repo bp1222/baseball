@@ -5,10 +5,10 @@
  * Used for live game status and final game summaries.
  */
 
-import { queryOptions, useQuery } from '@tanstack/react-query'
+import {queryOptions, useQuery} from '@tanstack/react-query'
 
-import { api } from '@/services/MlbAPI'
-import { LinescoreFromMLBLinescore } from '@/types/Linescore'
+import {api} from '@/services/MlbAPI'
+import {LinescoreFromMLBLinescore} from '@/types/Linescore'
 
 /**
  * Stale times based on game status:
@@ -18,7 +18,7 @@ import { LinescoreFromMLBLinescore } from '@/types/Linescore'
  * Default to shorter time; callers can override for final games.
  */
 const LINESCORE_STALE_TIME_LIVE = 1000 * 30
-const LINESCORE_STALE_TIME_FINAL = 1000 * 60 * 60
+const LINESCORE_STALE_TIME_FINAL = Infinity
 
 export const linescoreOptions = (gamePk: number, isLive: boolean = false) =>
   queryOptions({

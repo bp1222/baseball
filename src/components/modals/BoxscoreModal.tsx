@@ -3,6 +3,7 @@ import { Box, CircularProgress, IconButton, Modal, Typography } from '@mui/mater
 import dayjs from 'dayjs'
 import { lazy, Suspense } from 'react'
 
+import { useLinescore } from '@/queries/linescore'
 import { useTeams } from '@/queries/team'
 import { Game } from '@/types/Game'
 import { GameStatus } from '@/types/Game/GameStatus'
@@ -22,10 +23,13 @@ type BoxscoreModalProps = {
 export const BoxscoreModal = ({ game, onClose }: BoxscoreModalProps) => {
   const { data: teams } = useTeams()
 
+  const isLive = game.gameStatus === GameStatus.InProgress
+  const { data: linescore } = useLinescore(game.pk, isLive)
+  const awayScore = isLive && linescore != null ? linescore.away.runs : (game.away.score ?? 0)
+  const homeScore = isLive && linescore != null ? linescore.home.runs : (game.home.score ?? 0)
+
   const awayAbbr = teams?.find((t: Team) => t.id === game.away.teamId)?.abbreviation ?? 'Away'
   const homeAbbr = teams?.find((t: Team) => t.id === game.home.teamId)?.abbreviation ?? 'Home'
-  const awayScore = game.away.score ?? 0
-  const homeScore = game.home.score ?? 0
 
   const statusLabel =
     game.gameStatus === GameStatus.Final

@@ -31,6 +31,13 @@ export type Linescore = {
   currentInningOrdinal?: string
   scheduledInnings?: number
   isTopInning?: boolean
+  balls?: number
+  strikes?: number
+  outs?: number
+  /** Runner on first (for live baserunner diamond); not in MLB linescore response yet */
+  runnerOnFirst?: boolean
+  runnerOnSecond?: boolean
+  runnerOnThird?: boolean
   innings: Array<Inning>
   away: LinescoreTeam
   home: LinescoreTeam
@@ -41,6 +48,9 @@ export const LinescoreFromMLBLinescore = (linescore: MLBLinescore): Linescore =>
   currentInningOrdinal: linescore.currentInningOrdinal,
   scheduledInnings: linescore.scheduledInnings,
   isTopInning: linescore.isTopInning,
+  balls: linescore.balls,
+  strikes: linescore.strikes,
+  outs: linescore.outs,
   innings: linescore.innings?.map((inning) => InningFromMLBInning(inning)) ?? [],
   away: LinescoreTeamFromMLBLinescoreTeam(linescore.teams.away),
   home: LinescoreTeamFromMLBLinescoreTeam(linescore.teams.home),

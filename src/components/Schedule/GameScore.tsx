@@ -6,6 +6,8 @@ import { GameTeam } from '@/types/GameTeam'
 
 type GameScoreProps = {
   gameTeam: GameTeam
+  /** When provided (e.g. from linescore for in-progress games), display instead of gameTeam.score */
+  scoreOverride?: number
   color?: Color
   /** When true, use darker background and lighter text for dark mode */
   darkMode?: boolean
@@ -13,7 +15,7 @@ type GameScoreProps = {
   darkModeColors?: { bg: string; border: string; text: string }
 }
 
-export const GameScore = ({ gameTeam, color, darkMode = false, darkModeColors }: GameScoreProps) => {
+export const GameScore = ({ gameTeam, scoreOverride, color, darkMode = false, darkModeColors }: GameScoreProps) => {
   const isTbd = /[\d/]/
   const { data: team } = useTeam(gameTeam.teamId)
 
@@ -41,7 +43,7 @@ export const GameScore = ({ gameTeam, color, darkMode = false, darkModeColors }:
         bgcolor={bg}
         sx={{ width: '30%', minWidth: 0, paddingTop: 0.1, color: text }}
       >
-        {gameTeam.score ?? '-'}
+        {scoreOverride !== undefined ? scoreOverride : (gameTeam.score ?? '-')}
       </Grid>
     </Grid>
   )
