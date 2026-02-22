@@ -2,17 +2,17 @@ import {
   Game as MLBGame,
   GameStatusCode as MLBGameStatusCode,
   GameTeam as MLBGameTeam,
-  GameType as MLBGameType
+  GameType as MLBGameType,
 } from '@bp1222/stats-api'
 import dayjs from 'dayjs'
 
-import {GameResult, GetGameResult} from '@/types/Game/GameResult.ts'
-import {SeriesHomeAway} from '@/types/Series/SeriesHomeAway.ts'
-import {SeriesResult} from '@/types/Series/SeriesResult.ts'
-import {Team} from '@/types/Team.ts'
+import { GameResult, GetGameResult } from '@/types/Game/GameResult.ts'
+import { SeriesHomeAway } from '@/types/Series/SeriesHomeAway.ts'
+import { SeriesResult } from '@/types/Series/SeriesResult.ts'
+import { Team } from '@/types/Team.ts'
 
-import {Game, GameFromMLBGame} from './Game'
-import {SeriesType} from './Series/SeriesType'
+import { Game, GameFromMLBGame } from './Game'
+import { SeriesType } from './Series/SeriesType'
 
 /** Grapefruit League = Florida, Cactus League = Arizona */
 export type SpringLeague = 'grapefruit' | 'cactus'

@@ -1,14 +1,14 @@
-import {Box, Grid, ToggleButton, ToggleButtonGroup} from '@mui/material'
-import {createFileRoute} from '@tanstack/react-router'
-import {useState} from 'react'
+import { Box, Grid, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
 
-import {SeriesCardSkeleton, SeriesList} from '@/components/Schedule'
-import {StandingsSkeleton} from '@/components/Standings'
-import {SeriesRecordSkeleton, TeamStats} from '@/components/Team'
-import {scheduleOptions, useSchedule} from '@/queries/schedule'
-import {seasonsOptions} from '@/queries/season'
-import {teamsOptions} from '@/queries/team'
-import {SeriesType} from '@/types/Series/SeriesType'
+import { SeriesCardSkeleton, SeriesList } from '@/components/Schedule'
+import { StandingsSkeleton } from '@/components/Standings'
+import { SeriesRecordSkeleton, TeamStats } from '@/components/Team'
+import { scheduleOptions, useSchedule } from '@/queries/schedule'
+import { seasonsOptions } from '@/queries/season'
+import { teamsOptions } from '@/queries/team'
+import { SeriesType } from '@/types/Series/SeriesType'
 
 type TeamViewTab = 'schedule' | 'stats'
 
@@ -171,12 +171,14 @@ const TeamComponent = () => {
 
 export const Route = createFileRoute('/{$seasonId}/{$teamId}')({
   loader: async ({ context: { queryClient, defaultSeason }, params: { seasonId } }) => {
-    const seasons = await queryClient.ensureQueryData(seasonsOptions)
-    const season = seasons.find((s) => s.seasonId === (seasonId ?? defaultSeason))
-    await Promise.all([
+    const [seasons, teams] = await Promise.all([
+      queryClient.ensureQueryData(seasonsOptions),
       queryClient.ensureQueryData(teamsOptions(seasonId ?? defaultSeason)),
-      season ? queryClient.ensureQueryData(scheduleOptions(season)) : Promise.resolve(),
     ])
+    const season = seasons.find((s) => s.seasonId === (seasonId ?? defaultSeason))
+    if (season && teams.length) {
+      await queryClient.ensureQueryData(scheduleOptions(season, teams))
+    }
   },
   component: TeamComponent,
 })

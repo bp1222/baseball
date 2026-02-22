@@ -9,11 +9,10 @@
 
 import { Alert, Box, Button, Grid } from '@mui/material'
 
+import { DateNavigation } from './DateNavigation'
 import { useDateNavigation } from './hooks/useDateNavigation'
 import { useDatesWithGames } from './hooks/useDatesWithGames'
 import { useFilteredSeries } from './hooks/useFilteredSeries'
-
-import { DateNavigation } from './DateNavigation'
 import { NoGamesMessage } from './NoGamesMessage'
 import { SeriesCardSkeleton } from './SeriesCardSkeleton'
 import { SeriesGroups } from './SeriesGroups'

@@ -5,10 +5,10 @@
  * Used for live game status and final game summaries.
  */
 
-import {queryOptions, useQuery} from '@tanstack/react-query'
+import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import {api} from '@/services/MlbAPI'
-import {LinescoreFromMLBLinescore} from '@/types/Linescore'
+import { api } from '@/services/MlbAPI'
+import { LinescoreFromMLBLinescore } from '@/types/Linescore'
 
 /**
  * Stale times based on game status:

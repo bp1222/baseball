@@ -2,15 +2,15 @@
  * Scorecard hero — prominent score and matchup at top of boxscore
  */
 
-import {Box, Typography, useTheme} from '@mui/material'
+import { Box, Typography, useTheme } from '@mui/material'
 import dayjs from 'dayjs'
 
-import {GetTeamImage} from '@/components/Shared/GetTeamImage'
-import {useLinescore} from '@/queries/linescore'
-import {useTeams} from '@/queries/team'
-import {Game} from '@/types/Game'
-import {GameStatus} from '@/types/Game/GameStatus'
-import {GameTeam} from '@/types/GameTeam'
+import { GetTeamImage } from '@/components/Shared/GetTeamImage'
+import { useLinescore } from '@/queries/linescore'
+import { useTeams } from '@/queries/team'
+import { Game } from '@/types/Game'
+import { GameStatus } from '@/types/Game/GameStatus'
+import { GameTeam } from '@/types/GameTeam'
 
 type ScorecardHeroProps = {
   game: Game
@@ -180,7 +180,7 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
                 borderColor: 'divider',
               }}
             >
-              {(linescore.currentInning != null && linescore.isTopInning != null) && (
+              {linescore.currentInning != null && linescore.isTopInning != null && (
                 <Typography
                   variant="caption"
                   fontWeight={600}

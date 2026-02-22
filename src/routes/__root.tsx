@@ -1,15 +1,15 @@
-import {Box, Container, CssBaseline, ThemeProvider} from '@mui/material'
-import {createRootRouteWithContext, Outlet} from '@tanstack/react-router'
-import {TanStackRouterDevtools} from '@tanstack/react-router-devtools'
+import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material'
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
-import {GetTeamTheme} from '@/colors'
+import { GetTeamTheme } from '@/colors'
+import { Footer } from '@/components/Layout/Footer'
+import { Header } from '@/components/Layout/Header'
 import { AppModals } from '@/components/Modals'
-import {Footer} from '@/components/Layout/Footer'
-import {Header} from '@/components/Layout/Header'
-import {InterestedTeamProvider, useInterestedTeamContext} from '@/context/InterestedTeamContext'
-import {ModalProvider} from '@/context/ModalContext'
-import {ThemeModeProvider, useThemeMode} from '@/context/ThemeModeContext'
-import type {RouterContext} from '@/router/context'
+import { InterestedTeamProvider, useInterestedTeamContext } from '@/context/InterestedTeamContext'
+import { ModalProvider } from '@/context/ModalContext'
+import { ThemeModeProvider, useThemeMode } from '@/context/ThemeModeContext'
+import type { RouterContext } from '@/router/context'
 
 /**
  * Inner component that uses the interested team context for theming

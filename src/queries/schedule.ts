@@ -5,14 +5,14 @@
  * This is the primary data source for both day view and team view.
  */
 
-import {GameType, Season} from '@bp1222/stats-api'
-import {queryOptions, useQuery} from '@tanstack/react-query'
+import { GameType, Season } from '@bp1222/stats-api'
+import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import {useSeason} from '@/queries/season'
-import {useTeams} from "@/queries/team.ts"
-import {api} from '@/services/MlbAPI'
-import {SeriesFromMLBSchedule} from '@/types/Series'
-import {Team} from '@/types/Team'
+import { useSeason } from '@/queries/season'
+import { useTeams } from '@/queries/team.ts'
+import { api } from '@/services/MlbAPI'
+import { SeriesFromMLBSchedule } from '@/types/Series'
+import { Team } from '@/types/Team'
 
 /**
  * Stale time: 24 hours
@@ -57,22 +57,22 @@ export const scheduleOptions = (season?: Season, teams?: Team[]) =>
   queryOptions({
     queryKey: ['schedule', season?.seasonId],
     staleTime: SCHEDULE_STALE_TIME,
-    enabled: !!season?.seasonId && !!teams?.length,
+    enabled: !!(season?.seasonId && teams?.length),
     queryFn: async () => {
       const scheduleData = await api.getSchedule({
-          sportId: 1,
-          gameTypes: [
-            GameType.SpringTraining,
-            GameType.Regular,
-            GameType.WildCardSeries,
-            GameType.DivisionSeries,
-            GameType.LeagueChampionshipSeries,
-            GameType.WorldSeries,
-          ],
-          startDate: season?.preSeasonStartDate ?? season?.seasonStartDate,
-          endDate: season?.postSeasonEndDate ?? season?.seasonEndDate,
-          fields: baseGameFields,
-        })
+        sportId: 1,
+        gameTypes: [
+          GameType.SpringTraining,
+          GameType.Regular,
+          GameType.WildCardSeries,
+          GameType.DivisionSeries,
+          GameType.LeagueChampionshipSeries,
+          GameType.WorldSeries,
+        ],
+        startDate: season?.preSeasonStartDate ?? season?.seasonStartDate,
+        endDate: season?.postSeasonEndDate ?? season?.seasonEndDate,
+        fields: baseGameFields,
+      })
       return SeriesFromMLBSchedule(
         scheduleData.dates.flatMap((d) => d.games),
         teams,
@@ -83,6 +83,6 @@ export const scheduleOptions = (season?: Season, teams?: Team[]) =>
 export const useSchedule = () => {
   const { data: season } = useSeason()
   const { data: teams } = useTeams()
-  
+
   return useQuery(scheduleOptions(season, teams))
 }

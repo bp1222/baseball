@@ -8,9 +8,9 @@
 import { Alert, Box, Button, Grid, Typography } from '@mui/material'
 
 import LabelPaper from '@/components/Shared/LabelPaper'
-import { useSeriesStats } from './hooks/useSeriesStats'
 import { Team } from '@/types/Team'
 
+import { useSeriesStats } from './hooks/useSeriesStats'
 import { SeriesRecordSkeleton } from './SeriesRecordSkeleton'
 
 type TeamSeriesRecordProps = {

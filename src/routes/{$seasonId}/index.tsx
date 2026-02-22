@@ -1,10 +1,10 @@
-import {createFileRoute} from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 
-import {SeasonSeries} from '@/components/Schedule'
-import {scheduleOptions} from '@/queries/schedule'
-import {seasonsOptions} from '@/queries/season'
-import {teamsOptions} from '@/queries/team'
+import { SeasonSeries } from '@/components/Schedule'
+import { scheduleOptions } from '@/queries/schedule'
+import { seasonsOptions } from '@/queries/season'
+import { teamsOptions } from '@/queries/team'
 
 /**
  * Search params schema for the season route
@@ -31,12 +31,14 @@ export const Route = createFileRoute('/{$seasonId}/')({
     date: typeof search.date === 'string' && dayjs(search.date).isValid() ? search.date : undefined,
   }),
   loader: async ({ context: { queryClient, defaultSeason }, params: { seasonId } }) => {
-    const seasons = await queryClient.ensureQueryData(seasonsOptions)
-    const season = seasons.find((s) => s.seasonId === (seasonId ?? defaultSeason))
-    await Promise.all([
+    const [seasons, teams] = await Promise.all([
+      queryClient.ensureQueryData(seasonsOptions),
       queryClient.ensureQueryData(teamsOptions(seasonId ?? defaultSeason)),
-      season ? queryClient.ensureQueryData(scheduleOptions(season)) : Promise.resolve(),
     ])
+    const season = seasons.find((s) => s.seasonId === (seasonId ?? defaultSeason))
+    if (season && teams.length) {
+      await queryClient.ensureQueryData(scheduleOptions(season, teams))
+    }
   },
   component: SeasonComponent,
 })
