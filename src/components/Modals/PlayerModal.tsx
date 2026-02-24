@@ -15,8 +15,9 @@ import {
 import { useMemo, useState } from 'react'
 
 import { usePerson, usePersonGameLog } from '@/queries/person'
+import type { GameLogSplit } from '@/types/GameLogSplit'
 
-import { type GameLogSplit, GameLogTable } from './GameLogTable'
+import { GameLogTable } from './GameLogTable'
 import { SeasonStatsTable } from './SeasonStatsTable'
 
 type PlayerModalProps = {

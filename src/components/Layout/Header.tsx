@@ -1,22 +1,25 @@
 import Brightness4Icon from '@mui/icons-material/Brightness4'
 import Brightness7Icon from '@mui/icons-material/Brightness7'
-import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
-import { useParams } from '@tanstack/react-router'
+import DonutLargeIcon from '@mui/icons-material/DonutLarge'
+import {AppBar, Box, IconButton, Toolbar, Tooltip, Typography} from '@mui/material'
+import {useParams} from '@tanstack/react-router'
 
-import { useInterestedTeam } from '@/context/InterestedTeamContext'
-import { useThemeMode } from '@/context/ThemeModeContext'
+import {useInterestedTeam} from '@/context/InterestedTeamContext'
+import {useModal} from '@/context/ModalContext'
+import {useThemeMode} from '@/context/ThemeModeContext'
 
-import { HeaderName } from './Header/HeaderName'
-import { SeasonPicker } from './Header/SeasonPicker'
-import { TeamPicker } from './Header/TeamPicker'
+import {HeaderName} from './Header/HeaderName'
+import {SeasonPicker} from './Header/SeasonPicker'
+import {TeamPicker} from './Header/TeamPicker'
 
 export const Header = () => {
   const { seasonId } = useParams({ strict: false })
   const selectedTeam = useInterestedTeam()
   const { mode, toggleMode } = useThemeMode()
+  const { openSeasonWheelDemo } = useModal()
 
   return (
-    <AppBar position="sticky" sx={{ marginBottom: 2 }}>
+    <AppBar position={'sticky'} color={'primary'} enableColorOnDark>
       <Toolbar sx={{ minWidth: 0, px: { xs: 0.5, sm: 2 } }}>
         {/* Left: app name — same flex as right so center is truly centered */}
         <Box
@@ -55,8 +58,16 @@ export const Header = () => {
             gap: 0.5,
           }}
         >
+          <Tooltip title="Season Wheel Demo">
+            <IconButton
+              onClick={() => openSeasonWheelDemo()}
+              aria-label="Open season wheel demo"
+              size="small"
+            >
+              <DonutLargeIcon aria-hidden />
+            </IconButton>
+          </Tooltip>
           <IconButton
-            color="inherit"
             onClick={toggleMode}
             aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             size="small"

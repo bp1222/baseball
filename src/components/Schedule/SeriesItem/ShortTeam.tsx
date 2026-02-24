@@ -1,7 +1,7 @@
-import { Grid, Typography } from '@mui/material'
+import {Grid, Typography} from '@mui/material'
 
-import { GetTeamImage } from '@/components/Shared/GetTeamImage'
-import { Team } from '@/types/Team.ts'
+import {TeamImage} from '@/components/Shared/TeamImage.tsx'
+import {Team} from '@/types/Team.ts'
 
 type ShortTeamProps = {
   team?: Team
@@ -17,7 +17,7 @@ const ShortTeam = ({ team, dead, showAbbreviation = true }: ShortTeamProps) => {
   return (
     <Grid container justifyContent="center" alignItems="center" flexDirection="column" sx={{ minWidth: 0 }}>
       <Typography fontSize="smaller" noWrap sx={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        {GetTeamImage(team, dead)}
+        <TeamImage team={team} dead={dead} />
         {showAbbreviation &&
           (isTbd.test(team.abbreviation ?? '') ? 'TBD' : (team.abbreviation?.toUpperCase() ?? 'TBD'))}
       </Typography>

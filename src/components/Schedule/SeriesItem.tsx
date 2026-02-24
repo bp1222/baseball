@@ -1,10 +1,11 @@
-import { Grid, Typography, useTheme } from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 import dayjs from 'dayjs'
 
 import { useInterestedTeam } from '@/context/InterestedTeamContext'
 import { useThemeMode } from '@/context/ThemeModeContext'
-import { GetSeriesResult, Series } from '@/types/Series'
-import { GetSeriesColors } from '@/types/Series/SeriesResult'
+import { GetSeriesResult } from '@/domain/series'
+import { GetSeriesColors } from '@/theme'
+import { Series } from '@/types/Series'
 import { SeriesType } from '@/types/Series/SeriesType'
 
 import { GameTile } from './GameTile'
@@ -22,13 +23,9 @@ type SeriesItemProps = {
 export const SeriesItem = ({ series, selectedDate }: SeriesItemProps) => {
   const interestedTeam = useInterestedTeam()
   const { mode } = useThemeMode()
-  const theme = useTheme()
 
   const seriesResult = GetSeriesResult(series, interestedTeam ?? undefined)
-  const { background, border } = GetSeriesColors(series.type, seriesResult, series.springLeague, mode)
-
-  const isDarkCard = mode === 'dark'
-  const textColor = isDarkCard ? theme.palette.text.primary : undefined
+  const seriesColors = GetSeriesColors(series.type, seriesResult, series.springLeague, mode)
 
   return (
     <Grid
@@ -36,8 +33,8 @@ export const SeriesItem = ({ series, selectedDate }: SeriesItemProps) => {
       flexWrap="nowrap"
       border={1}
       borderRadius={1}
-      borderColor={border}
-      bgcolor={background}
+      borderColor={seriesColors.main}
+      bgcolor={seriesColors.light}
       fontSize="small"
       position="relative"
       sx={{
@@ -46,7 +43,7 @@ export const SeriesItem = ({ series, selectedDate }: SeriesItemProps) => {
         minWidth: 0,
         flexGrow: 1,
         boxSizing: 'border-box',
-        ...(textColor && { color: textColor }),
+        color: 'text.primary',
       }}
     >
       {interestedTeam && (
@@ -63,7 +60,6 @@ export const SeriesItem = ({ series, selectedDate }: SeriesItemProps) => {
         </Grid>
       )}
 
-      {/* Team / opponent and series badge */}
       <Grid alignContent="center" minWidth={120} maxWidth={120} sx={{ flexShrink: 0 }}>
         <Grid container paddingTop={1} paddingBottom={1} justifyContent="center">
           <Grid>
@@ -82,14 +78,12 @@ export const SeriesItem = ({ series, selectedDate }: SeriesItemProps) => {
         </Grid>
       </Grid>
 
-      {/* Spring league icon — to the left of games, same box */}
       {series.type === SeriesType.SpringTraining && series.springLeague && (
         <Grid sx={{ flexShrink: 0, alignSelf: 'center', paddingRight: 1 }}>
           <SpringLeagueIcon league={series.springLeague} />
         </Grid>
       )}
 
-      {/* Game tiles — fills remaining width, wraps to next line when needed */}
       <Grid flexGrow={1} minWidth={0} justifyContent="flex-end" alignContent="center">
         <Grid container justifyContent="flex-end" flexWrap="wrap">
           {series.games.map((g, index) => {

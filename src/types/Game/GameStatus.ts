@@ -1,6 +1,4 @@
 import { GameStatusCode } from '@bp1222/stats-api'
-import { Color } from '@mui/material'
-import { blue, brown, deepPurple, grey } from '@mui/material/colors'
 
 export enum GameStatus {
   Final,
@@ -24,20 +22,5 @@ export const GameStatusFromMLBGameStatus = (status: GameStatusCode) => {
     case GameStatusCode.Final:
     case GameStatusCode.GameOver:
       return GameStatus.Final
-  }
-}
-
-export const GetGameStatusColor = (status: GameStatus): Color => {
-  switch (status) {
-    case GameStatus.Scheduled:
-      return grey
-    case GameStatus.InProgress:
-      return blue
-    case GameStatus.Final:
-      return grey
-    case GameStatus.Postponed:
-      return deepPurple
-    case GameStatus.Canceled:
-      return brown
   }
 }

@@ -1,8 +1,8 @@
-import { Grid, Typography } from '@mui/material'
+import {Grid, Typography} from '@mui/material'
 
-import { GetTeamImage } from '@/components/Shared/GetTeamImage'
-import { useTeams } from '@/queries/team.ts'
-import { GameTeam } from '@/types/GameTeam.ts'
+import {TeamImage} from '@/components/Shared/TeamImage.tsx'
+import {useTeam, useTeams} from '@/queries/team.ts'
+import {GameTeam} from '@/types/GameTeam.ts'
 
 type BoxscoreTeamProps = {
   gameTeam: GameTeam
@@ -10,11 +10,12 @@ type BoxscoreTeamProps = {
 
 export const BoxscoreTeam = ({ gameTeam }: BoxscoreTeamProps) => {
   const { data: teams } = useTeams()
+  const { data: team } = useTeam(gameTeam.teamId)
 
   return (
     <Grid container flexDirection={'column'} alignItems={'center'} textAlign={'center'}>
       <Grid container flexDirection={'row'} alignItems={'center'}>
-        {GetTeamImage(teams?.find((t) => t.id == gameTeam.teamId))}
+        <TeamImage team={team} />
         <Typography paddingLeft={1} fontSize={'larger'}>
           {gameTeam.score}
         </Typography>

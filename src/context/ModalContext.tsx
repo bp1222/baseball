@@ -15,7 +15,10 @@ import { createContext, ReactNode, useCallback, useContext, useRef, useState } f
 import { Game } from '@/types/Game'
 
 // One item in the modal stack (bottom to top)
-export type ModalStackItem = { type: 'boxscore'; data: Game } | { type: 'player'; data: string }
+export type ModalStackItem =
+  | { type: 'boxscore'; data: Game }
+  | { type: 'player'; data: string }
+  | { type: 'seasonWheelDemo' }
 
 type ModalContextValue = {
   /** Stack of open modals (bottom to top). Empty = no modal. */
@@ -24,6 +27,8 @@ type ModalContextValue = {
   openBoxscore: (game: Game, trigger?: HTMLElement | null) => void
   /** Open the player modal on top of the current stack (e.g. on top of boxscore) */
   openPlayer: (personId: string, trigger?: HTMLElement | null) => void
+  /** Open the season wheel demo modal */
+  openSeasonWheelDemo: (trigger?: HTMLElement | null) => void
   /** Close the topmost modal; if stack becomes empty, returns focus to trigger */
   close: () => void
 }
@@ -47,6 +52,11 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
     setStack((prev) => [...prev, { type: 'player', data: personId }])
   }, [])
 
+  const openSeasonWheelDemo = useCallback((trigger?: HTMLElement | null) => {
+    triggerRef.current = trigger ?? null
+    setStack([{ type: 'seasonWheelDemo' }])
+  }, [])
+
   const close = useCallback(() => {
     setStack((prev) => {
       const next = prev.slice(0, -1)
@@ -60,7 +70,11 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
     })
   }, [])
 
-  return <ModalContext.Provider value={{ stack, openBoxscore, openPlayer, close }}>{children}</ModalContext.Provider>
+  return (
+    <ModalContext.Provider value={{ stack, openBoxscore, openPlayer, openSeasonWheelDemo, close }}>
+      {children}
+    </ModalContext.Provider>
+  )
 }
 
 /**

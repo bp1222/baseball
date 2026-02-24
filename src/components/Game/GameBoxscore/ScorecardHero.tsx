@@ -2,15 +2,15 @@
  * Scorecard hero — prominent score and matchup at top of boxscore
  */
 
-import { Box, Typography, useTheme } from '@mui/material'
+import {Box, Typography, useTheme} from '@mui/material'
 import dayjs from 'dayjs'
 
-import { GetTeamImage } from '@/components/Shared/GetTeamImage'
-import { useLinescore } from '@/queries/linescore'
-import { useTeams } from '@/queries/team'
-import { Game } from '@/types/Game'
-import { GameStatus } from '@/types/Game/GameStatus'
-import { GameTeam } from '@/types/GameTeam'
+import {TeamImage} from '@/components/Shared/TeamImage.tsx'
+import {useLinescore} from '@/queries/linescore'
+import {useTeams} from '@/queries/team'
+import {Game} from '@/types/Game'
+import {GameStatus} from '@/types/Game/GameStatus'
+import {GameTeam} from '@/types/GameTeam'
 
 type ScorecardHeroProps = {
   game: Game
@@ -69,7 +69,7 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
             '& img': { width: '100%', height: '100%', objectFit: 'contain' },
           }}
         >
-          {GetTeamImage(team)}
+          <TeamImage team={team} />
         </Box>
         <Typography
           variant="subtitle2"
@@ -147,8 +147,7 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
                       : isDark
                         ? 'grey.700'
                         : 'grey.300',
-                color:
-                  game.gameStatus === GameStatus.InProgress ? 'success.contrastText' : isDark ? 'grey.100' : 'grey.800',
+                color: game.gameStatus === GameStatus.InProgress ? 'success.contrastText' : 'text.primary',
               }}
             >
               <Typography

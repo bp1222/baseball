@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material'
+import {createTheme} from '@mui/material'
 
 const phillies = createTheme({
   palette: {

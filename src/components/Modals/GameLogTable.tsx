@@ -3,16 +3,8 @@ import dayjs from 'dayjs'
 
 import type { PersonGameLogGroup } from '@/queries/person'
 import { useTeams } from '@/queries/team'
+import type { GameLogSplit } from '@/types/GameLogSplit'
 import type { Team } from '@/types/Team'
-
-export type GameLogSplit = {
-  date?: string
-  opponent?: { id?: number; name?: string; abbreviation?: string }
-  isHome?: boolean
-  isWin?: boolean
-  stat?: Record<string, unknown> & { summary?: string }
-  game?: { gamePk?: number; link?: string }
-}
 
 const HITTING_GAME_LOG_COLUMNS = [
   { key: 'atBats', label: 'AB' },

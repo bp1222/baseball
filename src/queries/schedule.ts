@@ -8,10 +8,10 @@
 import { GameType, Season } from '@bp1222/stats-api'
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
+import { SeriesFromMLBSchedule } from '@/domain/series'
 import { useSeason } from '@/queries/season'
 import { useTeams } from '@/queries/team.ts'
 import { api } from '@/services/MlbAPI'
-import { SeriesFromMLBSchedule } from '@/types/Series'
 import { Team } from '@/types/Team'
 
 /**

@@ -1,11 +1,9 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, useTheme } from '@mui/material'
-
-import LabelPaper from '@/components/Shared/LabelPaper'
-import { useDivisions } from '@/queries/division'
-import { useLeagues } from '@/queries/league'
-import { useTeams } from '@/queries/team'
-import { Standings } from '@/types/Standings'
-import { Team } from '@/types/Team'
+import {ThemedTable, ThemedTableData} from "@/components/Shared/ThemedTable.tsx"
+import {useDivisions} from '@/queries/division'
+import {useLeagues} from '@/queries/league'
+import {useTeams} from '@/queries/team'
+import {Standings} from '@/types/Standings'
+import {Team} from '@/types/Team'
 
 interface LeagueStandingsProps {
   team: Team
@@ -13,8 +11,6 @@ interface LeagueStandingsProps {
 }
 
 export const LeagueStandings = ({ team, standings }: LeagueStandingsProps) => {
-  const theme = useTheme()
-  const isDark = theme.palette.mode === 'dark'
   const { data: teams } = useTeams()
   const { getDivision } = useDivisions()
   const { getLeague } = useLeagues()
@@ -35,97 +31,40 @@ export const LeagueStandings = ({ team, standings }: LeagueStandingsProps) => {
   })
   finalLeagueStandings.push(...orderedLeagueStandings.filter((s) => !finalLeagueStandings.includes(s)))
 
-  const headerCellSx = {
-    whiteSpace: 'nowrap' as const,
-    fontWeight: 700,
-    py: 1,
-  }
+  const headerRow = ['Team', 'W', 'L', 'Pct', 'WCGB', 'WC-E#']
+  const data: ThemedTableData[] = []
+
+  finalLeagueStandings.map((s, idx) => {
+    const rowTeam = teams?.find((t) => t.id == s.teamId)
+    if (!rowTeam) return
+
+    const division = getDivision(rowTeam.division)
+
+    let clinchedLeague = false
+    if (idx === 0 && finalLeagueStandings[1]?.leagueGamesBack && finalLeagueStandings[1]?.gamesPlayed) {
+      if (parseFloat(finalLeagueStandings[1].leagueGamesBack) > 162 - finalLeagueStandings[1].gamesPlayed) {
+        clinchedLeague = true
+      }
+    }
+
+    const playoffIndicator = s.clinched ? (clinchedLeague ? ' – z' : s.divisionChamp ? ' – y' : ' – w') : null
+
+    data.push({
+      id: rowTeam.id,
+      data: [
+        (idx <= 2 && rowTeam.division && division
+        ? `${division.abbreviation?.charAt(division.abbreviation.length - 1) ?? ''} – `
+        : '') + (rowTeam.teamName ?? '') + (playoffIndicator ?? ''),
+        s.wins,
+        s.losses,
+        s.winningPercentage,
+        s.wildCardGamesBack,
+        s.wildCardEliminationNumber,
+      ]
+    })
+  })
 
   return (
-    <LabelPaper label={`${league.name} Standings`}>
-      <TableContainer
-        sx={{
-          maxHeight: 425,
-          overflowX: 'auto',
-          overflowY: 'auto',
-          '&::-webkit-scrollbar': { height: 6 },
-          '&::-webkit-scrollbar-thumb': { borderRadius: 3, bgcolor: 'divider' },
-          // Keep sticky header above body rows: solid background and higher z-index
-          '& thead th': {
-            position: 'sticky',
-            top: 0,
-            zIndex: 10,
-            // Opaque background so body rows don't show through when scrolling
-            backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[100],
-            boxShadow: `0 1px 0 0 ${theme.palette.divider}`,
-          },
-        }}
-      >
-        <Table stickyHeader size="small" sx={{ minWidth: 320 }}>
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ ...headerCellSx }} align="left">
-                Team
-              </TableCell>
-              <TableCell sx={{ ...headerCellSx }} align="right">
-                W
-              </TableCell>
-              <TableCell sx={{ ...headerCellSx }} align="right">
-                L
-              </TableCell>
-              <TableCell sx={{ ...headerCellSx }} align="right">
-                Pct
-              </TableCell>
-              <TableCell sx={{ ...headerCellSx }} align="right">
-                WCGB
-              </TableCell>
-              <TableCell sx={{ ...headerCellSx }} align="right">
-                WC-E#
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {finalLeagueStandings.map((s, idx) => {
-              const rowTeam = teams?.find((t) => t.id == s.teamId)
-              const division = getDivision(rowTeam?.division)
-
-              let clinchedLeague = false
-              if (idx === 0 && finalLeagueStandings[1]?.leagueGamesBack && finalLeagueStandings[1]?.gamesPlayed) {
-                if (parseFloat(finalLeagueStandings[1].leagueGamesBack) > 162 - finalLeagueStandings[1].gamesPlayed) {
-                  clinchedLeague = true
-                }
-              }
-              const playoffIndicator = s.clinched ? (clinchedLeague ? ' – z' : s.divisionChamp ? ' – y' : ' – w') : null
-              const isCurrentTeam = s.teamId === team.id
-              return (
-                <TableRow
-                  key={rowTeam?.id}
-                  sx={{
-                    '&:hover': { bgcolor: isCurrentTeam ? 'primary.light' : 'action.hover' },
-                    ...(isCurrentTeam && {
-                      bgcolor: isDark ? 'primary.dark' : 'primary.50',
-                      color: isDark ? 'primary.contrastText' : undefined,
-                    }),
-                  }}
-                >
-                  <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: isCurrentTeam ? 600 : 400 }} align="left">
-                    {idx <= 2 && rowTeam?.division && division
-                      ? `${division.abbreviation?.charAt(division.abbreviation.length - 1) ?? ''} – `
-                      : ''}
-                    {rowTeam?.teamName}
-                    {playoffIndicator}
-                  </TableCell>
-                  <TableCell align="right">{s.wins}</TableCell>
-                  <TableCell align="right">{s.losses}</TableCell>
-                  <TableCell align="right">{s.winningPercentage}</TableCell>
-                  <TableCell align="right">{s.wildCardGamesBack}</TableCell>
-                  <TableCell align="right">{s.wildCardEliminationNumber}</TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </LabelPaper>
+    <ThemedTable label={`${league.name} Standings`} headerRow={headerRow} data={data} highlightRowId={team.id} />
   )
 }

@@ -7,9 +7,8 @@
 
 import { useMemo } from 'react'
 
-import { calculateStreak, seriesResultToChar } from '@/domain/series/stats'
+import { calculateStreak, GetSeriesResult, seriesResultToChar } from '@/domain/series'
 import { useSchedule } from '@/queries/schedule'
-import { GetSeriesResult } from '@/types/Series'
 import { SeriesResult } from '@/types/Series/SeriesResult'
 import { SeriesType } from '@/types/Series/SeriesType'
 import { Team } from '@/types/Team'

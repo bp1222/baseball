@@ -1,9 +1,17 @@
-import { Box, Tooltip } from '@mui/material'
+import {Box, BoxProps, Tooltip} from '@mui/material'
 
-import { Team } from '@/types/Team'
+import type {Team} from '@/types/Team'
 
-export const GetTeamImage = (team?: Team, dead?: boolean) => {
-  if (team == undefined) return null
+type TeamImageProps = BoxProps & {
+  team?: Team
+  dead?: boolean
+  size?: number
+}
+
+export const TeamImage = ({ team, dead, size } : TeamImageProps) => {
+  if (!team) {
+    return null
+  }
 
   let teamId = team.id
   let src = 'https://www.mlbstatic.com/team-logos/team-cap-on-light/' + teamId + '.svg'
@@ -12,7 +20,7 @@ export const GetTeamImage = (team?: Team, dead?: boolean) => {
   // a specific team qualifies for the spot. Problem is the images served
   // for the teams aren't always the right league. So we hardcode to
   // known good images for the leagues.
-  if (team.id > 1000) {
+  if (teamId > 1000) {
     if (team.league == 104) {
       teamId = 4619
     }
@@ -29,8 +37,8 @@ export const GetTeamImage = (team?: Team, dead?: boolean) => {
         src={src}
         sx={{
           filter: dead ? 'grayscale(1)' : undefined,
-          height: 24,
-          width: 24,
+          height: size ?? 24,
+          width: size ?? 24,
           display: 'block',
           objectFit: 'contain',
         }}

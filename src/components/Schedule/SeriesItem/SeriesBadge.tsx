@@ -37,7 +37,7 @@ export const SeriesBadge = ({ type }: SeriesBadgeProps) => {
           boxSizing: 'border-box',
           color: isDark ? blueGrey[100] : blueGrey[900],
           bgcolor: isDark ? blueGrey[700] : blueGrey[300],
-          borderColor: isDark ? blueGrey[500] : blueGrey[500],
+          borderColor: blueGrey[500],
         }}
         fontSize="smaller"
         textAlign="center"

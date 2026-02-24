@@ -10,23 +10,17 @@
  * Opens the boxscore modal via ModalContext when clicked.
  */
 
-import { Box, Color, Grid } from '@mui/material'
+import { Box, Grid, useTheme } from '@mui/material'
 import dayjs from 'dayjs'
 import { useRef } from 'react'
 
 import { useInterestedTeam } from '@/context/InterestedTeamContext'
 import { useModal } from '@/context/ModalContext'
-import { useThemeMode } from '@/context/ThemeModeContext'
 import { useLinescore } from '@/queries/linescore'
 import { useTeams } from '@/queries/team'
+import { GetGameResultColor, GetGameStatusTileColor } from '@/theme'
 import { Game } from '@/types/Game'
-import {
-  DefaultGameResultColor,
-  GameTileDarkColorsMap,
-  GetGameResultColor,
-  getGameTileDarkKey,
-} from '@/types/Game/GameResult'
-import { GameStatus, GetGameStatusColor } from '@/types/Game/GameStatus'
+import { GameStatus } from '@/types/Game/GameStatus'
 
 import { GameScore } from './GameScore'
 import { GameStatusLine } from './GameStatusLine'
@@ -42,11 +36,11 @@ type GameTileProps = {
 
 export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: GameTileProps) => {
   const interestedTeam = useInterestedTeam()
-  const { mode } = useThemeMode()
+  const { palette } = useTheme()
+  const mode = palette.mode
   const { data: teams } = useTeams()
   const { openBoxscore } = useModal()
   const tileRef = useRef<HTMLDivElement>(null)
-  const isDark = mode === 'dark'
 
   const isLive = game.gameStatus === GameStatus.InProgress
   const { data: linescore } = useLinescore(game.pk, isLive)
@@ -55,44 +49,26 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
 
   const gameIsToday = dayjs(game.gameDate).isSame(interestedTeam ? dayjs() : selectedDate, 'day')
 
-  const awayAbbr = teams?.find((t) => t.id === game.away.teamId)?.abbreviation ?? 'Away'
-  const homeAbbr = teams?.find((t) => t.id === game.home.teamId)?.abbreviation ?? 'Home'
-
   const isPostponedOrCanceled = game.gameStatus === GameStatus.Postponed || game.gameStatus === GameStatus.Canceled
   const postponedCanceledBadge =
     game.gameStatus === GameStatus.Postponed ? 'PPD' : game.gameStatus === GameStatus.Canceled ? 'CANC' : null
 
-  const gameTileColor: Color = interestedTeam
-    ? GetGameResultColor(game, interestedTeam)
-    : [GameStatus.InProgress, GameStatus.Canceled].indexOf(game.gameStatus) > -1
-      ? GetGameStatusColor(game.gameStatus)
-      : DefaultGameResultColor
+  const tileColors = interestedTeam
+    ? GetGameResultColor(game, interestedTeam, mode)
+    : [GameStatus.InProgress, GameStatus.Canceled].includes(game.gameStatus)
+      ? GetGameStatusTileColor(game.gameStatus, mode)
+      : GetGameResultColor(game, undefined, mode)
 
-  const tileDarkKey = isDark ? getGameTileDarkKey(game, interestedTeam ?? undefined) : null
-  const darkColors = isDark && tileDarkKey ? GameTileDarkColorsMap[tileDarkKey] : null
+  const awayAbbr = teams?.find((t) => t.id === game.away.teamId)?.abbreviation ?? 'Away'
+  const homeAbbr = teams?.find((t) => t.id === game.home.teamId)?.abbreviation ?? 'Home'
 
-  // For finished games with no team selected, use per-row win/loss (like light mode)
-  const awayScoreDarkKey =
-    isDark && !interestedTeam && game.gameStatus === GameStatus.Final
-      ? getGameTileDarkKey(
-          game,
-          teams?.find((t) => t.id === game.away.teamId),
-        )
-      : tileDarkKey
-  const homeScoreDarkKey =
-    isDark && !interestedTeam && game.gameStatus === GameStatus.Final
-      ? getGameTileDarkKey(
-          game,
-          teams?.find((t) => t.id === game.home.teamId),
-        )
-      : tileDarkKey
-  const awayScoreDarkColors = isDark && awayScoreDarkKey ? GameTileDarkColorsMap[awayScoreDarkKey] : undefined
-  const homeScoreDarkColors = isDark && homeScoreDarkKey ? GameTileDarkColorsMap[homeScoreDarkKey] : undefined
+  const awayColors = GetGameResultColor(game, interestedTeam ?? teams?.find((t) => t.id === game.away.teamId), mode)
+  const homeColors = GetGameResultColor(game, interestedTeam ?? teams?.find((t) => t.id === game.home.teamId), mode)
 
-  const tileBg = gameIsToday ? 'primary.50' : darkColors ? darkColors.bg : gameTileColor[50]
-  const tileBorder = gameIsToday ? 'primary.main' : darkColors ? darkColors.border : gameTileColor[400]
-  const badgeBg = gameIsToday ? 'primary.main' : darkColors ? darkColors.badgeBg : gameTileColor[300]
-  const badgeTextColor = gameIsToday ? 'primary.contrastText' : darkColors ? darkColors.text : gameTileColor[800]
+  const tileBg = gameIsToday ? 'primary.50' : tileColors.light
+  const tileBorder = gameIsToday ? 'primary.main' : tileColors.main
+  const badgeBg = gameIsToday ? 'primary.main' : tileColors.dark
+  const badgeTextColor = gameIsToday ? 'primary.contrastText' : tileColors.contrastText
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -161,30 +137,10 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
 
       {/* Scores */}
       <Grid>
-        <GameScore
-          gameTeam={game.away}
-          scoreOverride={awayScoreOverride}
-          color={GetGameResultColor(game, interestedTeam ?? teams?.find((t) => t.id == game.away.teamId))}
-          darkMode={isDark}
-          darkModeColors={
-            awayScoreDarkColors
-              ? { bg: awayScoreDarkColors.bg, border: awayScoreDarkColors.border, text: awayScoreDarkColors.text }
-              : undefined
-          }
-        />
+        <GameScore gameTeam={game.away} scoreOverride={awayScoreOverride} colors={awayColors} />
       </Grid>
       <Grid>
-        <GameScore
-          gameTeam={game.home}
-          scoreOverride={homeScoreOverride}
-          color={GetGameResultColor(game, interestedTeam ?? teams?.find((t) => t.id == game.home.teamId))}
-          darkMode={isDark}
-          darkModeColors={
-            homeScoreDarkColors
-              ? { bg: homeScoreDarkColors.bg, border: homeScoreDarkColors.border, text: homeScoreDarkColors.text }
-              : undefined
-          }
-        />
+        <GameScore gameTeam={game.home} scoreOverride={homeScoreOverride} colors={homeColors} />
       </Grid>
 
       {/* Status line */}

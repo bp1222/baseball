@@ -1,16 +1,19 @@
 /**
- * Theme mode (light/dark) with persistence to localStorage.
+ * Combined theme provider: owns light/dark mode state (persisted to localStorage)
+ * and wraps children in MUI's ThemeProvider with the correct team + mode theme.
  */
 
-import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
+import {CssBaseline, type PaletteMode, ThemeProvider} from '@mui/material'
+import {createContext, PropsWithChildren, useCallback, useContext, useMemo, useState} from 'react'
+
+import {useInterestedTeam} from '@/context/InterestedTeamContext'
+import {GetTeamTheme} from '@/theme'
 
 const STORAGE_KEY = 'themeMode'
 
-export type ThemeMode = 'light' | 'dark'
-
 type ThemeModeContextValue = {
-  mode: ThemeMode
-  setMode: (mode: ThemeMode) => void
+  mode: PaletteMode
+  setMode: (mode: PaletteMode) => void
   toggleMode: () => void
 }
 
@@ -20,21 +23,18 @@ const ThemeModeContext = createContext<ThemeModeContextValue>({
   toggleMode: () => {},
 })
 
-function readStoredMode(): ThemeMode {
+function readStoredMode(): PaletteMode {
   if (typeof window === 'undefined') return 'light'
   const stored = localStorage.getItem(STORAGE_KEY)
   if (stored === 'dark' || stored === 'light') return stored
   return 'light'
 }
 
-type ThemeModeProviderProps = {
-  children: ReactNode
-}
+export const AppThemeProvider = ({ children }: PropsWithChildren) => {
+  const [mode, setModeState] = useState<PaletteMode>(readStoredMode)
+  const team = useInterestedTeam()
 
-export const ThemeModeProvider = ({ children }: ThemeModeProviderProps) => {
-  const [mode, setModeState] = useState<ThemeMode>(readStoredMode)
-
-  const setMode = useCallback((next: ThemeMode) => {
+  const setMode = useCallback((next: PaletteMode) => {
     setModeState(next)
     localStorage.setItem(STORAGE_KEY, next)
   }, [])
@@ -48,14 +48,22 @@ export const ThemeModeProvider = ({ children }: ThemeModeProviderProps) => {
   }, [])
 
   const value = useMemo(() => ({ mode, setMode, toggleMode }), [mode, setMode, toggleMode])
+  const theme = useMemo(() => GetTeamTheme(team?.id ?? 0, mode), [team, mode])
 
-  return <ThemeModeContext.Provider value={value}>{children}</ThemeModeContext.Provider>
+  return (
+    <ThemeModeContext.Provider value={value}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    </ThemeModeContext.Provider>
+  )
 }
 
-export const useThemeMode = (): ThemeModeContextValue => {
+export const useThemeMode = () => {
   const ctx = useContext(ThemeModeContext)
   if (ctx == null) {
-    throw new Error('useThemeMode must be used within ThemeModeProvider')
+    throw new Error('useThemeMode must be used within AppThemeProvider')
   }
   return ctx
 }

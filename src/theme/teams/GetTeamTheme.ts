@@ -1,6 +1,4 @@
-import { createTheme, type Theme } from '@mui/material'
-
-import type { ThemeMode } from '@/context/ThemeModeContext'
+import {createTheme, type PaletteMode, type Theme} from '@mui/material'
 
 import angels from './angels'
 import astros from './astros'
@@ -66,13 +64,23 @@ const teamColorMap: Record<number, Theme> = {
   158: brewers,
 }
 
-export const GetTeamTheme = (teamId: number | undefined, mode: ThemeMode = 'light'): Theme => {
-  // Build from mode first so MUI sets background.default, text.primary, etc. for dark/light.
-  // Then overlay only the team's primary/secondary so we don't re-introduce light palette.
-  const modeTheme = createTheme({ palette: { mode } })
+export const GetTeamTheme = (teamId: number | undefined, mode: PaletteMode = 'light'): Theme => {
+  const defaultTheme = createTheme({
+    palette: {
+      mode: mode,
+      primary: {
+        main: '#041e42',
+      },
+      secondary: {
+        main: '#bf0d3f'
+      },
+    }
+  })
+
   const base = !teamId ? null : (teamColorMap[teamId] ?? null)
-  if (!base) return modeTheme
-  return createTheme(modeTheme, {
+  if (!base) return defaultTheme
+
+  return createTheme(defaultTheme, {
     palette: {
       primary: base.palette.primary,
       secondary: base.palette.secondary,

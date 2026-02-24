@@ -1,10 +1,10 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, useTheme } from '@mui/material'
+import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, useTheme} from '@mui/material'
 
 import LabelPaper from '@/components/Shared/LabelPaper'
-import { useDivisions } from '@/queries/division'
-import { useTeams } from '@/queries/team'
-import { Standings } from '@/types/Standings'
-import { Team } from '@/types/Team'
+import {useDivisions} from '@/queries/division'
+import {useTeams} from '@/queries/team'
+import {Standings} from '@/types/Standings'
+import {Team} from '@/types/Team'
 
 interface StandingsProps {
   team: Team
@@ -13,7 +13,6 @@ interface StandingsProps {
 
 export const DivisionStandings = ({ team, standings }: StandingsProps) => {
   const theme = useTheme()
-  const isDark = theme.palette.mode === 'dark'
   const { data: teams } = useTeams()
   const { getDivision } = useDivisions()
   const division = getDivision(team.division)
@@ -52,8 +51,6 @@ export const DivisionStandings = ({ team, standings }: StandingsProps) => {
             position: 'sticky',
             top: 0,
             zIndex: 10,
-            // Opaque background so body rows don't show through when scrolling
-            backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[100],
             boxShadow: `0 1px 0 0 ${theme.palette.divider}`,
           },
         }}
@@ -91,8 +88,8 @@ export const DivisionStandings = ({ team, standings }: StandingsProps) => {
                   sx={{
                     '&:hover': { bgcolor: isCurrentTeam ? 'primary.light' : 'action.hover' },
                     ...(isCurrentTeam && {
-                      bgcolor: isDark ? 'primary.dark' : 'primary.50',
-                      color: isDark ? 'primary.contrastText' : undefined,
+                      bgcolor: 'primary.main',
+                      color: 'primary.contrastText',
                     }),
                   }}
                 >

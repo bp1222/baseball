@@ -1,7 +1,7 @@
 import { Chip } from '@mui/material'
 
-import { GetBadgeColors } from '@/colors'
 import { useThemeMode } from '@/context/ThemeModeContext'
+import { GetBadgeColors } from '@/theme'
 import { SeriesResult } from '@/types/Series/SeriesResult'
 import { SeriesType } from '@/types/Series/SeriesType'
 
@@ -25,8 +25,7 @@ export const ResultBadge = ({ result, type }: ResultBadgeProps) => {
   const label = RESULT_LABELS[result]
   if (!label) return null
 
-  const { background, border } = GetBadgeColors(type, result, mode)
-  const isDark = mode === 'dark'
+  const badgeColors = GetBadgeColors(type, result, mode)
 
   return (
     <Chip
@@ -38,10 +37,10 @@ export const ResultBadge = ({ result, type }: ResultBadgeProps) => {
         fontSize: '0.7rem',
         fontWeight: 600,
         borderRadius: 0.5,
-        bgcolor: background,
-        color: isDark ? 'grey.100' : 'grey.900',
+        bgcolor: badgeColors.light,
+        color: badgeColors.contrastText,
         border: '1px solid',
-        borderColor: border,
+        borderColor: badgeColors.main,
         '& .MuiChip-label': {
           px: 1,
         },

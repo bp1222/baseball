@@ -1,48 +1,34 @@
-import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material'
+import { Box, Container } from '@mui/material'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
-import { GetTeamTheme } from '@/colors'
 import { Footer } from '@/components/Layout/Footer'
 import { Header } from '@/components/Layout/Header'
 import { AppModals } from '@/components/Modals'
-import { InterestedTeamProvider, useInterestedTeamContext } from '@/context/InterestedTeamContext'
+import { InterestedTeamProvider } from '@/context/InterestedTeamContext'
 import { ModalProvider } from '@/context/ModalContext'
-import { ThemeModeProvider, useThemeMode } from '@/context/ThemeModeContext'
+import { AppThemeProvider } from '@/context/ThemeModeContext'
 import type { RouterContext } from '@/router/context'
-
-/**
- * Inner component that uses the interested team context for theming
- */
-const RootLayout = () => {
-  const { teamId } = useInterestedTeamContext()
-  const { mode } = useThemeMode()
-
-  return (
-    <ThemeProvider theme={GetTeamTheme(teamId ?? 0, mode)}>
-      <CssBaseline />
-      <Header />
-      <Container maxWidth="lg" sx={{ minWidth: 0 }}>
-        <Box sx={{ justifyItems: 'center', minWidth: 0 }}>
-          <Outlet />
-        </Box>
-      </Container>
-      <AppModals />
-      <Footer />
-    </ThemeProvider>
-  )
-}
 
 const RootComponent = () => {
   return (
     <>
       <InterestedTeamProvider>
-        <ThemeModeProvider>
+        <AppThemeProvider>
           <ModalProvider>
-            <RootLayout />
+            <Header />
+            <Container maxWidth="lg" sx={{ minWidth: 0 }}>
+              <Box sx={{ justifyItems: 'center', minWidth: 0 }}>
+                <Outlet />
+              </Box>
+            </Container>
+            <AppModals />
+            <Footer />
           </ModalProvider>
-        </ThemeModeProvider>
+        </AppThemeProvider>
       </InterestedTeamProvider>
+      <ReactQueryDevtools buttonPosition="bottom-right" />
       <TanStackRouterDevtools position="bottom-left" />
     </>
   )

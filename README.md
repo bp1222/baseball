@@ -14,7 +14,7 @@ This application displays Major League Baseball records in a layout of series ac
 
 - **`src/features/`** — Feature-based UI: `schedule` (day view, series list, game tiles), `game` (boxscore), `team` (team stats, series record), `standings` (division/league tables).
 - **`src/domain/`** — Pure business logic (no React/I/O): e.g. `series/stats.ts` (streak, last-10), `series/SeriesFromMLBSchedule.ts` (build series from MLB schedule).
-- **`src/shared/`** — Shared components (e.g. `LabelPaper`, `GetTeamImage`).
+- **`src/shared/`** — Shared components (e.g. `LabelPaper`, `TeamImage`).
 - **`src/context/`** — React context: interested team, modal state.
 - **`src/queries/`** — TanStack Query options and hooks.
 - **`src/routes/`** — TanStack Router route tree and loaders.

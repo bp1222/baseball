@@ -1,11 +1,12 @@
-import { Grid, Typography } from '@mui/material'
+import {Grid, Typography} from '@mui/material'
 
-import { GetTeamImage } from '@/components/Shared/GetTeamImage'
-import { useTeam } from '@/queries/team'
-import { GetSeriesHomeAway, GetSeriesWins, Series } from '@/types/Series'
-import { SeriesHomeAway } from '@/types/Series/SeriesHomeAway'
-import { SeriesType } from '@/types/Series/SeriesType'
-import { Team } from '@/types/Team'
+import {TeamImage} from '@/components/Shared/TeamImage.tsx'
+import {GetSeriesHomeAway, GetSeriesWins} from '@/domain/series'
+import {useTeam} from '@/queries/team'
+import {Series} from '@/types/Series'
+import {SeriesHomeAway} from '@/types/Series/SeriesHomeAway'
+import {SeriesType} from '@/types/Series/SeriesType'
+import {Team} from '@/types/Team'
 
 type SeriesTeamProps = {
   series: Series
@@ -30,7 +31,9 @@ export const SeriesTeam = ({ series, team }: SeriesTeamProps) => {
 
   return (
     <Grid container flexDirection="column" alignItems="center" sx={{ minWidth: 0 }}>
-      <Grid marginBottom={-0.5}>{GetTeamImage(against)}</Grid>
+      <Grid marginBottom={-0.5}>
+        <TeamImage team={against} />
+      </Grid>
       <Grid sx={{ minWidth: 0, width: '100%', textAlign: 'center' }}>
         <Typography display="inline" variant="caption" sx={{ fontSize: '0.65rem' }}>
           {homeaway === SeriesHomeAway.Home

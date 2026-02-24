@@ -1,8 +1,9 @@
 import { Grid, Typography } from '@mui/material'
 import { Fragment } from 'react'
 
+import { GetSeriesResult, GetSeriesWins } from '@/domain/series'
 import { useTeams } from '@/queries/team.ts'
-import { GetSeriesResult, GetSeriesWins, Series } from '@/types/Series.ts'
+import { Series } from '@/types/Series'
 import { SeriesResult } from '@/types/Series/SeriesResult.ts'
 import { SeriesType } from '@/types/Series/SeriesType.ts'
 

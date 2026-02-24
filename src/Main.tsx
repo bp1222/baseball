@@ -1,17 +1,16 @@
 import 'dayjs/locale/en'
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { createHashHistory, createRouter, RouterProvider } from '@tanstack/react-router'
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
+import {createHashHistory, createRouter, RouterProvider} from '@tanstack/react-router'
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween'
 import isToday from 'dayjs/plugin/isToday'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { createRoot } from 'react-dom/client'
+import {createRoot} from 'react-dom/client'
 
-import type { RouterContext } from '@/router/context'
-import { routeTree } from '@/routeTree.gen'
+import type {RouterContext} from '@/router/context'
+import {routeTree} from '@/routeTree.gen'
 
 dayjs.locale('en')
 
@@ -35,6 +34,5 @@ const router = createRouter({
 createRoot(document.getElementById('root')!).render(
   <QueryClientProvider client={queryClient}>
     <RouterProvider router={router} />
-    <ReactQueryDevtools buttonPosition="bottom-right" />
   </QueryClientProvider>,
 )
