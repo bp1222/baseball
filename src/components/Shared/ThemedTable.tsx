@@ -21,7 +21,6 @@ export const ThemedTable = ({ label, headerRow, data, highlightRowId }: ThemedTa
     py: 1,
   }
   const isHighlightedRow = (rowId: number | string) => {
-    console.log('Comparing rowId:', rowId, 'with highlightRowId:', highlightRowId)
     return highlightRowId !== undefined && rowId === highlightRowId
   }
 
@@ -54,15 +53,23 @@ export const ThemedTable = ({ label, headerRow, data, highlightRowId }: ThemedTa
               <TableRow
                 key={row.id}
                 sx={{
+                  whiteSpace: 'nowrap',
                   '&:hover': { bgcolor: isHighlightedRow(row.id) ? 'primary.light' : 'action.hover' },
                   ...(isHighlightedRow(row.id) && {
                     bgcolor: 'primary.main',
-                    color: 'primary.contrastText',
+                    fontWeight: 'bold',
                   }),
                 }}
               >
                 {row.data.map((cell, colIdx) => (
-                  <TableCell align={colIdx === 0 ? 'left' : 'right'} key={colIdx}>
+                  <TableCell
+                    sx={{
+                      ...(isHighlightedRow(row.id) && {
+                        color: 'primary.contrastText',
+                      })
+                    }}
+                    align={colIdx === 0 ? 'left' : 'right'} key={colIdx}
+                  >
                     {cell}
                   </TableCell>
                 ))}

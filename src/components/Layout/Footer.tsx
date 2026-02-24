@@ -1,6 +1,6 @@
 import GitHubIcon from '@mui/icons-material/GitHub'
-import { Grid, Typography } from '@mui/material'
-import { Link } from '@tanstack/react-router'
+import {Grid, Typography} from '@mui/material'
+import {Link} from '@tanstack/react-router'
 
 import img from '/assets/c.png'
 
@@ -15,23 +15,32 @@ export const Footer = () => {
         border={0.5}
         borderRadius={1}
         borderColor={'divider'}
-        bgcolor={'background.paper'}
       >
         <Grid>
           <Typography noWrap align={'center'}>
-            Made in <img width={12} height={12} src={img} alt={'Colorado style C'} />
+            Made in <img width={12} height={12} src={img} alt={'Colorado Stylized C'} />
           </Typography>
         </Grid>
         <Grid>
           <Typography paddingTop={1} align={'center'}>
-            <Link to={'https://github.com/bp1222/baseball'}>
-              <GitHubIcon color={'primary'} fontSize={'small'} />
+            <Link to={`https://github.com/bp1222/baseball`}>
+              <GitHubIcon
+                sx={[
+                  (theme) => ({
+                    color: theme.palette.secondary.main,
+                    '&:hover': {
+                      color: theme.palette.secondary.dark,
+                    },
+                  }),
+                  (theme) => theme.applyStyles('dark', {
+                    color: theme.palette.secondary.main,
+                    '&:hover': {
+                      color: theme.palette.secondary.light,
+                    },
+                  })
+                ]}
+              />
             </Link>
-          </Typography>
-        </Grid>
-        <Grid>
-          <Typography fontSize={8} align={'center'}>
-            <Link to={`https://github.com/bp1222/baseball/tree/${GIT_COMMIT_HASH}`}>{GIT_COMMIT_HASH}</Link>
           </Typography>
         </Grid>
       </Grid>

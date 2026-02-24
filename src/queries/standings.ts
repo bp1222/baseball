@@ -38,16 +38,16 @@ export const standingsOptions = (seasonId?: string, leagueId?: number) =>
           'leagueRank',
           'leagueGamesBack',
           'wildCardGamesBack',
-          'leagueGamesBack',
           'divisionGamesBack',
           'gamesBack',
+          'gamesPlayed',
           'eliminationNumber',
           'wildCardEliminationNumber',
           'wins',
           'losses',
           'winningPercentage',
           'clinched',
-          'wildCardClinched',
+          'divisionChamp',
         ],
       })
       return StandingsFromMLBDivisionStandingsList(standings)

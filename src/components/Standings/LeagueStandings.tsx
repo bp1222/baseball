@@ -2,7 +2,7 @@ import {ThemedTable, ThemedTableData} from "@/components/Shared/ThemedTable.tsx"
 import {useDivisions} from '@/queries/division'
 import {useLeagues} from '@/queries/league'
 import {useTeams} from '@/queries/team'
-import {Standings} from '@/types/Standings'
+import {DivisionRecord, Standings} from '@/types/Standings'
 import {Team} from '@/types/Team'
 
 interface LeagueStandingsProps {
@@ -18,49 +18,68 @@ export const LeagueStandings = ({ team, standings }: LeagueStandingsProps) => {
 
   if (league == undefined) return
 
-  const orderedLeagueStandings = standings
+  const allRecords = standings
     .flatMap((s) => s.records)
-    .sort((a, b) => (parseFloat(a.leagueRank) > parseFloat(b.leagueRank!) ? 1 : -1))
+    .sort((a, b) => parseFloat(a.leagueRank) - parseFloat(b.leagueRank))
 
-  // League standings always report the top 3 division leaders first.
-  const found: number[] = []
-  const finalLeagueStandings = orderedLeagueStandings.filter((s) => {
-    if (s.division == undefined || found.includes(s.division)) return false
-    found.push(s.division)
-    return true
-  })
-  finalLeagueStandings.push(...orderedLeagueStandings.filter((s) => !finalLeagueStandings.includes(s)))
+  // Division leaders: first-ranked team per division, ordered by their league rank
+  const seenDivisions = new Set<number>()
+  const divisionLeaders: DivisionRecord[] = []
+  const remaining: DivisionRecord[] = []
+
+  for (const record of allRecords) {
+    if (record.division != null && !seenDivisions.has(record.division)) {
+      seenDivisions.add(record.division)
+      divisionLeaders.push(record)
+    } else {
+      remaining.push(record)
+    }
+  }
+
+  const orderedStandings = [...divisionLeaders, ...remaining]
+
+  // The league-best team is the first division leader, but only if they've
+  // mathematically clinched (the second-place team can't catch them).
+  const leaderRecord = orderedStandings[0]
+  const secondRecord = orderedStandings[1]
+  const leagueBestClinched =
+    leaderRecord?.clinched &&
+    secondRecord?.leagueGamesBack != null &&
+    secondRecord?.gamesPlayed != null &&
+    parseFloat(secondRecord.leagueGamesBack) > 162 - secondRecord.gamesPlayed
 
   const headerRow = ['Team', 'W', 'L', 'Pct', 'WCGB', 'WC-E#']
   const data: ThemedTableData[] = []
 
-  finalLeagueStandings.map((s, idx) => {
-    const rowTeam = teams?.find((t) => t.id == s.teamId)
+  orderedStandings.forEach((record, idx) => {
+    const rowTeam = teams?.find((t) => t.id === record.teamId)
     if (!rowTeam) return
 
     const division = getDivision(rowTeam.division)
+    const isDivisionLeader = idx < divisionLeaders.length
+    const isLeagueBest = idx === 0 && !!leagueBestClinched
 
-    let clinchedLeague = false
-    if (idx === 0 && finalLeagueStandings[1]?.leagueGamesBack && finalLeagueStandings[1]?.gamesPlayed) {
-      if (parseFloat(finalLeagueStandings[1].leagueGamesBack) > 162 - finalLeagueStandings[1].gamesPlayed) {
-        clinchedLeague = true
-      }
-    }
+    const divisionPrefix =
+      isDivisionLeader && division?.abbreviation
+        ? `${division.abbreviation.charAt(division.abbreviation.length - 1)} – `
+        : ''
 
-    const playoffIndicator = s.clinched ? (clinchedLeague ? ' – z' : s.divisionChamp ? ' – y' : ' – w') : null
+    const clinchIndicator = !record.clinched ? '' : (
+      isLeagueBest ? ' – z' : (
+        record.divisionChamp ? ' – y' : ' – w'
+      )
+    )
 
     data.push({
       id: rowTeam.id,
       data: [
-        (idx <= 2 && rowTeam.division && division
-        ? `${division.abbreviation?.charAt(division.abbreviation.length - 1) ?? ''} – `
-        : '') + (rowTeam.teamName ?? '') + (playoffIndicator ?? ''),
-        s.wins,
-        s.losses,
-        s.winningPercentage,
-        s.wildCardGamesBack,
-        s.wildCardEliminationNumber,
-      ]
+        `${divisionPrefix}${rowTeam.teamName ?? ''}${clinchIndicator}`,
+        record.wins,
+        record.losses,
+        record.winningPercentage,
+        record.wildCardGamesBack,
+        record.wildCardEliminationNumber,
+      ],
     })
   })
 

@@ -31,7 +31,7 @@ const LabelPaper = ({ label, children }: LabelPaperProps) => {
       >
         {label}
       </Typography>
-      <Box sx={{ p: 1.5, pt: 1 }}>
+      <Box sx={{ p: 0.5, pt: 1 }}>
         {children}
       </Box>
     </Paper>
