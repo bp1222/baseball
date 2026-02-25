@@ -3,11 +3,11 @@
  * Each modal is in its own file under modals/ for clarity.
  */
 
-import { useModalState } from '@/context/ModalContext'
+import {useModalState} from '@/context/ModalContext'
 
-import { BoxscoreModal } from './BoxscoreModal'
-import { PlayerModal } from './PlayerModal'
-import { SeasonWheelDemoModal } from './SeasonWheelDemoModal'
+import {BoxscoreModal} from './BoxscoreModal'
+import {PlayerModal} from './PlayerModal'
+//import { SeasonWheelDemoModal } from './SeasonWheelDemoModal'
 
 /**
  * Renders the modal stack (e.g. boxscore with player on top).
@@ -26,7 +26,7 @@ export const AppModals = () => {
           return <PlayerModal key={`player-${item.data}`} personId={item.data} onClose={close} />
         }
         if (item.type === 'seasonWheelDemo') {
-          return <SeasonWheelDemoModal key={`seasonWheelDemo-${index}`} onClose={close} />
+          //return <SeasonWheelDemoModal key={`seasonWheelDemo-${index}`} onClose={close} />
         }
         return null
       })}
