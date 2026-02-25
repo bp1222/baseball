@@ -1,6 +1,6 @@
 import GitHubIcon from '@mui/icons-material/GitHub'
-import {Grid, Typography} from '@mui/material'
-import {Link} from '@tanstack/react-router'
+import { Grid, Typography } from '@mui/material'
+import { Link } from '@tanstack/react-router'
 
 import img from '/assets/c.png'
 
@@ -32,12 +32,13 @@ export const Footer = () => {
                       color: theme.palette.secondary.dark,
                     },
                   }),
-                  (theme) => theme.applyStyles('dark', {
-                    color: theme.palette.secondary.main,
-                    '&:hover': {
-                      color: theme.palette.secondary.light,
-                    },
-                  })
+                  (theme) =>
+                    theme.applyStyles('dark', {
+                      color: theme.palette.secondary.main,
+                      '&:hover': {
+                        color: theme.palette.secondary.light,
+                      },
+                    }),
                 ]}
               />
             </Link>

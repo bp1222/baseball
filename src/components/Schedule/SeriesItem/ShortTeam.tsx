@@ -1,7 +1,7 @@
-import {Grid, Typography} from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 
-import {TeamImage} from '@/components/Shared/TeamImage.tsx'
-import {Team} from '@/types/Team.ts'
+import { TeamImage } from '@/components/Shared/TeamImage.tsx'
+import { Team } from '@/types/Team.ts'
 
 type ShortTeamProps = {
   team?: Team

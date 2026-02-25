@@ -1,12 +1,9 @@
 import Brightness4Icon from '@mui/icons-material/Brightness4'
 import Brightness7Icon from '@mui/icons-material/Brightness7'
-import DonutLargeIcon from '@mui/icons-material/DonutLarge'
-import {AppBar, Box, IconButton, Toolbar, Tooltip, Typography} from '@mui/material'
+import {AppBar, Box, IconButton, Toolbar, Typography, useColorScheme} from '@mui/material'
 import {useParams} from '@tanstack/react-router'
 
 import {useInterestedTeam} from '@/context/InterestedTeamContext'
-import {useModal} from '@/context/ModalContext'
-import {useThemeMode} from '@/context/ThemeModeContext'
 
 import {HeaderName} from './Header/HeaderName'
 import {SeasonPicker} from './Header/SeasonPicker'
@@ -15,8 +12,8 @@ import {TeamPicker} from './Header/TeamPicker'
 export const Header = () => {
   const { seasonId } = useParams({ strict: false })
   const selectedTeam = useInterestedTeam()
-  const { mode, toggleMode } = useThemeMode()
-  const { openSeasonWheelDemo } = useModal()
+  const { mode, setMode } = useColorScheme()
+  //const { openSeasonWheelDemo } = useModal()
 
   return (
     <AppBar position={'sticky'} color={'primary'} enableColorOnDark>
@@ -58,17 +55,11 @@ export const Header = () => {
             gap: 0.5,
           }}
         >
-          <Tooltip title="Season Wheel Demo">
-            <IconButton
-              onClick={() => openSeasonWheelDemo()}
-              aria-label="Open season wheel demo"
-              size="small"
-            >
-              <DonutLargeIcon aria-hidden />
-            </IconButton>
-          </Tooltip>
           <IconButton
-            onClick={toggleMode}
+            onClick={() => {
+              console.log(mode)
+              setMode(mode === 'dark' ? 'light' : 'dark')
+            }}
             aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             size="small"
           >

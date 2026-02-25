@@ -1,11 +1,11 @@
-import type {PersonStatSplit} from '@bp1222/stats-api'
-import {Box, styled, SvgIcon, Typography} from '@mui/material'
-import {useMemo} from 'react'
+import type { PersonStatSplit } from '@bp1222/stats-api'
+import { Box, styled, SvgIcon, Typography } from '@mui/material'
+import { useMemo } from 'react'
 
-import {TeamImage} from "@/components/Shared/TeamImage.tsx"
-import {GetTeamTheme} from "@/theme"
-import type {GameLogSplit} from '@/types/GameLogSplit'
-import {Team} from "@/types/Team.ts"
+import { TeamImage } from '@/components/Shared/TeamImage.tsx'
+import { getTheme } from '@/theme'
+import type { GameLogSplit } from '@/types/GameLogSplit'
+import { Team } from '@/types/Team.ts'
 
 export type AtBatResult = 'hr' | 'hit' | 'out' | 'walk' | 'dnp'
 
@@ -309,7 +309,7 @@ const StatDiamond = ({ value, label, position, size, team, highlight }: StatDiam
       `${cx - plateW * 0.45},${plateH * 0.55}`,
     ].join(' ')
 
-    const teamTheme = GetTeamTheme(team.id)
+    const teamTheme = getTheme(team.id)
     const StyledSvgIcon = styled(SvgIcon)(() => ({
       fill: teamTheme.palette.primary.main,
       stroke: teamTheme.palette.secondary.main,
@@ -335,9 +335,7 @@ const StatDiamond = ({ value, label, position, size, team, highlight }: StatDiam
             left: 0,
           }}
         >
-          <polygon
-            points={pts}
-          />
+          <polygon points={pts} />
         </StyledSvgIcon>
         <Box
           sx={{

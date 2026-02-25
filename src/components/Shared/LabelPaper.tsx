@@ -1,5 +1,5 @@
-import {Box, Paper, Typography} from '@mui/material'
-import {ReactNode} from 'react'
+import { Box, Paper, Typography } from '@mui/material'
+import { ReactNode } from 'react'
 
 type LabelPaperProps = {
   label: string
@@ -31,9 +31,7 @@ const LabelPaper = ({ label, children }: LabelPaperProps) => {
       >
         {label}
       </Typography>
-      <Box sx={{ p: 0.5, pt: 1 }}>
-        {children}
-      </Box>
+      <Box sx={{ p: 0.5, pt: 1 }}>{children}</Box>
     </Paper>
   )
 }

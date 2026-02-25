@@ -1,12 +1,12 @@
-import {Grid, Typography} from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 
-import {TeamImage} from '@/components/Shared/TeamImage.tsx'
-import {GetSeriesHomeAway, GetSeriesWins} from '@/domain/series'
-import {useTeam} from '@/queries/team'
-import {Series} from '@/types/Series'
-import {SeriesHomeAway} from '@/types/Series/SeriesHomeAway'
-import {SeriesType} from '@/types/Series/SeriesType'
-import {Team} from '@/types/Team'
+import { TeamImage } from '@/components/Shared/TeamImage.tsx'
+import { GetSeriesHomeAway, GetSeriesWins } from '@/domain/series'
+import { useTeam } from '@/queries/team'
+import { Series } from '@/types/Series'
+import { SeriesHomeAway } from '@/types/Series/SeriesHomeAway'
+import { SeriesType } from '@/types/Series/SeriesType'
+import { Team } from '@/types/Team'
 
 type SeriesTeamProps = {
   series: Series

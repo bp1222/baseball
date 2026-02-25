@@ -1,6 +1,6 @@
-import {Box, BoxProps, Tooltip} from '@mui/material'
+import { Box, BoxProps, Tooltip } from '@mui/material'
 
-import type {Team} from '@/types/Team'
+import type { Team } from '@/types/Team'
 
 type TeamImageProps = BoxProps & {
   team?: Team
@@ -8,7 +8,7 @@ type TeamImageProps = BoxProps & {
   size?: number
 }
 
-export const TeamImage = ({ team, dead, size } : TeamImageProps) => {
+export const TeamImage = ({ team, dead, size }: TeamImageProps) => {
   if (!team) {
     return null
   }

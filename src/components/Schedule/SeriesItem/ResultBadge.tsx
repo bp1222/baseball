@@ -1,7 +1,6 @@
 import { Chip } from '@mui/material'
 
-import { useThemeMode } from '@/context/ThemeModeContext'
-import { GetBadgeColors } from '@/theme'
+import { useCustomPalette } from '@/theme/useCustomPalette'
 import { SeriesResult } from '@/types/Series/SeriesResult'
 import { SeriesType } from '@/types/Series/SeriesType'
 
@@ -18,14 +17,17 @@ const RESULT_LABELS: Record<SeriesResult, string> = {
   [SeriesResult.Tie]: 'Tie',
   [SeriesResult.InProgress]: 'In progress',
   [SeriesResult.Unplayed]: '',
+  [SeriesResult.WorldSeriesWin]: 'Win',
 }
 
 export const ResultBadge = ({ result, type }: ResultBadgeProps) => {
-  const { mode } = useThemeMode()
+  const { seriesBadge } = useCustomPalette()
   const label = RESULT_LABELS[result]
   if (!label) return null
 
-  const badgeColors = GetBadgeColors(type, result, mode)
+  const effectiveResult =
+    type === SeriesType.World && result === SeriesResult.Win ? SeriesResult.WorldSeriesWin : result
+  const badgeColors = seriesBadge[effectiveResult]
 
   return (
     <Chip

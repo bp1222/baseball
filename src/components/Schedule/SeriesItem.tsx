@@ -2,9 +2,8 @@ import { Grid, Typography } from '@mui/material'
 import dayjs from 'dayjs'
 
 import { useInterestedTeam } from '@/context/InterestedTeamContext'
-import { useThemeMode } from '@/context/ThemeModeContext'
 import { GetSeriesResult } from '@/domain/series'
-import { GetSeriesColors } from '@/theme'
+import { useCustomPalette } from '@/theme/useCustomPalette'
 import { Series } from '@/types/Series'
 import { SeriesType } from '@/types/Series/SeriesType'
 
@@ -21,11 +20,14 @@ type SeriesItemProps = {
 }
 
 export const SeriesItem = ({ series, selectedDate }: SeriesItemProps) => {
+  const { seriesResult: seriesResultPalette, springTraining } = useCustomPalette()
   const interestedTeam = useInterestedTeam()
-  const { mode } = useThemeMode()
 
   const seriesResult = GetSeriesResult(series, interestedTeam ?? undefined)
-  const seriesColors = GetSeriesColors(series.type, seriesResult, series.springLeague, mode)
+  const seriesColors =
+    series.type === SeriesType.SpringTraining
+      ? springTraining[series.springLeague ?? 'grapefruit']
+      : seriesResultPalette[seriesResult]
 
   return (
     <Grid

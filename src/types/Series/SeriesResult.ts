@@ -6,11 +6,13 @@ export enum SeriesResult {
   Loss,
   Sweep,
   Swept,
+  WorldSeriesWin,
 }
 
 export const OppositeSeriesResult = (result: SeriesResult): SeriesResult => {
   switch (result) {
     case SeriesResult.Win:
+    case SeriesResult.WorldSeriesWin:
       return SeriesResult.Loss
     case SeriesResult.Loss:
       return SeriesResult.Win

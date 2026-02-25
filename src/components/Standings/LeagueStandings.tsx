@@ -1,9 +1,9 @@
-import {ThemedTable, ThemedTableData} from "@/components/Shared/ThemedTable.tsx"
-import {useDivisions} from '@/queries/division'
-import {useLeagues} from '@/queries/league'
-import {useTeams} from '@/queries/team'
-import {DivisionRecord, Standings} from '@/types/Standings'
-import {Team} from '@/types/Team'
+import { ThemedTable, ThemedTableData } from '@/components/Shared/ThemedTable.tsx'
+import { useDivisions } from '@/queries/division'
+import { useLeagues } from '@/queries/league'
+import { useTeams } from '@/queries/team'
+import { DivisionRecord, Standings } from '@/types/Standings'
+import { Team } from '@/types/Team'
 
 interface LeagueStandingsProps {
   team: Team
@@ -64,11 +64,7 @@ export const LeagueStandings = ({ team, standings }: LeagueStandingsProps) => {
         ? `${division.abbreviation.charAt(division.abbreviation.length - 1)} – `
         : ''
 
-    const clinchIndicator = !record.clinched ? '' : (
-      isLeagueBest ? ' – z' : (
-        record.divisionChamp ? ' – y' : ' – w'
-      )
-    )
+    const clinchIndicator = !record.clinched ? '' : isLeagueBest ? ' – z' : record.divisionChamp ? ' – y' : ' – w'
 
     data.push({
       id: rowTeam.id,
@@ -83,7 +79,5 @@ export const LeagueStandings = ({ team, standings }: LeagueStandingsProps) => {
     })
   })
 
-  return (
-    <ThemedTable label={`${league.name} Standings`} headerRow={headerRow} data={data} highlightRowId={team.id} />
-  )
+  return <ThemedTable label={`${league.name} Standings`} headerRow={headerRow} data={data} highlightRowId={team.id} />
 }

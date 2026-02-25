@@ -1,9 +1,9 @@
 import CloseIcon from '@mui/icons-material/Close'
-import {Box, IconButton, Modal} from '@mui/material'
+import { Box, IconButton, Modal } from '@mui/material'
 
-import {PlayerSeasonWheel} from '@/components/Player'
-import {useTeam} from "@/queries/team.ts"
-import type {GameLogSplit} from '@/types/GameLogSplit'
+import { PlayerSeasonWheel } from '@/components/Player'
+import { useTeam } from '@/queries/team.ts'
+import type { GameLogSplit } from '@/types/GameLogSplit'
 
 type SeasonWheelDemoModalProps = {
   onClose: () => void
@@ -97,7 +97,7 @@ function generateDemoGameLog(): GameLogSplit[] {
 
 export const SeasonWheelDemoModal = ({ onClose }: SeasonWheelDemoModalProps) => {
   const { data: team } = useTeam(143)
-  
+
   const modalSx = {
     display: 'flex',
     alignItems: 'center',
@@ -124,11 +124,7 @@ export const SeasonWheelDemoModal = ({ onClose }: SeasonWheelDemoModalProps) => 
   return (
     <Modal open disableAutoFocus onClose={onClose} sx={modalSx}>
       <Box sx={contentBoxSx}>
-        <IconButton
-          aria-label="Close"
-          onClick={onClose}
-          sx={{ position: 'absolute', top: 8, right: 8, zIndex: 10 }}
-        >
+        <IconButton aria-label="Close" onClick={onClose} sx={{ position: 'absolute', top: 8, right: 8, zIndex: 10 }}>
           <CloseIcon />
         </IconButton>
         <PlayerSeasonWheel

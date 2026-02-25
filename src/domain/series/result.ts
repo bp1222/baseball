@@ -6,6 +6,7 @@ import { GameResult, GetGameResult } from '@/types/Game/GameResult'
 import type { Series } from '@/types/Series'
 import { SeriesHomeAway } from '@/types/Series/SeriesHomeAway'
 import { SeriesResult } from '@/types/Series/SeriesResult'
+import { SeriesType } from '@/types/Series/SeriesType.ts'
 import { Team } from '@/types/Team'
 
 export const GetSeriesHomeAway = (series: Series, team?: Team) => {
@@ -74,7 +75,9 @@ export const GetSeriesResult = (series: Series, team?: Team): SeriesResult => {
       const det = Math.ceil((gamesInSeries + 1) / 2)
       return playedGames >= det
         ? wins >= det
-          ? SeriesResult.Win
+          ? series.type == SeriesType.World
+            ? SeriesResult.WorldSeriesWin
+            : SeriesResult.Win
           : losses >= det
             ? SeriesResult.Loss
             : SeriesResult.InProgress
@@ -85,7 +88,9 @@ export const GetSeriesResult = (series: Series, team?: Team): SeriesResult => {
         : wins == 0
           ? SeriesResult.Swept
           : wins > losses
-            ? SeriesResult.Win
+            ? series.type == SeriesType.World
+              ? SeriesResult.WorldSeriesWin
+              : SeriesResult.Win
             : wins == losses
               ? SeriesResult.Tie
               : SeriesResult.Loss

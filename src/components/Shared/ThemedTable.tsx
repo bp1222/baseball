@@ -1,10 +1,10 @@
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 
 import LabelPaper from '@/components/Shared/LabelPaper.tsx'
 
 export type ThemedTableData = {
   id: number | string
-  data: (string|number|undefined)[]
+  data: (string | number | undefined)[]
 }
 
 type ThemedTableProps = {
@@ -40,7 +40,7 @@ export const ThemedTable = ({ label, headerRow, data, highlightRowId }: ThemedTa
       >
         <Table stickyHeader size="small" sx={{ minWidth: 320 }}>
           <TableHead>
-            <TableRow sx={{backgroundColor: 'primary.main'}}>
+            <TableRow sx={{ backgroundColor: 'primary.main' }}>
               {headerRow.map((header, idx) => (
                 <TableCell sx={headerCellSx} align={idx === 0 ? 'left' : 'right'} key={header}>
                   {header}
@@ -66,9 +66,10 @@ export const ThemedTable = ({ label, headerRow, data, highlightRowId }: ThemedTa
                     sx={{
                       ...(isHighlightedRow(row.id) && {
                         color: 'primary.contrastText',
-                      })
+                      }),
                     }}
-                    align={colIdx === 0 ? 'left' : 'right'} key={colIdx}
+                    align={colIdx === 0 ? 'left' : 'right'}
+                    key={colIdx}
                   >
                     {cell}
                   </TableCell>

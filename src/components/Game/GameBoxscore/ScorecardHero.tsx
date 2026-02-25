@@ -2,24 +2,25 @@
  * Scorecard hero — prominent score and matchup at top of boxscore
  */
 
-import {Box, Typography, useTheme} from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import dayjs from 'dayjs'
 
-import {TeamImage} from '@/components/Shared/TeamImage.tsx'
-import {useLinescore} from '@/queries/linescore'
-import {useTeams} from '@/queries/team'
-import {Game} from '@/types/Game'
-import {GameStatus} from '@/types/Game/GameStatus'
-import {GameTeam} from '@/types/GameTeam'
+import { TeamImage } from '@/components/Shared/TeamImage.tsx'
+import { useLinescore } from '@/queries/linescore'
+import { useTeams } from '@/queries/team'
+import { useCustomPalette } from '@/theme/useCustomPalette'
+import { Game } from '@/types/Game'
+import { GameStatus } from '@/types/Game/GameStatus'
+import { GameTeam } from '@/types/GameTeam'
 
 type ScorecardHeroProps = {
   game: Game
 }
 
 export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
-  const theme = useTheme()
+  const { gameStatus } = useCustomPalette()
   const { data: teams } = useTeams()
-  const isDark = theme.palette.mode === 'dark'
+  const statusColors = gameStatus[game.gameStatus]
 
   const isLive = game.gameStatus === GameStatus.InProgress
   const { data: linescore } = useLinescore(game.pk, isLive)
@@ -137,17 +138,8 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
                 px: { xs: 0.5, sm: 1 },
                 py: 0.25,
                 borderRadius: 1,
-                bgcolor:
-                  game.gameStatus === GameStatus.InProgress
-                    ? 'success.main'
-                    : game.gameStatus === GameStatus.Final
-                      ? isDark
-                        ? 'grey.600'
-                        : 'grey.400'
-                      : isDark
-                        ? 'grey.700'
-                        : 'grey.300',
-                color: game.gameStatus === GameStatus.InProgress ? 'success.contrastText' : 'text.primary',
+                bgcolor: statusColors.main,
+                color: statusColors.contrastText,
               }}
             >
               <Typography
@@ -174,7 +166,7 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
                 py: 0.5,
                 mt: 0.5,
                 borderRadius: 1,
-                bgcolor: isDark ? 'grey.800' : 'grey.200',
+                bgcolor: statusColors.light,
                 border: 1,
                 borderColor: 'divider',
               }}

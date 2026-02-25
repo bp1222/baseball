@@ -1,8 +1,8 @@
-import {ThemedTable, ThemedTableData} from '@/components/Shared/ThemedTable.tsx'
-import {useDivisions} from '@/queries/division'
-import {useTeams} from '@/queries/team'
-import {Standings} from '@/types/Standings'
-import {Team} from '@/types/Team'
+import { ThemedTable, ThemedTableData } from '@/components/Shared/ThemedTable.tsx'
+import { useDivisions } from '@/queries/division'
+import { useTeams } from '@/queries/team'
+import { Standings } from '@/types/Standings'
+import { Team } from '@/types/Team'
 
 interface DivisionStandingsProps {
   team: Team
@@ -46,7 +46,5 @@ export const DivisionStandings = ({ team, standings }: DivisionStandingsProps) =
     })
   })
 
-  return (
-    <ThemedTable label={`${division.name} Standings`} headerRow={headerRow} data={data} highlightRowId={team.id} />
-  )
+  return <ThemedTable label={`${division.name} Standings`} headerRow={headerRow} data={data} highlightRowId={team.id} />
 }

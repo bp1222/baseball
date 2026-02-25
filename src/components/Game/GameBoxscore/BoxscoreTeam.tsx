@@ -1,8 +1,8 @@
-import {Grid, Typography} from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 
-import {TeamImage} from '@/components/Shared/TeamImage.tsx'
-import {useTeam, useTeams} from '@/queries/team.ts'
-import {GameTeam} from '@/types/GameTeam.ts'
+import { TeamImage } from '@/components/Shared/TeamImage.tsx'
+import { useTeam, useTeams } from '@/queries/team.ts'
+import { GameTeam } from '@/types/GameTeam.ts'
 
 type BoxscoreTeamProps = {
   gameTeam: GameTeam

@@ -1,5 +1,6 @@
 import { Game } from '@/types/Game'
 import { GameStatus } from '@/types/Game/GameStatus'
+import { Team } from '@/types/Team'
 
 export enum GameResult {
   Unknown,
@@ -14,17 +15,21 @@ export enum GameResult {
   Loss,
 }
 
-export type GameResultStatus = Exclude<GameResult, GameResult.Win | GameResult.Loss>
+export const GetGameResult = (game: Game, team?: Team): GameResult => {
+  if (game.gameStatus !== GameStatus.Final) return GameResult.Unknown
 
-export const GetGameResult = (game: Game): GameResultStatus => {
-  if (game.gameStatus == GameStatus.Final) {
-    if (game.home.score > game.away.score) {
-      return GameResult.Home
-    } else if (game.away.score > game.home.score) {
-      return GameResult.Away
-    } else {
-      return GameResult.Tie
-    }
+  const homeScore = game.home.score ?? 0
+  const awayScore = game.away.score ?? 0
+
+  if (homeScore === awayScore) return GameResult.Tie
+
+  const homeWins = homeScore > awayScore
+
+  if (team == null) {
+    return homeWins ? GameResult.Home : GameResult.Away
   }
-  return GameResult.Unknown
+
+  const teamWins = (homeWins && game.home.teamId === team.id) || (!homeWins && game.away.teamId === team.id)
+
+  return teamWins ? GameResult.Win : GameResult.Loss
 }

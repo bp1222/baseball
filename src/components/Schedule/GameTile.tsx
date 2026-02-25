@@ -10,7 +10,7 @@
  * Opens the boxscore modal via ModalContext when clicked.
  */
 
-import { Box, Grid, useTheme } from '@mui/material'
+import { Box, Grid } from '@mui/material'
 import dayjs from 'dayjs'
 import { useRef } from 'react'
 
@@ -18,8 +18,9 @@ import { useInterestedTeam } from '@/context/InterestedTeamContext'
 import { useModal } from '@/context/ModalContext'
 import { useLinescore } from '@/queries/linescore'
 import { useTeams } from '@/queries/team'
-import { GetGameResultColor, GetGameStatusTileColor } from '@/theme'
+import { useCustomPalette } from '@/theme/useCustomPalette'
 import { Game } from '@/types/Game'
+import { GetGameResult } from '@/types/Game/GameResult'
 import { GameStatus } from '@/types/Game/GameStatus'
 
 import { GameScore } from './GameScore'
@@ -35,9 +36,8 @@ type GameTileProps = {
 }
 
 export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: GameTileProps) => {
+  const { gameResult, gameStatus } = useCustomPalette()
   const interestedTeam = useInterestedTeam()
-  const { palette } = useTheme()
-  const mode = palette.mode
   const { data: teams } = useTeams()
   const { openBoxscore } = useModal()
   const tileRef = useRef<HTMLDivElement>(null)
@@ -53,17 +53,16 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
   const postponedCanceledBadge =
     game.gameStatus === GameStatus.Postponed ? 'PPD' : game.gameStatus === GameStatus.Canceled ? 'CANC' : null
 
-  const tileColors = interestedTeam
-    ? GetGameResultColor(game, interestedTeam, mode)
-    : [GameStatus.InProgress, GameStatus.Canceled].includes(game.gameStatus)
-      ? GetGameStatusTileColor(game.gameStatus, mode)
-      : GetGameResultColor(game, undefined, mode)
+  const tileColors = interestedTeam ? gameResult[GetGameResult(game, interestedTeam)] : gameStatus[game.gameStatus]
 
   const awayAbbr = teams?.find((t) => t.id === game.away.teamId)?.abbreviation ?? 'Away'
   const homeAbbr = teams?.find((t) => t.id === game.home.teamId)?.abbreviation ?? 'Home'
 
-  const awayColors = GetGameResultColor(game, interestedTeam ?? teams?.find((t) => t.id === game.away.teamId), mode)
-  const homeColors = GetGameResultColor(game, interestedTeam ?? teams?.find((t) => t.id === game.home.teamId), mode)
+  const awayTeam = interestedTeam ?? teams?.find((t) => t.id === game.away.teamId)
+  const homeTeam = interestedTeam ?? teams?.find((t) => t.id === game.home.teamId)
+
+  const awayColors = gameResult[GetGameResult(game, awayTeam)]
+  const homeColors = gameResult[GetGameResult(game, homeTeam)]
 
   const tileBg = gameIsToday ? 'primary.50' : tileColors.light
   const tileBorder = gameIsToday ? 'primary.main' : tileColors.main

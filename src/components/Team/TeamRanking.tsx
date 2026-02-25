@@ -7,7 +7,7 @@ import LabelPaper from '@/components/Shared/LabelPaper'
 import { useInterestedTeam } from '@/context/InterestedTeamContext'
 import { useSchedule } from '@/queries/schedule'
 import { useTeams } from '@/queries/team'
-import { GetTeamTheme } from '@/theme'
+import { getTheme } from '@/theme'
 import { GameStatus } from '@/types/Game/GameStatus'
 import { GameType } from '@/types/Game/GameType'
 import { Team } from '@/types/Team'
@@ -170,7 +170,7 @@ export const TeamRanking = () => {
         label: team.name,
         showMark: false,
         curve: 'catmullRom',
-        color: GetTeamTheme(team.id).palette.primary.main,
+        color: getTheme(team.id).palette.primary.main,
       })
     })
     return ret
