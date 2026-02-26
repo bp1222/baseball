@@ -5,6 +5,7 @@ export enum GameStatus {
   Postponed,
   Scheduled,
   InProgress,
+  Challenge,
   Canceled,
 }
 
@@ -17,6 +18,8 @@ export const GameStatusFromMLBGameStatus = (status: GameStatusCode) => {
       return GameStatus.Postponed
     case GameStatusCode.InProgress:
       return GameStatus.InProgress
+    case GameStatusCode.Challenge:
+      return GameStatus.Challenge
     case GameStatusCode.Canceled:
       return GameStatus.Canceled
     case GameStatusCode.Final:

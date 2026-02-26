@@ -54,7 +54,7 @@ export const GameStatusLine = ({ game }: GameStatusLineProps) => {
             ) : (
               <ArrowDropDownIcon sx={{ width: '.6em', height: '.6em' }} />
             )}
-            {` ${linescore?.currentInningOrdinal}`}
+            {` ${linescore?.currentInningOrdinal ?? 0}`}
           </Box>
         </Box>
       )
@@ -72,6 +72,19 @@ export const GameStatusLine = ({ game }: GameStatusLineProps) => {
           {(linescore?.innings?.length ?? 9) !== (linescore?.scheduledInnings ?? 9)
             ? `/${linescore?.innings?.length ?? ''}`
             : ''}
+        </Box>
+      )
+    case GameStatus.Challenge:
+      return (
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-evenly"
+          sx={{ fontSize: '0.70rem', fontWeight: 600 }}
+          textAlign="center"
+          color="text.secondary"
+        >
+          Challenge
         </Box>
       )
     case GameStatus.Postponed:
@@ -101,6 +114,6 @@ export const GameStatusLine = ({ game }: GameStatusLineProps) => {
         </Box>
       )
     default:
-      return null
+      return <></>
   }
 }

@@ -1,19 +1,19 @@
-import Brightness4Icon from '@mui/icons-material/Brightness4'
-import Brightness7Icon from '@mui/icons-material/Brightness7'
-import {AppBar, Box, IconButton, Toolbar, Typography, useColorScheme} from '@mui/material'
-import {useParams} from '@tanstack/react-router'
+import { DonutLarge } from '@mui/icons-material'
+import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
+import { useParams } from '@tanstack/react-router'
 
-import {useInterestedTeam} from '@/context/InterestedTeamContext'
+import { Preferences } from '@/components/Layout/Header/Preferences.tsx'
+import { useInterestedTeam } from '@/context/InterestedTeamContext'
+import { useModal } from '@/context/ModalContext.tsx'
 
-import {HeaderName} from './Header/HeaderName'
-import {SeasonPicker} from './Header/SeasonPicker'
-import {TeamPicker} from './Header/TeamPicker'
+import { HeaderName } from './Header/HeaderName'
+import { SeasonPicker } from './Header/SeasonPicker'
+import { TeamPicker } from './Header/TeamPicker'
 
 export const Header = () => {
   const { seasonId } = useParams({ strict: false })
   const selectedTeam = useInterestedTeam()
-  const { mode, setMode } = useColorScheme()
-  //const { openSeasonWheelDemo } = useModal()
+  const { openSeasonWheelDemo } = useModal()
 
   return (
     <AppBar position={'sticky'} color={'primary'} enableColorOnDark>
@@ -55,16 +55,10 @@ export const Header = () => {
             gap: 0.5,
           }}
         >
-          <IconButton
-            onClick={() => {
-              console.log(mode)
-              setMode(mode === 'dark' ? 'light' : 'dark')
-            }}
-            aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            size="small"
-          >
-            {mode === 'dark' ? <Brightness7Icon aria-hidden /> : <Brightness4Icon aria-hidden />}
+          <IconButton onClick={() => openSeasonWheelDemo()} color="secondary" size="large">
+            <DonutLarge />
           </IconButton>
+          <Preferences />
           <TeamPicker />
         </Box>
       </Toolbar>

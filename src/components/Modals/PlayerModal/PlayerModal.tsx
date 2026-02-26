@@ -10,15 +10,19 @@ import {
   MenuItem,
   Modal,
   Select,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
 
-import { usePerson, usePersonGameLog } from '@/queries/person'
-import type { GameLogSplit } from '@/types/GameLogSplit'
+import { usePerson } from '@/queries/person'
 
-import { GameLogTable } from './GameLogTable'
-import { SeasonStatsTable } from './SeasonStatsTable'
+import { SeasonStatsTable } from '../SeasonStatsTable'
+import { PlayerGameLogView } from './PlayerGameLogView'
+import { PlayerSeasonWheelView } from './PlayerSeasonWheelView'
+
+type PlayerViewTab = 'gameLog' | 'seasonWheel'
 
 type PlayerModalProps = {
   personId: string
@@ -41,8 +45,7 @@ export const PlayerModal = ({ personId, onClose }: PlayerModalProps) => {
   }, [person?.stats])
 
   const [selectedSeason, setSelectedSeason] = useState<string | null>(null)
-  const hittingGameLog = usePersonGameLog(personId, selectedSeason, 'hitting')
-  const pitchingGameLog = usePersonGameLog(personId, selectedSeason, 'pitching')
+  const [viewTab, setViewTab] = useState<PlayerViewTab>('gameLog')
 
   const modalSx = {
     display: 'flex',
@@ -259,38 +262,41 @@ export const PlayerModal = ({ personId, onClose }: PlayerModalProps) => {
                 </Button>
               )}
               {selectedSeason && (
-                <Box sx={{ mt: 2 }}>
-                  {(hittingStats && hittingGameLog.isPending) || (pitchingStats && pitchingGameLog.isPending) ? (
-                    <Box display="flex" justifyContent="center" py={2}>
-                      <CircularProgress size={24} />
-                    </Box>
-                  ) : (
-                    <>
-                      {hittingStats && hittingGameLog.data != null && hittingGameLog.data.length > 0 && (
-                        <GameLogTable
-                          title={`Hitting game log · ${selectedSeason}`}
-                          splits={hittingGameLog.data as GameLogSplit[]}
-                          group="hitting"
-                        />
-                      )}
-                      {pitchingStats && pitchingGameLog.data != null && pitchingGameLog.data.length > 0 && (
-                        <GameLogTable
-                          title={`Pitching game log · ${selectedSeason}`}
-                          splits={pitchingGameLog.data as GameLogSplit[]}
-                          group="pitching"
-                        />
-                      )}
-                      {(hittingStats && hittingGameLog.data?.length === 0 && !pitchingStats) ||
-                      (pitchingStats && pitchingGameLog.data?.length === 0 && !hittingStats) ||
-                      (hittingStats &&
-                        pitchingStats &&
-                        hittingGameLog.data?.length === 0 &&
-                        pitchingGameLog.data?.length === 0) ? (
-                        <Typography variant="body2" color="text.secondary">
-                          No game log for {selectedSeason}.
-                        </Typography>
-                      ) : null}
-                    </>
+                <Box sx={{ width: '100%', mt: 1 }}>
+                  <ToggleButtonGroup
+                    value={viewTab}
+                    exclusive
+                    onChange={(_, v) => v != null && setViewTab(v)}
+                    aria-label="View game log or season wheel"
+                    fullWidth
+                    size="small"
+                    sx={{ mb: 1.5 }}
+                  >
+                    <ToggleButton value="gameLog" aria-label="Game log">
+                      Game Log
+                    </ToggleButton>
+                    <ToggleButton value="seasonWheel" aria-label="Season wheel">
+                      Season Wheel
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+
+                  {viewTab === 'gameLog' && (
+                    <PlayerGameLogView
+                      personId={personId}
+                      selectedSeason={selectedSeason}
+                      hittingStats={hittingStats}
+                      pitchingStats={pitchingStats}
+                    />
+                  )}
+
+                  {viewTab === 'seasonWheel' && (
+                    <PlayerSeasonWheelView
+                      personId={personId}
+                      playerName={person.fullName ?? ''}
+                      currentTeamId={person.currentTeam?.id}
+                      selectedSeason={selectedSeason}
+                      hittingStats={hittingStats}
+                    />
                   )}
                 </Box>
               )}

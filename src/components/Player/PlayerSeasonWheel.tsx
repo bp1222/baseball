@@ -1,4 +1,3 @@
-/*
 import type { PersonStatSplit } from '@bp1222/stats-api'
 import { Box, styled, SvgIcon, Typography } from '@mui/material'
 import { useMemo } from 'react'
@@ -21,9 +20,9 @@ export type PlayerSeasonWheelProps = {
 const RESULT_COLORS: Record<AtBatResult, string> = {
   hr: '#c41e3a',
   hit: '#1e4d8c',
-  out: '#b8c4ce',
+  out: '#e0e0e0',
   walk: '#2e8b57',
-  dnp: '#e0e0e0',
+  dnp: '#38444e',
 }
 
 function deriveAtBatsFromStat(stat: Record<string, unknown>): AtBatResult[] {
@@ -54,6 +53,7 @@ function deriveAtBatsFromStat(stat: Record<string, unknown>): AtBatResult[] {
 }
 
 export const PlayerSeasonWheel = ({ playerName, team, season, gameLog, seasonSplit }: PlayerSeasonWheelProps) => {
+  console.log('PlayerSeasonWheel render', { playerName, team, season, gameLog, seasonSplit })
   const games = useMemo(() => {
     return gameLog.map((split) => ({
       gamePk: split.game?.gamePk,
@@ -111,17 +111,6 @@ export const PlayerSeasonWheel = ({ playerName, team, season, gameLog, seasonSpl
         p: 2,
       }}
     >
-      <Typography
-        variant="caption"
-        color="text.secondary"
-        sx={{ letterSpacing: 1, textTransform: 'uppercase', fontSize: '0.7rem' }}
-      >
-        Opening Day
-      </Typography>
-      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem', mb: 1 }}>
-        Continue Clockwise to Next Game
-      </Typography>
-
       <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>
         {playerName}
       </Typography>
@@ -186,10 +175,10 @@ export const PlayerSeasonWheel = ({ playerName, team, season, gameLog, seasonSpl
 
         {stats && (
           <>
-            <StatDiamond value={stats.doubles} label="2B" position="top" size={size} team={team} />
-            <StatDiamond value={stats.triples} label="3B" position="left" size={size} team={team} />
-            <StatDiamond value={stats.singles} label="1B" position="right" size={size} team={team} />
-            <StatDiamond value={stats.homeRuns} label="HR" position="bottom" size={size} team={team} highlight />
+            <StatDiamond value={stats.doubles} label="2B" position="top" size={size} team={team!} />
+            <StatDiamond value={stats.triples} label="3B" position="left" size={size} team={team!} />
+            <StatDiamond value={stats.singles} label="1B" position="right" size={size} team={team!} />
+            <StatDiamond value={stats.homeRuns} label="HR" position="bottom" size={size} team={team!} highlight />
           </>
         )}
       </Box>
@@ -467,6 +456,3 @@ const LegendItem = ({ color, label }: LegendItemProps) => (
     </Typography>
   </Box>
 )
-
-
- */

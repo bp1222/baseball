@@ -1,5 +1,5 @@
 import { createTheme, type Theme } from '@mui/material'
-import { darken, getContrastRatio,lighten } from '@mui/material/styles'
+import { darken, getContrastRatio, lighten } from '@mui/material/styles'
 
 interface TeamColors {
   primary: string
