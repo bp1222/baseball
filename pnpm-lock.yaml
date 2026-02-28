@@ -4,16 +4,13 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@bp1222/stats-api': link:../stats-api
-
 importers:
 
   .:
     dependencies:
       '@bp1222/stats-api':
-        specifier: link:../stats-api
-        version: link:../stats-api
+        specifier: ^0.8.2
+        version: 0.8.2
       '@tanstack/react-query':
         specifier: ^5.90.21
         version: 5.90.21(react@19.2.4)
@@ -209,6 +206,9 @@ packages:
   '@babel/types@7.29.0':
     resolution: {integrity: sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A==}
     engines: {node: '>=6.9.0'}
+
+  '@bp1222/stats-api@0.8.2':
+    resolution: {integrity: sha512-SKvfZo0Baz1BWWNT15Mzd7X3BFl8l1kFo9AtzgQXtFnWajuC4KuLExqc+0w/DUv7L/FlRWq+M/JGjpDNqt2tQQ==}
 
   '@emotion/babel-plugin@11.13.5':
     resolution: {integrity: sha512-pxHCpT2ex+0q+HH91/zsdHkw/lXd468DIN2zvfvLtPKLLMo6gQj7oLObq8PhkrxOZb/gGCq03S3Z7PDhS8pduQ==}
@@ -2150,6 +2150,8 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
+
+  '@bp1222/stats-api@0.8.2': {}
 
   '@emotion/babel-plugin@11.13.5':
     dependencies:

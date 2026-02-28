@@ -16,7 +16,7 @@
     "favicon.ico"
   ],
   "dependencies": {
-    "@bp1222/stats-api": "link:../stats-api",
+    "@bp1222/stats-api": "^0.8.2",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-query-devtools": "^5.91.3",
     "@tanstack/react-router": "^1.162.2",
