@@ -6,5 +6,6 @@ import type { QueryClient } from '@tanstack/react-query'
  */
 export interface RouterContext {
   queryClient: QueryClient
+  defaultSport: string
   defaultSeason: string
 }

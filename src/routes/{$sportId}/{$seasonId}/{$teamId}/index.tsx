@@ -2,15 +2,15 @@ import { Box, Grid, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 
-import { SeriesCardSkeleton } from '@/components/Schedule/SeriesCardSkeleton'
-import { SeriesList } from '@/components/Schedule/SeriesList'
-import { StandingsSkeleton } from '@/components/Standings/StandingsSkeleton'
-import { SeriesRecordSkeleton } from '@/components/Team/SeriesRecordSkeleton'
-import { TeamStats } from '@/components/Team/TeamStats'
-import { scheduleOptions, useSchedule } from '@/queries/schedule'
-import { seasonsOptions } from '@/queries/season'
-import { teamsOptions } from '@/queries/team'
-import { SeriesType } from '@/types/Series/SeriesType'
+import { SeriesCardSkeleton } from '@/components/Schedule/SeriesCardSkeleton.tsx'
+import { SeriesList } from '@/components/Schedule/SeriesList.tsx'
+import { StandingsSkeleton } from '@/components/Standings/StandingsSkeleton.tsx'
+import { SeriesRecordSkeleton } from '@/components/Team/SeriesRecordSkeleton.tsx'
+import { TeamStats } from '@/components/Team/TeamStats.tsx'
+import { scheduleOptions, useSchedule } from '@/queries/schedule.ts'
+import { seasonsOptions } from '@/queries/season.ts'
+import { teamsOptions } from '@/queries/team.ts'
+import { SeriesType } from '@/types/Series/SeriesType.ts'
 
 type TeamViewTab = 'schedule' | 'stats'
 
@@ -171,9 +171,9 @@ const TeamComponent = () => {
   )
 }
 
-export const Route = createFileRoute('/{$seasonId}/{$teamId}')({
+export const Route = createFileRoute('/{$sportId}/{$seasonId}/{$teamId}/')({
   loader: async ({ context: { queryClient, defaultSeason }, params: { seasonId } }) => {
-    await import('@/lib/dayjs')
+    await import('@/lib/dayjs.ts')
     const [seasons, teams] = await Promise.all([
       queryClient.ensureQueryData(seasonsOptions),
       queryClient.ensureQueryData(teamsOptions(seasonId ?? defaultSeason)),

@@ -26,7 +26,7 @@ const SeasonComponent = () => {
   return <SeasonSeries />
 }
 
-export const Route = createFileRoute('/{$seasonId}/')({
+export const Route = createFileRoute('/{$sportId}/{$seasonId}/')({
   validateSearch: (search: Record<string, unknown>): SeasonSearchParams => ({
     date: typeof search.date === 'string' && dayjs(search.date).isValid() ? search.date : undefined,
   }),

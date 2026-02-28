@@ -1,0 +1,263 @@
+import CloseIcon from '@mui/icons-material/Close'
+import {
+  Box,
+  Button,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from '@mui/material'
+import { useMemo, useState } from 'react'
+
+import { Person } from '@/types/Person'
+
+import { PlayerGameLogView } from './PlayerGameLogView'
+import { PlayerSeasonWheelView } from './PlayerSeasonWheelView'
+import { SeasonStatsTable } from './SeasonStatsTable'
+
+type PlayerViewTab = 'gameLog' | 'seasonWheel'
+
+type PlayerDetailProps = {
+  person: Person
+  onClose: () => void
+}
+
+const contentBoxSx = {
+  width: '100%',
+  maxWidth: 560,
+  maxHeight: '100%',
+  boxSizing: 'border-box' as const,
+  bgcolor: 'background.paper',
+  border: '2px solid',
+  borderColor: 'divider',
+  borderRadius: 2,
+  overflow: 'auto' as const,
+}
+
+export const PlayerDetail = ({ person, onClose }: PlayerDetailProps) => {
+  const seasons = useMemo(() => {
+    if (!person.stats) return []
+    const set = new Set<string>()
+    const hitting = person.stats.find((s) => s.type?.displayName === 'yearByYear' && s.group?.displayName === 'hitting')
+    const pitching = person.stats.find(
+      (s) => s.type?.displayName === 'yearByYear' && s.group?.displayName === 'pitching',
+    )
+    hitting?.splits?.forEach((s) => s.season && set.add(s.season))
+    pitching?.splits?.forEach((s) => s.season && set.add(s.season))
+    return Array.from(set).sort((a, b) => Number(b) - Number(a))
+  }, [person?.stats])
+
+  const [selectedSeason, setSelectedSeason] = useState<string | null>(null)
+  const [viewTab, setViewTab] = useState<PlayerViewTab>('gameLog')
+
+  const isPrimaryPitcher = person.primaryPosition?.abbreviation === 'P' || person.primaryPosition?.type === 'Pitcher'
+
+  const hittingStatsRaw = person.stats?.find(
+    (s) => s.type?.displayName === 'yearByYear' && s.group?.displayName === 'hitting',
+  )
+  const pitchingStats = person.stats?.find(
+    (s) => s.type?.displayName === 'yearByYear' && s.group?.displayName === 'pitching',
+  )
+
+  const hittingStats =
+    hittingStatsRaw && isPrimaryPitcher && hittingStatsRaw.splits
+      ? {
+          ...hittingStatsRaw,
+          splits: hittingStatsRaw.splits.filter((s) => (s.stat?.atBats ?? 0) > 0),
+        }
+      : hittingStatsRaw
+
+  const hittingColumns = [
+    { key: 'gamesPlayed', label: 'G' },
+    { key: 'atBats', label: 'AB' },
+    { key: 'runs', label: 'R' },
+    { key: 'hits', label: 'H' },
+    { key: 'homeRuns', label: 'HR' },
+    { key: 'rbi', label: 'RBI' },
+    { key: 'avg', label: 'AVG' },
+    { key: 'ops', label: 'OPS' },
+  ]
+  const pitchingColumns = [
+    { key: 'gamesPlayed', label: 'G' },
+    { key: 'inningsPitched', label: 'IP' },
+    { key: 'wins', label: 'W' },
+    { key: 'losses', label: 'L' },
+    { key: 'era', label: 'ERA' },
+    { key: 'strikeOuts', label: 'SO' },
+    { key: 'baseOnBalls', label: 'BB' },
+  ]
+
+  const position = person.primaryPosition?.abbreviation ?? person.primaryPosition?.name ?? ''
+  const team = person.currentTeam?.abbreviation ?? person.currentTeam?.teamName ?? ''
+
+  return (
+    <Box
+      id="player-modal"
+      sx={{
+        ...contentBoxSx,
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Box
+        id="player-modal-header"
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 1,
+          padding: { xs: 1.5, sm: 2 },
+          borderBottom: 1,
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+        }}
+      >
+        <Box sx={{ width: 48, flexShrink: 0 }} aria-hidden />
+        <Box
+          sx={{
+            flex: 1,
+            minWidth: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+          }}
+        >
+          <Typography
+            variant="h6"
+            component="p"
+            sx={{
+              fontSize: { xs: '1rem', sm: 'inherit' },
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {person.fullName}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.875rem', sm: 'inherit' } }}>
+            {[position, team, person.primaryNumber ? `#${person.primaryNumber}` : ''].filter(Boolean).join(' · ')}
+          </Typography>
+          {(person.batSide?.description || person.pitchHand?.description) && (
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              sx={{ fontSize: { xs: '0.75rem', sm: 'inherit' } }}
+            >
+              Bats: {person.batSide?.description ?? '—'} · Throws: {person.pitchHand?.description ?? '—'}
+            </Typography>
+          )}
+        </Box>
+        <Box
+          sx={{
+            width: 48,
+            flexShrink: 0,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <IconButton aria-label="Close" onClick={onClose} sx={{ flexShrink: 0 }}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          minWidth: 0,
+          minHeight: 0,
+          flex: '1 1 0%',
+          overflow: 'auto',
+          px: 2,
+          py: 2,
+        }}
+      >
+        {seasons.length > 0 && (
+          <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+            <FormControl size="small" sx={{ minWidth: 160 }}>
+              <InputLabel id="game-log-season-label">GameStats log (by season)</InputLabel>
+              <Select
+                labelId="game-log-season-label"
+                label="GameStats log (by season)"
+                value={selectedSeason ?? ''}
+                onChange={(e) => setSelectedSeason(e.target.value || null)}
+              >
+                {seasons.map((s) => (
+                  <MenuItem key={s} value={s}>
+                    {s}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {selectedSeason && (
+              <Button size="small" variant="outlined" onClick={() => setSelectedSeason(null)}>
+                Clear
+              </Button>
+            )}
+            {selectedSeason && (
+              <Box sx={{ width: '100%', mt: 1 }}>
+                <ToggleButtonGroup
+                  value={viewTab}
+                  exclusive
+                  onChange={(_, v) => v != null && setViewTab(v)}
+                  aria-label="View game log or season wheel"
+                  fullWidth
+                  size="small"
+                  sx={{ mb: 1.5 }}
+                >
+                  <ToggleButton value="gameLog" aria-label="GameStats log">
+                    GameStats Log
+                  </ToggleButton>
+                  <ToggleButton value="seasonWheel" aria-label="Season wheel">
+                    Season Wheel
+                  </ToggleButton>
+                </ToggleButtonGroup>
+
+                {viewTab === 'gameLog' && (
+                  <PlayerGameLogView
+                    personId={person.id}
+                    selectedSeason={selectedSeason}
+                    hittingStats={hittingStats}
+                    pitchingStats={pitchingStats}
+                  />
+                )}
+
+                {viewTab === 'seasonWheel' && (
+                  <PlayerSeasonWheelView
+                    personId={person.id}
+                    playerName={person.fullName ?? ''}
+                    currentTeamId={person.currentTeam?.id}
+                    selectedSeason={selectedSeason}
+                    hittingStats={hittingStats}
+                  />
+                )}
+              </Box>
+            )}
+          </Box>
+        )}
+
+        {!selectedSeason && hittingStats && (
+          <SeasonStatsTable statItem={hittingStats} title="Hitting (by season)" statColumns={hittingColumns} />
+        )}
+        {!selectedSeason && pitchingStats && (
+          <SeasonStatsTable statItem={pitchingStats} title="Pitching (by season)" statColumns={pitchingColumns} />
+        )}
+        {!selectedSeason && !hittingStats && !pitchingStats && (
+          <Typography variant="body2" color="text.secondary">
+            No season stats available.
+          </Typography>
+        )}
+      </Box>
+    </Box>
+  )
+}

@@ -10,55 +10,81 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as Char123seasonIdChar125IndexRouteImport } from './routes/{$seasonId}/index'
-import { Route as Char123seasonIdChar125Char123teamIdChar125RouteImport } from './routes/{$seasonId}/{$teamId}'
+import { Route as Char123sportIdChar125IndexRouteImport } from './routes/{$sportId}/index'
+import { Route as Char123sportIdChar125Char123seasonIdChar125IndexRouteImport } from './routes/{$sportId}/{$seasonId}/index'
+import { Route as Char123sportIdChar125Char123seasonIdChar125Char123teamIdChar125IndexRouteImport } from './routes/{$sportId}/{$seasonId}/{$teamId}/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Char123seasonIdChar125IndexRoute =
-  Char123seasonIdChar125IndexRouteImport.update({
-    id: '/{$seasonId}/',
-    path: '/{$seasonId}/',
+const Char123sportIdChar125IndexRoute =
+  Char123sportIdChar125IndexRouteImport.update({
+    id: '/{$sportId}/',
+    path: '/{$sportId}/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const Char123seasonIdChar125Char123teamIdChar125Route =
-  Char123seasonIdChar125Char123teamIdChar125RouteImport.update({
-    id: '/{$seasonId}/{$teamId}',
-    path: '/{$seasonId}/{$teamId}',
+const Char123sportIdChar125Char123seasonIdChar125IndexRoute =
+  Char123sportIdChar125Char123seasonIdChar125IndexRouteImport.update({
+    id: '/{$sportId}/{$seasonId}/',
+    path: '/{$sportId}/{$seasonId}/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const Char123sportIdChar125Char123seasonIdChar125Char123teamIdChar125IndexRoute =
+  Char123sportIdChar125Char123seasonIdChar125Char123teamIdChar125IndexRouteImport.update(
+    {
+      id: '/{$sportId}/{$seasonId}/{$teamId}/',
+      path: '/{$sportId}/{$seasonId}/{$teamId}/',
+      getParentRoute: () => rootRouteImport,
+    } as any,
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/{$seasonId}/{$teamId}': typeof Char123seasonIdChar125Char123teamIdChar125Route
-  '/{$seasonId}/': typeof Char123seasonIdChar125IndexRoute
+  '/{$sportId}/': typeof Char123sportIdChar125IndexRoute
+  '/{$sportId}/{$seasonId}/': typeof Char123sportIdChar125Char123seasonIdChar125IndexRoute
+  '/{$sportId}/{$seasonId}/{$teamId}/': typeof Char123sportIdChar125Char123seasonIdChar125Char123teamIdChar125IndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/{$seasonId}/{$teamId}': typeof Char123seasonIdChar125Char123teamIdChar125Route
-  '/{$seasonId}': typeof Char123seasonIdChar125IndexRoute
+  '/{$sportId}': typeof Char123sportIdChar125IndexRoute
+  '/{$sportId}/{$seasonId}': typeof Char123sportIdChar125Char123seasonIdChar125IndexRoute
+  '/{$sportId}/{$seasonId}/{$teamId}': typeof Char123sportIdChar125Char123seasonIdChar125Char123teamIdChar125IndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/{$seasonId}/{$teamId}': typeof Char123seasonIdChar125Char123teamIdChar125Route
-  '/{$seasonId}/': typeof Char123seasonIdChar125IndexRoute
+  '/{$sportId}/': typeof Char123sportIdChar125IndexRoute
+  '/{$sportId}/{$seasonId}/': typeof Char123sportIdChar125Char123seasonIdChar125IndexRoute
+  '/{$sportId}/{$seasonId}/{$teamId}/': typeof Char123sportIdChar125Char123seasonIdChar125Char123teamIdChar125IndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/{$seasonId}/{$teamId}' | '/{$seasonId}/'
+  fullPaths:
+    | '/'
+    | '/{$sportId}/'
+    | '/{$sportId}/{$seasonId}/'
+    | '/{$sportId}/{$seasonId}/{$teamId}/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/{$seasonId}/{$teamId}' | '/{$seasonId}'
-  id: '__root__' | '/' | '/{$seasonId}/{$teamId}' | '/{$seasonId}/'
+  to:
+    | '/'
+    | '/{$sportId}'
+    | '/{$sportId}/{$seasonId}'
+    | '/{$sportId}/{$seasonId}/{$teamId}'
+  id:
+    | '__root__'
+    | '/'
+    | '/{$sportId}/'
+    | '/{$sportId}/{$seasonId}/'
+    | '/{$sportId}/{$seasonId}/{$teamId}/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  Char123seasonIdChar125Char123teamIdChar125Route: typeof Char123seasonIdChar125Char123teamIdChar125Route
-  Char123seasonIdChar125IndexRoute: typeof Char123seasonIdChar125IndexRoute
+  Char123sportIdChar125IndexRoute: typeof Char123sportIdChar125IndexRoute
+  Char123sportIdChar125Char123seasonIdChar125IndexRoute: typeof Char123sportIdChar125Char123seasonIdChar125IndexRoute
+  Char123sportIdChar125Char123seasonIdChar125Char123teamIdChar125IndexRoute: typeof Char123sportIdChar125Char123seasonIdChar125Char123teamIdChar125IndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -70,18 +96,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/{$seasonId}/': {
-      id: '/{$seasonId}/'
-      path: '/{$seasonId}'
-      fullPath: '/{$seasonId}/'
-      preLoaderRoute: typeof Char123seasonIdChar125IndexRouteImport
+    '/{$sportId}/': {
+      id: '/{$sportId}/'
+      path: '/{$sportId}'
+      fullPath: '/{$sportId}/'
+      preLoaderRoute: typeof Char123sportIdChar125IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/{$seasonId}/{$teamId}': {
-      id: '/{$seasonId}/{$teamId}'
-      path: '/{$seasonId}/{$teamId}'
-      fullPath: '/{$seasonId}/{$teamId}'
-      preLoaderRoute: typeof Char123seasonIdChar125Char123teamIdChar125RouteImport
+    '/{$sportId}/{$seasonId}/': {
+      id: '/{$sportId}/{$seasonId}/'
+      path: '/{$sportId}/{$seasonId}'
+      fullPath: '/{$sportId}/{$seasonId}/'
+      preLoaderRoute: typeof Char123sportIdChar125Char123seasonIdChar125IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/{$sportId}/{$seasonId}/{$teamId}/': {
+      id: '/{$sportId}/{$seasonId}/{$teamId}/'
+      path: '/{$sportId}/{$seasonId}/{$teamId}'
+      fullPath: '/{$sportId}/{$seasonId}/{$teamId}/'
+      preLoaderRoute: typeof Char123sportIdChar125Char123seasonIdChar125Char123teamIdChar125IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -89,9 +122,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  Char123seasonIdChar125Char123teamIdChar125Route:
-    Char123seasonIdChar125Char123teamIdChar125Route,
-  Char123seasonIdChar125IndexRoute: Char123seasonIdChar125IndexRoute,
+  Char123sportIdChar125IndexRoute: Char123sportIdChar125IndexRoute,
+  Char123sportIdChar125Char123seasonIdChar125IndexRoute:
+    Char123sportIdChar125Char123seasonIdChar125IndexRoute,
+  Char123sportIdChar125Char123seasonIdChar125Char123teamIdChar125IndexRoute:
+    Char123sportIdChar125Char123seasonIdChar125Char123teamIdChar125IndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

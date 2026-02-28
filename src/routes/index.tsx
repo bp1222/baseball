@@ -1,10 +1,11 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
-  beforeLoad: ({ context: { defaultSeason } }) => {
+  beforeLoad: ({ context: { defaultSport, defaultSeason } }) => {
     throw redirect({
-      to: '/{$seasonId}',
+      to: `/{$sportId}/{$seasonId}`,
       params: {
+        sportId: defaultSport,
         seasonId: defaultSeason,
       },
     })

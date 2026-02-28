@@ -22,7 +22,7 @@ const DevTools = () => {
       setDevtools(
         <>
           <ReactQueryDevtools buttonPosition="bottom-right" />
-          <TanStackRouterDevtools position="bottom-left" />
+          <TanStackRouterDevtools position="top-left" />
         </>,
       )
     })

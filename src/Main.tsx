@@ -11,6 +11,7 @@ const router = createRouter({
   routeTree,
   context: {
     queryClient,
+    defaultSport: '1',
     defaultSeason: dayjs().format('YYYY'),
   } satisfies RouterContext,
   history: createHashHistory(),
