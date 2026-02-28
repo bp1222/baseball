@@ -18,9 +18,9 @@ import { useMemo, useState } from 'react'
 
 import { usePerson } from '@/queries/person'
 
-import { SeasonStatsTable } from '../SeasonStatsTable'
 import { PlayerGameLogView } from './PlayerGameLogView'
 import { PlayerSeasonWheelView } from './PlayerSeasonWheelView'
+import { SeasonStatsTable } from './SeasonStatsTable.tsx'
 
 type PlayerViewTab = 'gameLog' | 'seasonWheel'
 
