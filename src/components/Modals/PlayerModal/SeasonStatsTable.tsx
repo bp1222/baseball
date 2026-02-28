@@ -1,9 +1,8 @@
+import type { PersonStatsItem, PersonStatSplit } from '@bp1222/stats-api'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 
 import { useTeams } from '@/queries/team.ts'
 import type { Team } from '@/types/Team.ts'
-
-import type { PersonStatsItem, PersonStatSplit } from '../../../../../stats-api/dist'
 
 type SeasonStatsTableProps = {
   statItem: PersonStatsItem
