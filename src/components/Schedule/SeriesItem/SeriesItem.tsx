@@ -1,18 +1,18 @@
 import { Grid, Typography } from '@mui/material'
 import dayjs from 'dayjs'
 
-import { useInterestedTeam } from '@/context/InterestedTeamContext'
-import { GetSeriesResult } from '@/domain/series'
-import { useCustomPalette } from '@/theme/useCustomPalette'
-import { Series } from '@/types/Series'
-import { SeriesType } from '@/types/Series/SeriesType'
+import { useInterestedTeam } from '@/context/InterestedTeamContext.tsx'
+import { GetSeriesResult } from '@/domain/series/result'
+import { useCustomPalette } from '@/theme/useCustomPalette.ts'
+import { Series } from '@/types/Series.ts'
+import { SeriesType } from '@/types/Series/SeriesType.ts'
 
-import { GameTile } from './GameTile'
-import { ResultBadge } from './SeriesItem/ResultBadge'
-import { SeriesBadge } from './SeriesItem/SeriesBadge'
-import { SeriesTeam } from './SeriesItem/SeriesTeam'
-import { SeriesTeams } from './SeriesItem/SeriesTeams'
-import { SpringLeagueIcon } from './SeriesItem/SpringLeagueIcon'
+import { GameTile } from '../GameTile.tsx'
+import { ResultBadge } from './ResultBadge.tsx'
+import { SeriesBadge } from './SeriesBadge.tsx'
+import { SeriesTeam } from './SeriesTeam.tsx'
+import { SeriesTeams } from './SeriesTeams.tsx'
+import { SpringLeagueIcon } from './SpringLeagueIcon.tsx'
 
 type SeriesItemProps = {
   series: Series

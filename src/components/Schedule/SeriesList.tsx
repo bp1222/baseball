@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 
 import { Series } from '@/types/Series'
 
-import { SeriesItem } from './SeriesItem'
+import { SeriesItem } from './SeriesItem/SeriesItem.tsx'
 
 type SeriesListProps = {
   series: Series[]

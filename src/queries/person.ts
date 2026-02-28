@@ -5,9 +5,10 @@
  * via getPerson API. Used in the player modal from boxscore.
  */
 
+import { StatTypes } from '@bp1222/stats-api'
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import { api } from '@/services/MlbAPI'
+import { peopleApi } from '@/services/MlbAPI'
 
 const PERSON_STALE_TIME = 1000 * 60 * 5 // 5 minutes
 
@@ -20,7 +21,7 @@ export const personOptions = (personId: string) =>
     staleTime: PERSON_STALE_TIME,
     enabled: !!personId,
     queryFn: async () => {
-      const res = await api.getPerson({
+      const res = await peopleApi.getPerson({
         personId: Number(personId),
         hydrate: PERSON_HYDRATE,
       })
@@ -46,9 +47,9 @@ export const personGameLogOptions = (personId: string | null, season: string | n
     staleTime: PERSON_STALE_TIME,
     enabled: !!personId && !!season,
     queryFn: async () => {
-      const res = await api.getPersonStats({
+      const res = await peopleApi.getPersonStats({
         personId: Number(personId!),
-        stats: 'gameLog',
+        stats: StatTypes.GameLog,
         group,
         season: season!,
       })

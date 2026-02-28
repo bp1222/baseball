@@ -8,7 +8,7 @@
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
 import { useSeason } from '@/queries/season'
-import { api } from '@/services/MlbAPI'
+import { referenceApi } from '@/services/MlbAPI'
 import { TeamFromMLBTeam } from '@/types/Team'
 
 /**
@@ -23,7 +23,7 @@ export const teamsOptions = (seasonId?: string) =>
     staleTime: TEAMS_STALE_TIME,
     enabled: !!seasonId,
     queryFn: async () => {
-      const { teams } = await api.getTeams({
+      const { teams } = await referenceApi.getTeams({
         sportId: 1,
         season: seasonId!,
         fields: [

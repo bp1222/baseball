@@ -7,7 +7,7 @@
 
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import { api } from '@/services/MlbAPI'
+import { gamesApi } from '@/services/MlbAPI'
 import { LinescoreFromMLBLinescore } from '@/types/Linescore'
 
 /**
@@ -27,7 +27,7 @@ export const linescoreOptions = (gamePk: number, isLive: boolean = false) =>
     // Auto-refresh live games every 30 seconds
     refetchInterval: isLive ? LINESCORE_STALE_TIME_LIVE : false,
     queryFn: async () => {
-      const data = await api.getLinescore({ gamePk })
+      const data = await gamesApi.getLinescore({ gamePk })
       return LinescoreFromMLBLinescore(data)
     },
   })

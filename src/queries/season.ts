@@ -9,7 +9,8 @@ import { queryOptions, useQuery } from '@tanstack/react-query'
 import { useParams } from '@tanstack/react-router'
 
 import { Route } from '@/routes/__root'
-import { api } from '@/services/MlbAPI'
+import { referenceApi } from '@/services/MlbAPI'
+import { SeasonFromMLBSeason } from '@/types/Season.ts'
 
 /**
  * Stale time: Infinity (static)
@@ -26,8 +27,11 @@ export const seasonsOptions = queryOptions({
   queryKey: ['seasons'],
   staleTime: SEASONS_STALE_TIME,
   queryFn: async () => {
-    const { seasons } = await api.getAllSeasons({ sportId: 1 })
-    return seasons.filter((s) => parseInt(s.seasonId) > MIN_SEASON_YEAR).reverse()
+    const { seasons } = await referenceApi.getAllSeasons({ sportId: 1 })
+    return seasons
+      .filter((s) => parseInt(s.seasonId) > MIN_SEASON_YEAR)
+      .reverse()
+      .map(SeasonFromMLBSeason)
   },
 })
 

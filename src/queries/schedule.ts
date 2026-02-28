@@ -5,13 +5,14 @@
  * This is the primary data source for both day view and team view.
  */
 
-import { GameType, Season } from '@bp1222/stats-api'
+import { GameType } from '@bp1222/stats-api'
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import { SeriesFromMLBSchedule } from '@/domain/series'
+import { SeriesFromMLBSchedule } from '@/domain/series/factory'
 import { useSeason } from '@/queries/season'
-import { useTeams } from '@/queries/team.ts'
-import { api } from '@/services/MlbAPI'
+import { useTeams } from '@/queries/team'
+import { scheduleApi } from '@/services/MlbAPI'
+import { Season } from '@/types/Season'
 import { Team } from '@/types/Team'
 
 /**
@@ -53,13 +54,13 @@ const baseGameFields = [
   'venue',
 ]
 
-export const scheduleOptions = (season?: Season, teams?: Team[]) =>
+export const scheduleOptions = (season?: Season, teams: Team[]) =>
   queryOptions({
     queryKey: ['schedule', season?.seasonId],
     staleTime: SCHEDULE_STALE_TIME,
-    enabled: !!(season?.seasonId && teams?.length),
+    enabled: !!season?.seasonId,
     queryFn: async () => {
-      const scheduleData = await api.getSchedule({
+      const scheduleData = await scheduleApi.getSchedule({
         sportId: 1,
         gameTypes: [
           GameType.SpringTraining,

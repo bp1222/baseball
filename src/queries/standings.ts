@@ -7,7 +7,7 @@
 
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import { api } from '@/services/MlbAPI'
+import { standingsApi } from '@/services/MlbAPI'
 import { StandingsFromMLBDivisionStandingsList } from '@/types/Standings'
 
 /**
@@ -23,7 +23,7 @@ export const standingsOptions = (seasonId?: string, leagueId?: number) =>
     staleTime: STANDINGS_STALE_TIME,
     enabled: !!seasonId && !!leagueId,
     queryFn: async () => {
-      const standings = await api.getStandings({
+      const standings = await standingsApi.getStandings({
         season: seasonId!,
         leagueId: leagueId!,
         fields: [

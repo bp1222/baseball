@@ -1,1 +1,0 @@
-export { PlayerModal } from './PlayerModal'

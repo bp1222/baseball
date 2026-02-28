@@ -5,7 +5,7 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 import { Footer } from '@/components/Layout/Footer'
 import { Header } from '@/components/Layout/Header'
-import { AppModals } from '@/components/Modals'
+import { AppModals } from '@/components/Modals/AppModals'
 import { InterestedTeamProvider } from '@/context/InterestedTeamContext'
 import { ModalProvider } from '@/context/ModalContext'
 import { AppThemeProvider } from '@/context/ThemeModeContext'

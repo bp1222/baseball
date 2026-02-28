@@ -2,7 +2,7 @@ import { CssBaseline, ThemeProvider } from '@mui/material'
 import { PropsWithChildren, useMemo } from 'react'
 
 import { useInterestedTeam } from '@/context/InterestedTeamContext'
-import { getTheme } from '@/theme'
+import { getTheme } from '@/theme/getTheme'
 
 export const AppThemeProvider = ({ children }: PropsWithChildren) => {
   const team = useInterestedTeam()

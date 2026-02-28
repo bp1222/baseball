@@ -1,5 +1,4 @@
-import { DonutLarge } from '@mui/icons-material'
-import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, Toolbar, Typography } from '@mui/material'
 import { useParams } from '@tanstack/react-router'
 
 import { Preferences } from '@/components/Layout/Header/Preferences.tsx'
@@ -55,9 +54,6 @@ export const Header = () => {
             gap: 0.5,
           }}
         >
-          <IconButton onClick={() => openSeasonWheelDemo()} color="secondary" size="large">
-            <DonutLarge />
-          </IconButton>
           <Preferences />
           <TeamPicker />
         </Box>

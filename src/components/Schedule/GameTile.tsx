@@ -124,6 +124,8 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
       {/* Game number in series */}
       {gameNumber != null && gamesInSeries != null && gamesInSeries > 0 && (
         <Box
+          borderBottom={1}
+          borderColor={homeColors.main}
           sx={{
             fontSize: '0.65rem',
             color: 'text.secondary',

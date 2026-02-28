@@ -4,7 +4,7 @@ import { Box, CircularProgress, Typography } from '@mui/material'
 import { usePersonGameLog } from '@/queries/person'
 import type { GameLogSplit } from '@/types/GameLogSplit'
 
-import { GameLogTable } from '../GameLogTable'
+import { GameLogTable } from './GameLogTable'
 
 type PlayerGameLogViewProps = {
   personId: string
@@ -13,7 +13,12 @@ type PlayerGameLogViewProps = {
   pitchingStats: PersonStatsItem | undefined
 }
 
-export const PlayerGameLogView = ({ personId, selectedSeason, hittingStats, pitchingStats }: PlayerGameLogViewProps) => {
+export const PlayerGameLogView = ({
+  personId,
+  selectedSeason,
+  hittingStats,
+  pitchingStats,
+}: PlayerGameLogViewProps) => {
   const hittingGameLog = usePersonGameLog(personId, selectedSeason, 'hitting')
   const pitchingGameLog = usePersonGameLog(personId, selectedSeason, 'pitching')
 

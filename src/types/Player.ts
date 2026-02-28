@@ -1,10 +1,10 @@
 import { Player as MLBPlayer } from '@bp1222/stats-api'
 
 export type Player = {
-  id: string
+  id: number
   name: string
   jerseyNumber: string
-  battingOrder: number
+  battingOrder: string
   position?: string
   stats: {
     batting: {
@@ -37,7 +37,7 @@ export const PlayerFromMLBPlayer = (player: MLBPlayer): Player => ({
   id: player.person.id,
   name: player.person.fullName,
   jerseyNumber: player.jerseyNumber ?? 'X',
-  battingOrder: player.battingOrder ?? 0,
+  battingOrder: player.battingOrder ?? '0',
   position: player.position.abbreviation,
   stats: {
     batting: {

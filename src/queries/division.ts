@@ -8,7 +8,7 @@
 import { queryOptions, useQuery, UseQueryResult } from '@tanstack/react-query'
 
 import { useSeason } from '@/queries/season'
-import { api } from '@/services/MlbAPI'
+import { referenceApi } from '@/services/MlbAPI'
 import { Division, DivisionFromMLBDivision } from '@/types/Division'
 
 /**
@@ -23,7 +23,7 @@ export const divisionsOptions = (seasonId?: string) =>
     staleTime: DIVISIONS_STALE_TIME,
     enabled: !!seasonId,
     queryFn: async () => {
-      const data = await api.getDivisions({ sportId: 1, season: seasonId! })
+      const data = await referenceApi.getDivisions({ sportId: 1, season: seasonId! })
       return data.divisions.map((d) => DivisionFromMLBDivision(d))
     },
   })

@@ -17,7 +17,7 @@ const RESULT_LABELS: Record<SeriesResult, string> = {
   [SeriesResult.Tie]: 'Tie',
   [SeriesResult.InProgress]: 'In progress',
   [SeriesResult.Unplayed]: '',
-  [SeriesResult.WorldSeriesWin]: 'Win',
+  [SeriesResult.WorldSeriesWin]: 'Champions',
 }
 
 export const ResultBadge = ({ result, type }: ResultBadgeProps) => {

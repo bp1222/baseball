@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 
-import { SeasonSeries } from '@/components/Schedule'
+import { SeasonSeries } from '@/components/Schedule/SeasonSeries'
 import { scheduleOptions } from '@/queries/schedule'
 import { seasonsOptions } from '@/queries/season'
 import { teamsOptions } from '@/queries/team'

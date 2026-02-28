@@ -3,7 +3,7 @@ import { Box, styled, SvgIcon, Typography } from '@mui/material'
 import { useMemo } from 'react'
 
 import { TeamImage } from '@/components/Shared/TeamImage.tsx'
-import { getTheme } from '@/theme'
+import { getTheme } from '@/theme/getTheme'
 import type { GameLogSplit } from '@/types/GameLogSplit'
 import { Team } from '@/types/Team.ts'
 

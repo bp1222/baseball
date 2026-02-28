@@ -7,7 +7,7 @@
 
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import { api } from '@/services/MlbAPI'
+import { gamesApi } from '@/services/MlbAPI'
 import { BoxscoreFromMLBBoxscore } from '@/types/Boxscore'
 
 /**
@@ -25,7 +25,7 @@ export const boxscoreOptions = (gamePk: number, isLive: boolean = false) =>
     // Auto-refresh live games every 30 seconds
     refetchInterval: isLive ? BOXSCORE_STALE_TIME_LIVE : false,
     queryFn: async () => {
-      const data = await api.getBoxscore({ gamePk })
+      const data = await gamesApi.getBoxscore({ gamePk })
       return BoxscoreFromMLBBoxscore(data)
     },
   })

@@ -6,8 +6,7 @@
 import { useModalState } from '@/context/ModalContext'
 
 import { BoxscoreModal } from './BoxscoreModal'
-import { PlayerModal } from './PlayerModal'
-import { SeasonWheelDemoModal } from './SeasonWheelDemoModal'
+import { PlayerModal } from './PlayerModal/PlayerModal'
 
 /**
  * Renders the modal stack (e.g. boxscore with player on top).
@@ -18,15 +17,12 @@ export const AppModals = () => {
 
   return (
     <>
-      {stack.map((item, index) => {
+      {stack.map((item) => {
         if (item.type === 'boxscore') {
           return <BoxscoreModal key={`boxscore-${item.data.pk}`} game={item.data} onClose={close} />
         }
         if (item.type === 'player') {
           return <PlayerModal key={`player-${item.data}`} personId={item.data} onClose={close} />
-        }
-        if (item.type === 'seasonWheelDemo') {
-          return <SeasonWheelDemoModal key={`seasonWheelDemo-${index}`} onClose={close} />
         }
         return null
       })}

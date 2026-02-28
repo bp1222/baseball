@@ -1,7 +1,7 @@
 import type { PersonStatsItem } from '@bp1222/stats-api'
 import { Box, CircularProgress, Typography } from '@mui/material'
 
-import { PlayerSeasonWheel } from '@/components/Player'
+import { PlayerSeasonWheel } from '@/components/Player/PlayerSeasonWheel'
 import { usePersonGameLog } from '@/queries/person'
 import { useTeam } from '@/queries/team.ts'
 import type { GameLogSplit } from '@/types/GameLogSplit'
