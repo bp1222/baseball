@@ -15,11 +15,10 @@ const PERSON_STALE_TIME = 1000 * 60 * 5 // 5 minutes
 /** Hydrate person with year-by-year hitting and pitching stats for career table */
 const PERSON_HYDRATE = 'currentTeam,stats(group=[hitting,pitching],type=[yearByYear])'
 
-export const personOptions = (personId: string) =>
+export const personOptions = (personId: number) =>
   queryOptions({
     queryKey: ['person', personId],
     staleTime: PERSON_STALE_TIME,
-    enabled: !!personId,
     queryFn: async () => {
       const res = await peopleApi.getPerson({
         personId: Number(personId),
@@ -35,23 +34,22 @@ export const personOptions = (personId: string) =>
 /**
  * Get person (player) by ID with career season stats
  */
-export const usePerson = (personId: string | null) => {
-  return useQuery(personOptions(personId ?? ''))
+export const usePerson = (personId: number) => {
+  return useQuery(personOptions(personId))
 }
 
 export type PersonGameLogGroup = 'hitting' | 'pitching'
 
-export const personGameLogOptions = (personId: string | null, season: string | null, group: PersonGameLogGroup) =>
+export const personGameLogOptions = (personId: number, season: string, group: PersonGameLogGroup) =>
   queryOptions({
     queryKey: ['person', personId, 'gameLog', season, group],
     staleTime: PERSON_STALE_TIME,
-    enabled: !!personId && !!season,
     queryFn: async () => {
       const res = await peopleApi.getPersonStats({
-        personId: Number(personId!),
+        personId: personId,
         stats: StatTypes.GameLog,
         group,
-        season: season!,
+        season: season,
       })
       const gameLog = res.stats?.find((s) => s.type?.displayName === 'gameLog' && s.group?.displayName === group)
       return gameLog?.splits ?? []
@@ -61,5 +59,5 @@ export const personGameLogOptions = (personId: string | null, season: string | n
 /**
  * Get game-by-game stats for a player in a given season (hitting or pitching).
  */
-export const usePersonGameLog = (personId: string | null, season: string | null, group: PersonGameLogGroup) =>
+export const usePersonGameLog = (personId: number, season: string, group: PersonGameLogGroup) =>
   useQuery(personGameLogOptions(personId, season, group))

@@ -3,7 +3,6 @@ import { useParams } from '@tanstack/react-router'
 
 import { Preferences } from '@/components/Layout/Header/Preferences.tsx'
 import { useInterestedTeam } from '@/context/InterestedTeamContext'
-import { useModal } from '@/context/ModalContext.tsx'
 
 import { HeaderName } from './Header/HeaderName'
 import { SeasonPicker } from './Header/SeasonPicker'
@@ -12,7 +11,6 @@ import { TeamPicker } from './Header/TeamPicker'
 export const Header = () => {
   const { seasonId } = useParams({ strict: false })
   const selectedTeam = useInterestedTeam()
-  const { openSeasonWheelDemo } = useModal()
 
   return (
     <AppBar position={'sticky'} color={'primary'} enableColorOnDark>

@@ -25,7 +25,7 @@ import { PlayerSeasonWheelView } from './PlayerSeasonWheelView'
 type PlayerViewTab = 'gameLog' | 'seasonWheel'
 
 type PlayerModalProps = {
-  personId: string
+  personId: number
   onClose: () => void
 }
 

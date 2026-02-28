@@ -13,6 +13,7 @@ export enum GameType {
 export const GameTypeFromMLBGameType = (gameType: MLBGameType): GameType => {
   switch (gameType) {
     case MLBGameType.Exhibition:
+    case MLBGameType.AllStar:
       return GameType.Exhibition
     case MLBGameType.SpringTraining:
       return GameType.SpringTraining

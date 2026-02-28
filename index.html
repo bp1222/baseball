@@ -1,52 +1,50 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Google Tag Manager -->
-    <script>
-      ;(function (w, d, s, l, i) {
-        w[l] = w[l] || []
-        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' })
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : ''
-        j.async = true
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl
-        f.parentNode.insertBefore(j, f)
-      })(window, document, 'script', 'dataLayer', 'GTM-P2SCGT3M')
-    </script>
-    <!-- End Google Tag Manager -->
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RC0E7L57KC"></script>
+    <meta charset="utf-8" />
+    <!-- Analytics deferred until after first paint (see loadAnalytics below) -->
     <script>
       window.dataLayer = window.dataLayer || []
       function gtag() {
         dataLayer.push(arguments)
       }
-      gtag('js', new Date())
-      gtag('config', 'G-RC0E7L57KC')
+      window.loadAnalytics = function () {
+        dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' })
+        var gtm = document.createElement('script')
+        gtm.async = true
+        gtm.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-P2SCGT3M'
+        document.head.appendChild(gtm)
+        var ga = document.createElement('script')
+        ga.async = true
+        ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-RC0E7L57KC'
+        ga.onload = function () {
+          gtag('js', new Date())
+          gtag('config', 'G-RC0E7L57KC')
+        }
+        document.head.appendChild(ga)
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(
+          function () {
+            window.loadAnalytics()
+          },
+          { timeout: 3000 },
+        )
+      } else {
+        window.addEventListener('load', function () {
+          setTimeout(window.loadAnalytics, 0)
+        })
+      }
     </script>
-    <!-- End Google tag (gtag.js) -->
-
-    <link rel="preconnect" href="https://www.mlbstatic.com" />
-    <link rel="preconnect" href="https://midfield.mlbstatic.com" />
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://www.mlbstatic.com" />
+    <link rel="preconnect" href="https://midfield.mlbstatic.com" />
     <link rel="icon" href="favicon.ico" />
     <title>Baseball Series</title>
   </head>
   <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript
-      ><iframe
-        src="https://www.googletagmanager.com/ns.html?id=GTM-P2SCGT3M"
-        height="0"
-        width="0"
-        style="display: none; visibility: hidden"
-      ></iframe
-    ></noscript>
-    <!-- End Google Tag Manager (noscript) -->
     <div id="root"></div>
     <script type="module" src="/src/Main.tsx"></script>
   </body>

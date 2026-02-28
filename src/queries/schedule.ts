@@ -54,11 +54,11 @@ const baseGameFields = [
   'venue',
 ]
 
-export const scheduleOptions = (season?: Season, teams: Team[]) =>
+export const scheduleOptions = (season?: Season, teams?: Team[]) =>
   queryOptions({
     queryKey: ['schedule', season?.seasonId],
     staleTime: SCHEDULE_STALE_TIME,
-    enabled: !!season?.seasonId,
+    enabled: !!(season?.seasonId && teams?.length),
     queryFn: async () => {
       const scheduleData = await scheduleApi.getSchedule({
         sportId: 1,

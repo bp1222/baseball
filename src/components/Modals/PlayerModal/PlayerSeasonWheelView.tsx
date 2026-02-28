@@ -7,7 +7,7 @@ import { useTeam } from '@/queries/team.ts'
 import type { GameLogSplit } from '@/types/GameLogSplit'
 
 type PlayerSeasonWheelViewProps = {
-  personId: string
+  personId: number
   playerName: string
   currentTeamId: number | undefined
   selectedSeason: string

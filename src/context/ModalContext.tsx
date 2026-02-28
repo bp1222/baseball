@@ -17,7 +17,7 @@ import { Game } from '@/types/Game'
 // One item in the modal stack (bottom to top)
 export type ModalStackItem =
   | { type: 'boxscore'; data: Game }
-  | { type: 'player'; data: string }
+  | { type: 'player'; data: number }
   | { type: 'seasonWheelDemo' }
 
 type ModalContextValue = {
@@ -26,7 +26,7 @@ type ModalContextValue = {
   /** Open the boxscore modal (replaces stack with just this modal) */
   openBoxscore: (game: Game, trigger?: HTMLElement | null) => void
   /** Open the player modal on top of the current stack (e.g. on top of boxscore) */
-  openPlayer: (personId: string, trigger?: HTMLElement | null) => void
+  openPlayer: (personId: number, trigger?: HTMLElement | null) => void
   /** Open the season wheel demo modal */
   openSeasonWheelDemo: (trigger?: HTMLElement | null) => void
   /** Close the topmost modal; if stack becomes empty, returns focus to trigger */
@@ -48,7 +48,7 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
     setStack([{ type: 'boxscore', data: game }])
   }, [])
 
-  const openPlayer = useCallback((personId: string, _trigger?: HTMLElement | null) => {
+  const openPlayer = useCallback((personId: number, _trigger?: HTMLElement | null) => {
     setStack((prev) => [...prev, { type: 'player', data: personId }])
   }, [])
 

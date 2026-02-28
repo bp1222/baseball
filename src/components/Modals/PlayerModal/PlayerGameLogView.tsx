@@ -7,7 +7,7 @@ import type { GameLogSplit } from '@/types/GameLogSplit'
 import { GameLogTable } from './GameLogTable'
 
 type PlayerGameLogViewProps = {
-  personId: string
+  personId: number
   selectedSeason: string
   hittingStats: PersonStatsItem | undefined
   pitchingStats: PersonStatsItem | undefined

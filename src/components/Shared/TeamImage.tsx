@@ -30,15 +30,19 @@ export const TeamImage = ({ team, dead, size }: TeamImageProps) => {
     src = 'https://midfield.mlbstatic.com/v1/team/' + teamId + '/spots/128'
   }
 
+  const sizePx = size ?? 24
   return (
     <Tooltip title={team.name} enterDelay={500} enterNextDelay={500} leaveDelay={200}>
       <Box
         component="img"
         src={src}
+        width={sizePx}
+        height={sizePx}
+        loading="lazy"
         sx={{
           filter: dead ? 'grayscale(1)' : undefined,
-          height: size ?? 24,
-          width: size ?? 24,
+          height: sizePx,
+          width: sizePx,
           display: 'block',
           objectFit: 'contain',
         }}

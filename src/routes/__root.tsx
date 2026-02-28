@@ -1,7 +1,6 @@
 import { Box, Container } from '@mui/material'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { useEffect, useState } from 'react'
 
 import { Footer } from '@/components/Layout/Footer'
 import { Header } from '@/components/Layout/Header'
@@ -10,6 +9,26 @@ import { InterestedTeamProvider } from '@/context/InterestedTeamContext'
 import { ModalProvider } from '@/context/ModalContext'
 import { AppThemeProvider } from '@/context/ThemeModeContext'
 import type { RouterContext } from '@/router/context'
+
+/** Loads and renders React Query and Router devtools only in development. Not in production bundle. */
+const DevTools = () => {
+  const [devtools, setDevtools] = useState<React.ReactNode>(null)
+  useEffect(() => {
+    if (!import.meta.env.DEV) return
+    Promise.all([
+      import('@tanstack/react-query-devtools').then((m) => m.ReactQueryDevtools),
+      import('@tanstack/react-router-devtools').then((m) => m.TanStackRouterDevtools),
+    ]).then(([ReactQueryDevtools, TanStackRouterDevtools]) => {
+      setDevtools(
+        <>
+          <ReactQueryDevtools buttonPosition="bottom-right" />
+          <TanStackRouterDevtools position="bottom-left" />
+        </>,
+      )
+    })
+  }, [])
+  return devtools
+}
 
 const RootComponent = () => {
   return (
@@ -28,8 +47,7 @@ const RootComponent = () => {
           </ModalProvider>
         </AppThemeProvider>
       </InterestedTeamProvider>
-      <ReactQueryDevtools buttonPosition="bottom-right" />
-      <TanStackRouterDevtools position="bottom-left" />
+      <DevTools />
     </>
   )
 }

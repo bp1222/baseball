@@ -7,6 +7,7 @@ export default defineConfig({
   publicDir: 'public',
   plugins: [tanstackRouter({ target: 'react', autoCodeSplitting: true }), react(), tsconfigPaths()],
   build: {
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks: (id) => {

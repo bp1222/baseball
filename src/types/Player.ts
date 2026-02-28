@@ -4,7 +4,7 @@ export type Player = {
   id: number
   name: string
   jerseyNumber: string
-  battingOrder: string
+  battingOrder: number
   position?: string
   stats: {
     batting: {
@@ -37,7 +37,7 @@ export const PlayerFromMLBPlayer = (player: MLBPlayer): Player => ({
   id: player.person.id,
   name: player.person.fullName,
   jerseyNumber: player.jerseyNumber ?? 'X',
-  battingOrder: player.battingOrder ?? '0',
+  battingOrder: Number(player.battingOrder ?? 0),
   position: player.position.abbreviation,
   stats: {
     batting: {

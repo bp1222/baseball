@@ -173,6 +173,7 @@ const TeamComponent = () => {
 
 export const Route = createFileRoute('/{$seasonId}/{$teamId}')({
   loader: async ({ context: { queryClient, defaultSeason }, params: { seasonId } }) => {
+    await import('@/lib/dayjs')
     const [seasons, teams] = await Promise.all([
       queryClient.ensureQueryData(seasonsOptions),
       queryClient.ensureQueryData(teamsOptions(seasonId ?? defaultSeason)),
