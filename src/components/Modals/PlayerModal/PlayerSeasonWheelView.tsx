@@ -22,7 +22,23 @@ export const PlayerSeasonWheelView = ({
   hittingStats,
 }: PlayerSeasonWheelViewProps) => {
   const hittingGameLog = usePersonGameLog(personId, selectedSeason, 'hitting')
-  const { data: team } = useTeam(currentTeamId)
+  const { data: team, isLoading, isError } = useTeam(currentTeamId)
+
+  if (isLoading) {
+    return (
+      <Box display="flex" justifyContent="center" py={2}>
+        <CircularProgress size={24} />
+      </Box>
+    )
+  }
+
+  if (isError) {
+    return (
+      <Typography variant="body2" color="text.secondary">
+        Unable to load team information for season wheel.
+      </Typography>
+    )
+  }
 
   if (hittingGameLog.isPending) {
     return (

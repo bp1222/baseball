@@ -26,7 +26,6 @@ export const personOptions = (personId: number) =>
       })
       const person = res.people?.[0]
       if (!person) throw new Error('Person not found')
-      console.log(person)
       return person
     },
   })

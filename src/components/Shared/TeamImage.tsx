@@ -9,30 +9,31 @@ type TeamImageProps = BoxProps & {
 }
 
 export const TeamImage = ({ team, dead, size }: TeamImageProps) => {
-  if (!team) {
-    return null
-  }
+  let src = 'https://www.mlbstatic.com/team-logos/league-on-light/1.svg'
+  let teamName = 'MLB'
+  if (team) {
+    let teamId = team.id
+    src = 'https://www.mlbstatic.com/team-logos/team-cap-on-light/' + teamId + '.svg'
+    teamName = team.name
 
-  let teamId = team.id
-  let src = 'https://www.mlbstatic.com/team-logos/team-cap-on-light/' + teamId + '.svg'
-
-  // Teams in 4xxx range are returned for teams in the postseason before
-  // a specific team qualifies for the spot. Problem is the images served
-  // for the teams aren't always the right league. So we hardcode to
-  // known good images for the leagues.
-  if (teamId > 1000) {
-    if (team.league == 104) {
-      teamId = 4619
+    // Teams in 4xxx range are returned for teams in the postseason before
+    // a specific team qualifies for the spot. Problem is the images served
+    // for the teams aren't always the right league. So we hardcode to
+    // known good images for the leagues.
+    if (teamId > 1000) {
+      if (team.league == 104) {
+        teamId = 4619
+      }
+      if (team.league == 103) {
+        teamId = 4944
+      }
+      src = 'https://midfield.mlbstatic.com/v1/team/' + teamId + '/spots/128'
     }
-    if (team.league == 103) {
-      teamId = 4944
-    }
-    src = 'https://midfield.mlbstatic.com/v1/team/' + teamId + '/spots/128'
   }
 
   const sizePx = size ?? 24
   return (
-    <Tooltip title={team.name} enterDelay={500} enterNextDelay={500} leaveDelay={200}>
+    <Tooltip title={teamName} enterDelay={500} enterNextDelay={500} leaveDelay={200}>
       <Box
         component="img"
         src={src}
@@ -46,7 +47,7 @@ export const TeamImage = ({ team, dead, size }: TeamImageProps) => {
           display: 'block',
           objectFit: 'contain',
         }}
-        alt={team.name}
+        alt={teamName}
       />
     </Tooltip>
   )

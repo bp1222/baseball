@@ -53,7 +53,6 @@ function deriveAtBatsFromStat(stat: Record<string, unknown>): AtBatResult[] {
 }
 
 export const PlayerSeasonWheel = ({ playerName, team, season, gameLog, seasonSplit }: PlayerSeasonWheelProps) => {
-  console.log('PlayerSeasonWheel render', { playerName, team, season, gameLog, seasonSplit })
   const games = useMemo(() => {
     return gameLog.map((split) => ({
       gamePk: split.game?.gamePk,
@@ -175,10 +174,10 @@ export const PlayerSeasonWheel = ({ playerName, team, season, gameLog, seasonSpl
 
         {stats && (
           <>
-            <StatDiamond value={stats.doubles} label="2B" position="top" size={size} team={team!} />
-            <StatDiamond value={stats.triples} label="3B" position="left" size={size} team={team!} />
-            <StatDiamond value={stats.singles} label="1B" position="right" size={size} team={team!} />
-            <StatDiamond value={stats.homeRuns} label="HR" position="bottom" size={size} team={team!} highlight />
+            <StatDiamond value={stats.doubles} label="2B" position="top" size={size} team={team} />
+            <StatDiamond value={stats.triples} label="3B" position="left" size={size} team={team} />
+            <StatDiamond value={stats.singles} label="1B" position="right" size={size} team={team} />
+            <StatDiamond value={stats.homeRuns} label="HR" position="bottom" size={size} team={team} highlight />
           </>
         )}
       </Box>
@@ -269,7 +268,7 @@ type StatDiamondProps = {
   label: string
   position: 'top' | 'bottom' | 'left' | 'right'
   size: number
-  team: Team
+  team?: Team
   highlight?: boolean
 }
 
@@ -299,7 +298,7 @@ const StatDiamond = ({ value, label, position, size, team, highlight }: StatDiam
       `${cx - plateW * 0.45},${plateH * 0.55}`,
     ].join(' ')
 
-    const teamTheme = getTheme(team.id)
+    const teamTheme = getTheme(team?.id)
     const StyledSvgIcon = styled(SvgIcon)(() => ({
       fill: teamTheme.palette.primary.main,
       stroke: teamTheme.palette.secondary.main,
