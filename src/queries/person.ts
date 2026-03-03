@@ -9,6 +9,7 @@ import { StatTypes } from '@bp1222/stats-api'
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
 import { peopleApi } from '@/services/MlbAPI'
+import { PersonFromMLBPerson } from '@/types/Person.ts'
 
 const PERSON_STALE_TIME = 1000 * 60 * 5 // 5 minutes
 
@@ -26,7 +27,7 @@ export const personOptions = (personId: number) =>
       })
       const person = res.people?.[0]
       if (!person) throw new Error('Person not found')
-      return person
+      return PersonFromMLBPerson(person)
     },
   })
 
