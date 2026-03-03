@@ -41,11 +41,7 @@ export const PersonFromMLBPerson = (person: MLBPerson): Person => ({
       }
     : undefined,
   currentTeam: person.currentTeam ? TeamFromMLBTeam(person.currentTeam) : undefined,
-  batSide: person.batSide
-    ? { code: person.batSide.code, description: person.batSide.description }
-    : undefined,
-  pitchHand: person.pitchHand
-    ? { code: person.pitchHand.code, description: person.pitchHand.description }
-    : undefined,
+  batSide: person.batSide ? { code: person.batSide.code, description: person.batSide.description } : undefined,
+  pitchHand: person.pitchHand ? { code: person.pitchHand.code, description: person.pitchHand.description } : undefined,
   stats: person.stats,
 })
