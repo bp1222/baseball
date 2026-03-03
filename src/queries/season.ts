@@ -26,7 +26,6 @@ const MIN_SEASON_YEAR = 1921
 export const seasonsOptions = queryOptions({
   queryKey: ['seasons'],
   staleTime: SEASONS_STALE_TIME,
-  enabled: false,
   queryFn: async () => {
     const { seasons } = await referenceApi.getAllSeasons({ sportId: 1 })
     return seasons

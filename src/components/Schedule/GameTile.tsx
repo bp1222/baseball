@@ -17,7 +17,7 @@ import { useRef } from 'react'
 import { useInterestedTeam } from '@/context/InterestedTeamContext'
 import { useModal } from '@/context/ModalContext'
 import { useLinescore } from '@/queries/linescore'
-import { useTeams } from '@/queries/team'
+import { useTeam } from '@/queries/team'
 import { useCustomPalette } from '@/theme/useCustomPalette'
 import { Game } from '@/types/Game'
 import { GetGameResult } from '@/types/Game/GameResult'
@@ -38,7 +38,6 @@ type GameTileProps = {
 export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: GameTileProps) => {
   const { gameResult, gameStatus } = useCustomPalette()
   const interestedTeam = useInterestedTeam()
-  const { data: teams } = useTeams()
   const { openBoxscore } = useModal()
   const tileRef = useRef<HTMLDivElement>(null)
 
@@ -55,11 +54,11 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
 
   const tileColors = interestedTeam ? gameResult[GetGameResult(game, interestedTeam)] : gameStatus[game.gameStatus]
 
-  const awayAbbr = teams?.find((t) => t.id === game.away.teamId)?.abbreviation ?? 'Away'
-  const homeAbbr = teams?.find((t) => t.id === game.home.teamId)?.abbreviation ?? 'Home'
+  const { data: awayTeam } = useTeam(game.away.teamId)
+  const { data: homeTeam } = useTeam(game.home.teamId)
 
-  const awayTeam = interestedTeam ?? teams?.find((t) => t.id === game.away.teamId)
-  const homeTeam = interestedTeam ?? teams?.find((t) => t.id === game.home.teamId)
+  const awayAbbr = awayTeam?.abbreviation ?? 'Away'
+  const homeAbbr = homeTeam?.abbreviation ?? 'Home'
 
   const awayColors = gameResult[GetGameResult(game, awayTeam)]
   const homeColors = gameResult[GetGameResult(game, homeTeam)]

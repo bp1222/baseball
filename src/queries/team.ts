@@ -24,7 +24,6 @@ export const teamsOptions = (seasonId?: string) =>
     enabled: !!seasonId,
     queryFn: async () => {
       const { teams } = await referenceApi.getTeams({
-        sportId: 1,
         season: seasonId!,
         fields: [
           'teams',
@@ -38,6 +37,7 @@ export const teamsOptions = (seasonId?: string) =>
           'division',
           'nameShort',
           'springLeague',
+          'sport',
         ],
         hydrate: 'division',
       })
@@ -53,7 +53,6 @@ export const useTeam = (teamId: number | undefined) => {
   const { data: season } = useSeason()
   return useQuery({
     ...teamsOptions(season?.seasonId),
-    enabled: teamId != null && !!season?.seasonId,
     select: (teams) => (teamId != null ? teams.find((t) => t.id === teamId) : undefined),
   })
 }
@@ -63,5 +62,8 @@ export const useTeam = (teamId: number | undefined) => {
  */
 export const useTeams = () => {
   const { data: season } = useSeason()
-  return useQuery(teamsOptions(season?.seasonId))
+  return useQuery({
+    ...teamsOptions(season?.seasonId),
+    select: (teams) => teams.filter((t) => t.sport == 1),
+  })
 }

@@ -38,6 +38,8 @@ export function SeriesFromMLBSchedule(schedule: MLBGame[], teams?: Team[]): Seri
 
   const gameToSeriesType = (game: MLBGame): SeriesType => {
     switch (game.gameType) {
+      case MLBGameType.Exhibition:
+        return SeriesType.Exhibition
       case MLBGameType.Regular:
         return SeriesType.Regular
       case MLBGameType.SpringTraining:
@@ -89,9 +91,6 @@ export function SeriesFromMLBSchedule(schedule: MLBGame[], teams?: Team[]): Seri
   }
 
   for (const game of schedule) {
-    if (game.gameType === MLBGameType.Exhibition) {
-      continue
-    }
     if (game.status?.codedGameState === MLBGameStatusCode.Postponed) {
       continue
     }

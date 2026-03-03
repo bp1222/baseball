@@ -63,6 +63,7 @@ export const scheduleOptions = (season?: Season, teams?: Team[]) =>
       const scheduleData = await scheduleApi.getSchedule({
         sportId: 1,
         gameTypes: [
+          GameType.Exhibition,
           GameType.SpringTraining,
           GameType.Regular,
           GameType.WildCardSeries,

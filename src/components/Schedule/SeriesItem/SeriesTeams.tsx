@@ -2,7 +2,7 @@ import { Grid, Typography } from '@mui/material'
 import { Fragment } from 'react'
 
 import { GetSeriesResult, GetSeriesWins } from '@/domain/series/result'
-import { useTeams } from '@/queries/team.ts'
+import { useTeam } from '@/queries/team.ts'
 import { Series } from '@/types/Series'
 import { SeriesResult } from '@/types/Series/SeriesResult.ts'
 import { SeriesType } from '@/types/Series/SeriesType.ts'
@@ -14,9 +14,8 @@ type SeriesTeamsProps = {
 }
 
 export const SeriesTeams = ({ series }: SeriesTeamsProps) => {
-  const { data: teams } = useTeams()
-  const home = teams?.find((t) => t.id == series.games[0].home.teamId)
-  const away = teams?.find((t) => t.id == series.games[0].away.teamId)
+  const { data: home } = useTeam(series.games[0].home.teamId)
+  const { data: away } = useTeam(series.games[0].away.teamId)
 
   const isPlayoffs =
     [SeriesType.WildCard, SeriesType.Division, SeriesType.League, SeriesType.World].indexOf(series.type) >= 0

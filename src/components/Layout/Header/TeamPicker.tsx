@@ -7,7 +7,7 @@ import { useInterestedTeamContext } from '@/context/InterestedTeamContext'
 import { useTeams } from '@/queries/team'
 
 export const TeamPicker = () => {
-  const { seasonId } = useParams({ strict: false })
+  const currentParams = useParams({ strict: false })
   const { team: interestedTeam, teamId } = useInterestedTeamContext()
   const { data: teams } = useTeams()
   const navigate = useNavigate()
@@ -16,16 +16,17 @@ export const TeamPicker = () => {
   const isOpen = Boolean(anchorEl)
 
   const setTeam = (newTeamId: number | null) => {
-    if (seasonId == null) return
+    if (currentParams.seasonId == null) return
     if (newTeamId != null) {
       void navigate({
-        to: '/{$seasonId}/{$teamId}',
-        params: { seasonId, teamId: String(newTeamId) },
+        to: '/{$sportId}/{$seasonId}/{$teamId}',
+        params: { ...currentParams, teamId: String(newTeamId) },
       })
     } else {
+      const { teamId: _teamId, ...paramsWithoutTeam } = currentParams
       void navigate({
-        to: '/{$seasonId}',
-        params: { seasonId },
+        to: '/{$sportId}/{$seasonId}',
+        params: paramsWithoutTeam,
       })
     }
   }

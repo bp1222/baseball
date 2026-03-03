@@ -25,6 +25,7 @@ const TeamComponent = () => {
     seasonSeries = seasonSeries.filter(
       (s) =>
         s.type !== SeriesType.SpringTraining &&
+        s.type !== SeriesType.Exhibition &&
         s.games.some((g) => g.away.teamId === interestedTeamId || g.home.teamId === interestedTeamId),
     )
   }

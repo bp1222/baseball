@@ -3,6 +3,7 @@ import { Team as MLBTeam } from '@bp1222/stats-api'
 export type Team = {
   id: number
   name: string
+  sport?: number
   franchiseName?: string
   teamName?: string
   abbreviation?: string
@@ -16,6 +17,7 @@ export const TeamFromMLBTeam = (team: MLBTeam): Team => {
   return {
     id: team.id,
     name: team.name,
+    sport: team.sport?.id,
     franchiseName: team.franchiseName,
     teamName: team.teamName,
     abbreviation: team.abbreviation,

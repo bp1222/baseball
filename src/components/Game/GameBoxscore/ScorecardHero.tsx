@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 
 import { TeamImage } from '@/components/Shared/TeamImage.tsx'
 import { useLinescore } from '@/queries/linescore'
-import { useTeams } from '@/queries/team'
+import { useTeam } from '@/queries/team'
 import { useCustomPalette } from '@/theme/useCustomPalette'
 import { Game } from '@/types/Game'
 import { GameStatus } from '@/types/Game/GameStatus'
@@ -19,7 +19,6 @@ type ScorecardHeroProps = {
 
 export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
   const { gameStatus } = useCustomPalette()
-  const { data: teams } = useTeams()
   const statusColors = gameStatus[game.gameStatus]
 
   const isLive = game.gameStatus === GameStatus.InProgress
@@ -41,8 +40,8 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
               ? 'CANCELED'
               : ''
 
-  const getTeamGameComponent = (gameTeam: GameTeam, score: number) => {
-    const team = teams?.find((t) => t.id === gameTeam.teamId)
+  const useTeamGameComponent = (gameTeam: GameTeam, score: number) => {
+    const { data: team } = useTeam(gameTeam.teamId)
     const record =
       gameTeam.record.wins != null && gameTeam.record.losses != null
         ? `${gameTeam.record.wins}-${gameTeam.record.losses}`
@@ -113,7 +112,7 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
           minWidth: 0,
         }}
       >
-        {getTeamGameComponent(game.away, awayScore)}
+        {useTeamGameComponent(game.away, awayScore)}
 
         <Box
           sx={{
@@ -192,7 +191,7 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
           )}
         </Box>
 
-        {getTeamGameComponent(game.home, homeScore)}
+        {useTeamGameComponent(game.home, homeScore)}
       </Box>
       {game.venue?.name && (
         <Box
