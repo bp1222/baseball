@@ -30,6 +30,7 @@ const contentBoxSx = {
 export const PlayerModal = ({ personId, onClose }: PlayerModalProps) => {
   const { data: person, isPending, isError, refetch } = usePerson(personId)
 
+  console.log('PlayerModal render', { personId, person, isPending, isError })
   if (isPending) {
     return (
       <Box

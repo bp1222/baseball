@@ -7,7 +7,7 @@ export type Team = {
   franchiseName?: string
   teamName?: string
   abbreviation?: string
-  league: number
+  league?: number
   division?: number
   /** Spring training league: GL = Grapefruit, CL = Cactus */
   springLeagueAbbreviation?: string
@@ -21,7 +21,7 @@ export const TeamFromMLBTeam = (team: MLBTeam): Team => {
     franchiseName: team.franchiseName,
     teamName: team.teamName,
     abbreviation: team.abbreviation,
-    league: team.league!.id,
+    league: team.league?.id,
     division: team.division?.id,
     springLeagueAbbreviation: team.springLeague?.abbreviation,
   }

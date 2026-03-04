@@ -2,7 +2,6 @@ import type { PersonStatsItem } from '@bp1222/stats-api'
 import { Box, CircularProgress, Typography } from '@mui/material'
 
 import { usePersonGameLog } from '@/queries/person'
-import type { GameLogSplit } from '@/types/GameLogSplit'
 
 import { GameLogTable } from './GameLogTable'
 
@@ -43,14 +42,14 @@ export const PlayerGameLogView = ({
       {hasHittingData && (
         <GameLogTable
           title={`Hitting game log · ${selectedSeason}`}
-          splits={hittingGameLog.data as GameLogSplit[]}
+          splits={hittingGameLog.data ?? []}
           group="hitting"
         />
       )}
       {hasPitchingData && (
         <GameLogTable
           title={`Pitching game log · ${selectedSeason}`}
-          splits={pitchingGameLog.data as GameLogSplit[]}
+          splits={pitchingGameLog.data ?? []}
           group="pitching"
         />
       )}

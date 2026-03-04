@@ -6,7 +6,7 @@
 import { useModalState } from '@/context/ModalContext'
 
 import { BoxscoreModal } from './BoxscoreModal'
-import { PlayerModal } from './PlayerModal/PlayerModal'
+import { PlayerModal } from './PlayerModal'
 
 /**
  * Renders the modal stack (e.g. boxscore with player on top).

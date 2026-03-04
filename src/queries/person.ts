@@ -9,7 +9,8 @@ import { StatTypes } from '@bp1222/stats-api'
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
 import { peopleApi } from '@/services/MlbAPI'
-import { PersonFromMLBPerson } from '@/types/Person.ts'
+import { GameLogSplitFromMLBPersonStatSplit } from '@/types/GameLogSplit'
+import { PersonFromMLBPerson } from '@/types/Person'
 
 const PERSON_STALE_TIME = 1000 * 60 * 5 // 5 minutes
 
@@ -20,9 +21,10 @@ export const personOptions = (personId: number) =>
   queryOptions({
     queryKey: ['person', personId],
     staleTime: PERSON_STALE_TIME,
+    enabled: !!personId,
     queryFn: async () => {
       const res = await peopleApi.getPerson({
-        personId: Number(personId),
+        personId: personId,
         hydrate: PERSON_HYDRATE,
       })
       const person = res.people?.[0]
@@ -48,11 +50,14 @@ export const personGameLogOptions = (personId: number, season: string, group: Pe
       const res = await peopleApi.getPersonStats({
         personId: personId,
         stats: StatTypes.GameLog,
-        group,
+        group: group,
         season: season,
       })
-      const gameLog = res.stats?.find((s) => s.type?.displayName === 'gameLog' && s.group?.displayName === group)
-      return gameLog?.splits ?? []
+      return (
+        res.stats
+          ?.find((s) => s.type?.displayName === 'gameLog' && s.group?.displayName === group)
+          ?.splits?.map(GameLogSplitFromMLBPersonStatSplit) ?? []
+      )
     },
   })
 
