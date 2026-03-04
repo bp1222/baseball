@@ -123,7 +123,7 @@ export const TeamRanking = () => {
           if (awayTeam?.division == team.division) {
             tallyGame(game.gameDate, awayTeam, game.away.isWinner)
           }
-        } else if (awayTeam?.league == team.league) {
+        } else if (awayTeam && awayTeam?.league == team.league) {
           // Tally if the away team was in this league
           tallyGame(game.gameDate, awayTeam, game.away.isWinner)
         }
@@ -133,7 +133,7 @@ export const TeamRanking = () => {
           if (homeTeam.division == team.division) {
             tallyGame(game.gameDate, homeTeam, game.home.isWinner)
           }
-        } else if (homeTeam?.league == team.league) {
+        } else if (homeTeam && homeTeam?.league == team.league) {
           // Tally if the home team was in this league
           tallyGame(game.gameDate, homeTeam, game.home.isWinner)
         }

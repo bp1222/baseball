@@ -28,7 +28,7 @@ export const leaguesOptions = (seasonId?: string) =>
     },
   })
 
-type GetLeagueFunc = (leagueId: number) => League | undefined
+type GetLeagueFunc = (leagueId?: number) => League | undefined
 
 /**
  * Get leagues for the current season with a helper to find by ID
@@ -41,7 +41,7 @@ export const useLeagues = (): {
   const leagues = useQuery(leaguesOptions(season?.seasonId))
 
   return {
-    getLeague: (leagueId: number) => leagues.data?.find((l) => l.id === leagueId),
+    getLeague: (leagueId?: number) => leagues.data?.find((l) => l.id === leagueId),
     data: leagues,
   }
 }
