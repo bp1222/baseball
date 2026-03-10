@@ -5,13 +5,13 @@ import { useState } from 'react'
 import { useSeasons } from '@/queries/season.ts'
 
 export const SeasonPicker = () => {
-  const { seasonId } = useParams({ strict: false })
+  const currentParams = useParams({ strict: false })
   const { data: seasons } = useSeasons()
 
   const navigate = useNavigate()
 
   const setSeason = (newSeasonId: string) => {
-    void navigate({ to: '/{$seasonId}', params: { seasonId: newSeasonId } })
+    void navigate({ to: '/{$sportId}/{$seasonId}', params: { ...currentParams, seasonId: newSeasonId } })
   }
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -26,7 +26,7 @@ export const SeasonPicker = () => {
         onClick={(event) => setAnchorEl(event.currentTarget)}
         sx={{ minHeight: 44, minWidth: 44 }}
       >
-        {seasonId ? String(seasonId) : 'Season'}
+        {currentParams.seasonId ? String(currentParams.seasonId) : 'Season'}
       </Button>
       <Menu
         anchorEl={anchorEl}
