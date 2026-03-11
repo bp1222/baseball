@@ -14,9 +14,9 @@ import { useLocation, useRouter } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 import { useCallback, useMemo } from 'react'
 
-import { useSeason } from '@/queries/season'
+import { useSeason } from '@/queries/season.ts'
 
-import { useDatesWithGames } from './useDatesWithGames'
+import { useDatesWithGames } from './useDatesWithGames.ts'
 
 type UseDateNavigationResult = {
   /** Currently selected date */

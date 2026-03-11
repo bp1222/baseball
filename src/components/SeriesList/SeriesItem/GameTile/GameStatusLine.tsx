@@ -3,10 +3,10 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import { Box } from '@mui/material'
 import dayjs from 'dayjs'
 
-import { useLinescore } from '@/queries/linescore'
-import { useTeams } from '@/queries/team'
-import { Game } from '@/types/Game'
-import { GameStatus } from '@/types/Game/GameStatus'
+import { useLinescore } from '@/queries/linescore.ts'
+import { useTeams } from '@/queries/team.ts'
+import { Game } from '@/types/Game.ts'
+import { GameStatus } from '@/types/Game/GameStatus.ts'
 
 type GameStatusLineProps = {
   game: Game

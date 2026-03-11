@@ -9,7 +9,7 @@
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
 
-import { useSchedule } from '@/queries/schedule'
+import { useSchedule } from '@/queries/schedule.ts'
 
 type UseDatesWithGamesResult = {
   /** Sorted array of dates that have games */

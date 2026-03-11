@@ -9,13 +9,13 @@
 
 import { Alert, Box, Button, Grid } from '@mui/material'
 
-import { DateNavigation } from './DateNavigation'
-import { useDateNavigation } from './hooks/useDateNavigation'
-import { useDatesWithGames } from './hooks/useDatesWithGames'
-import { useFilteredSeries } from './hooks/useFilteredSeries'
-import { NoGamesMessage } from './NoGamesMessage'
-import { SeriesCardSkeleton } from './SeriesCardSkeleton'
-import { SeriesGroups } from './SeriesGroups'
+import { DateNavigation } from './DateNavigation/DateNavigation.tsx'
+import { useDateNavigation } from './hooks/useDateNavigation.ts'
+import { useDatesWithGames } from './hooks/useDatesWithGames.ts'
+import { useFilteredSeries } from './hooks/useFilteredSeries.ts'
+import { NoGamesMessage } from './NoGamesMessage.tsx'
+import { SeriesCardSkeleton } from './SeriesCardSkeleton.tsx'
+import { SeriesGroups } from './SeriesGroups.tsx'
 
 export const SeasonSeries = () => {
   const {

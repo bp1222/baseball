@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 
-import { SeasonSeries } from '@/components/Schedule/SeasonSeries'
+import { SeasonSeries } from '@/components/SeasonSeries/SeasonSeries.tsx'
 import { scheduleOptions } from '@/queries/schedule'
 import { seasonsOptions } from '@/queries/season'
 import { teamsOptions } from '@/queries/team'
@@ -12,18 +12,6 @@ import { teamsOptions } from '@/queries/team'
 type SeasonSearchParams = {
   /** Selected date in YYYY-MM-DD format */
   date?: string
-}
-
-/**
- * Season index route - displays all series for the selected date
- *
- * The date is stored in URL search params for:
- * - Shareable URLs
- * - Browser back/forward navigation
- * - Refresh persistence
- */
-const SeasonComponent = () => {
-  return <SeasonSeries />
 }
 
 export const Route = createFileRoute('/{$sportId}/{$seasonId}/')({
@@ -41,5 +29,5 @@ export const Route = createFileRoute('/{$sportId}/{$seasonId}/')({
       await queryClient.ensureQueryData(scheduleOptions(season, teams))
     }
   },
-  component: SeasonComponent,
+  component: () => <SeasonSeries />,
 })

@@ -12,11 +12,10 @@
 
 import { Box, Grid } from '@mui/material'
 import dayjs from 'dayjs'
-import { useRef } from 'react'
+import { MouseEvent } from 'react'
 
 import { useInterestedTeam } from '@/context/InterestedTeamContext'
 import { useModal } from '@/context/ModalContext'
-import { useLinescore } from '@/queries/linescore'
 import { useTeam } from '@/queries/team'
 import { useCustomPalette } from '@/theme/useCustomPalette'
 import { Game } from '@/types/Game'
@@ -36,17 +35,12 @@ type GameTileProps = {
 }
 
 export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: GameTileProps) => {
-  const { gameResult, gameStatus } = useCustomPalette()
-  const interestedTeam = useInterestedTeam()
   const { openBoxscore } = useModal()
-  const tileRef = useRef<HTMLDivElement>(null)
+  const { gameResult, gameStatus } = useCustomPalette()
 
-  const isLive = game.gameStatus === GameStatus.InProgress
-  const { data: linescore } = useLinescore(game.pk, isLive)
-  const awayScoreOverride = isLive && linescore ? linescore.away.runs : undefined
-  const homeScoreOverride = isLive && linescore ? linescore.home.runs : undefined
-
-  const gameIsToday = dayjs(game.gameDate).isSame(interestedTeam ? dayjs() : selectedDate, 'day')
+  const interestedTeam = useInterestedTeam()
+  const { data: awayTeam } = useTeam(game.away.teamId)
+  const { data: homeTeam } = useTeam(game.home.teamId)
 
   const isPostponedOrCanceled = game.gameStatus === GameStatus.Postponed || game.gameStatus === GameStatus.Canceled
   const postponedCanceledBadge =
@@ -54,40 +48,29 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
 
   const tileColors = interestedTeam ? gameResult[GetGameResult(game, interestedTeam)] : gameStatus[game.gameStatus]
 
-  const { data: awayTeam } = useTeam(game.away.teamId)
-  const { data: homeTeam } = useTeam(game.home.teamId)
-
   const awayAbbr = awayTeam?.abbreviation ?? 'Away'
   const homeAbbr = homeTeam?.abbreviation ?? 'Home'
 
-  const awayColors = gameResult[GetGameResult(game, awayTeam)]
-  const homeColors = gameResult[GetGameResult(game, homeTeam)]
+  const awayColors = interestedTeam ? tileColors : gameResult[GetGameResult(game, awayTeam)]
+  const homeColors = interestedTeam ? tileColors : gameResult[GetGameResult(game, homeTeam)]
 
+  const gameIsToday = dayjs(game.gameDate).isSame(interestedTeam ? dayjs() : selectedDate, 'day')
   const tileBg = gameIsToday ? 'primary.50' : tileColors.light
   const tileBorder = gameIsToday ? 'primary.main' : tileColors.main
   const badgeBg = gameIsToday ? 'primary.main' : tileColors.dark
   const badgeTextColor = gameIsToday ? 'primary.contrastText' : tileColors.contrastText
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: MouseEvent) => {
     e.stopPropagation()
-    openBoxscore(game, tileRef.current)
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      openBoxscore(game, tileRef.current)
-    }
+    openBoxscore(game)
   }
 
   return (
     <Grid
-      ref={tileRef}
       container
       tabIndex={0}
       role="button"
       onClick={handleClick}
-      onKeyDown={handleKeyDown}
       id={game.pk + '-game'}
       flexDirection="column"
       sx={{
@@ -102,8 +85,8 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
         marginRight: 1,
       }}
       border={gameIsToday ? 2 : 0.75}
+      borderColor={gameIsToday ? 'primary.main' : tileBorder}
       borderRadius={0.5}
-      borderColor={tileBorder}
       bgcolor={tileBg}
       aria-label={`View boxscore: ${awayAbbr} at ${homeAbbr}${postponedCanceledBadge ? ` (${postponedCanceledBadge})` : ''}`}
     >
@@ -119,12 +102,10 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
       >
         {postponedCanceledBadge ? postponedCanceledBadge : dayjs(game.gameDate).format('MMM DD').toUpperCase()}
       </Box>
-
       {/* Game number in series */}
       {gameNumber != null && gamesInSeries != null && gamesInSeries > 0 && (
         <Box
           borderBottom={1}
-          borderColor={homeColors.main}
           sx={{
             fontSize: '0.65rem',
             color: 'text.secondary',
@@ -134,15 +115,13 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
           Game {gameNumber}
         </Box>
       )}
-
       {/* Scores */}
       <Grid>
-        <GameScore gameTeam={game.away} scoreOverride={awayScoreOverride} colors={awayColors} />
+        <GameScore game={game} gameTeam={game.away} colors={awayColors} />
       </Grid>
       <Grid>
-        <GameScore gameTeam={game.home} scoreOverride={homeScoreOverride} colors={homeColors} />
+        <GameScore game={game} gameTeam={game.home} colors={homeColors} />
       </Grid>
-
       {/* Status line */}
       <Grid>
         <GameStatusLine game={game} />

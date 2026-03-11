@@ -9,9 +9,11 @@
 import { Box, Button, Grid } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { PickersDayProps } from '@mui/x-date-pickers/PickersDay'
 import dayjs from 'dayjs'
+import { useMemo } from 'react'
 
-import { GameDay } from './GameDay'
+import { GameDay } from './GameDay.tsx'
 
 type DateNavigationProps = {
   /** Currently selected date */
@@ -55,6 +57,11 @@ export const DateNavigation = ({
   hasNextGameDay,
   disabled = false,
 }: DateNavigationProps) => {
+  const GameDaySlot = useMemo(
+    () => (props: PickersDayProps) => <GameDay {...props} datesWithGames={datesWithGames} />,
+    [datesWithGames],
+  )
+
   return (
     <>
       {/* Date picker with chevrons */}
@@ -76,10 +83,10 @@ export const DateNavigation = ({
               minDate={minDate}
               maxDate={maxDate}
               disabled={disabled}
-              slots={{ day: GameDay }}
+              slots={{ day: GameDaySlot }}
+              showDaysOutsideCurrentMonth={false}
               slotProps={{
                 actionBar: { actions: ['today'] },
-                day: { datesWithGames } as Record<string, unknown>,
               }}
               onChange={(date, context) => {
                 if (!context.validationError && date) {

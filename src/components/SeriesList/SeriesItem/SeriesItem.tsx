@@ -7,7 +7,7 @@ import { useCustomPalette } from '@/theme/useCustomPalette.ts'
 import { Series } from '@/types/Series.ts'
 import { SeriesType } from '@/types/Series/SeriesType.ts'
 
-import { GameTile } from '../GameTile.tsx'
+import { GameTile } from './GameTile/GameTile.tsx'
 import { ResultBadge } from './ResultBadge.tsx'
 import { SeriesBadge } from './SeriesBadge.tsx'
 import { SeriesTeam } from './SeriesTeam.tsx'
@@ -87,7 +87,7 @@ export const SeriesItem = ({ series, selectedDate }: SeriesItemProps) => {
       )}
 
       <Grid flexGrow={1} minWidth={0} justifyContent="flex-end" alignContent="center">
-        <Grid container justifyContent="flex-end" flexWrap="wrap">
+        <Grid container justifyContent="flex-end" flexWrap="wrap" alignItems="center">
           {series.games.map((g, index) => {
             const isPostseason = [
               SeriesType.WildCard,

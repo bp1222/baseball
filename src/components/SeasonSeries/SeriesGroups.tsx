@@ -10,9 +10,8 @@
 import { Box } from '@mui/material'
 import dayjs from 'dayjs'
 
-import { Series } from '@/types/Series'
-
-import { SeriesList } from './SeriesList'
+import { SeriesList } from '@/components/SeriesList/SeriesList.tsx'
+import { Series } from '@/types/Series.ts'
 
 type SeriesGroupsProps = {
   /** All series to display */

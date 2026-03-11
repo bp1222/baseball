@@ -1,19 +1,20 @@
 import { Box } from '@mui/material'
 import { PickersDay } from '@mui/x-date-pickers/PickersDay'
 import dayjs, { type Dayjs } from 'dayjs'
+import { ComponentProps } from 'react'
 
-type GameDayProps = React.ComponentProps<typeof PickersDay> & {
+type GameDayProps = ComponentProps<typeof PickersDay> & {
   /** Set of date strings "YYYY-MM-DD" that have at least one game */
-  datesWithGames?: Set<string>
+  datesWithGames: Set<string>
 }
 
 /**
  * Calendar day that shows a dot indicator when the date has games.
  * Used in the date picker to help users discover game days.
  */
-export function GameDay({ datesWithGames, day, ...pickersDayProps }: GameDayProps) {
+export function GameDay({ outsideCurrentMonth, datesWithGames, day, ...pickersDayProps }: GameDayProps) {
   const dateKey = dayjs(day as Dayjs).format('YYYY-MM-DD')
-  const hasGame = datesWithGames?.has(dateKey) ?? false
+  const hasGame = datesWithGames.has(dateKey) ?? false
 
   return (
     <Box
@@ -22,12 +23,10 @@ export function GameDay({ datesWithGames, day, ...pickersDayProps }: GameDayProp
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100%',
-        height: '100%',
       }}
     >
-      <PickersDay day={day} {...pickersDayProps} />
-      {hasGame && (
+      <PickersDay day={day} outsideCurrentMonth={outsideCurrentMonth} {...pickersDayProps} />
+      {!outsideCurrentMonth && hasGame && (
         <Box
           sx={{
             position: 'absolute',

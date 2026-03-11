@@ -10,10 +10,10 @@
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
 
-import { useSchedule } from '@/queries/schedule'
-import { useTeams } from '@/queries/team'
-import { Series } from '@/types/Series'
-import { SeriesType } from '@/types/Series/SeriesType'
+import { useSchedule } from '@/queries/schedule.ts'
+import { useTeams } from '@/queries/team.ts'
+import { Series } from '@/types/Series.ts'
+import { SeriesType } from '@/types/Series/SeriesType.ts'
 
 type UseFilteredSeriesResult = {
   /** All series that span the selected date */
