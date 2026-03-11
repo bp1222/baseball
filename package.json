@@ -34,6 +34,8 @@
     "@mui/material": "^7.3.8",
     "@mui/x-charts": "^8.27.0",
     "@mui/x-date-pickers": "^8.27.2",
+    "@tanstack/devtools-vite": "^0.5.5",
+    "@tanstack/react-devtools": "^0.9.13",
     "@types/node": "^22.19.11",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

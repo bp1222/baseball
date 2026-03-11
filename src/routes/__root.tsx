@@ -1,4 +1,5 @@
 import { Box, Container } from '@mui/material'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 
@@ -16,14 +17,22 @@ const DevTools = () => {
   useEffect(() => {
     if (!import.meta.env.DEV) return
     Promise.all([
-      import('@tanstack/react-query-devtools').then((m) => m.ReactQueryDevtools),
-      import('@tanstack/react-router-devtools').then((m) => m.TanStackRouterDevtools),
-    ]).then(([ReactQueryDevtools, TanStackRouterDevtools]) => {
+      import('@tanstack/react-query-devtools').then((m) => m.ReactQueryDevtoolsPanel),
+      import('@tanstack/react-router-devtools').then((m) => m.TanStackRouterDevtoolsPanel),
+    ]).then(([ReactQueryDevtoolsPanel, TanStackRouterDevtoolsPanel]) => {
       setDevtools(
-        <>
-          <ReactQueryDevtools buttonPosition="bottom-right" />
-          <TanStackRouterDevtools position="top-left" />
-        </>,
+        <TanStackDevtools
+          plugins={[
+            {
+              name: 'TanStack Query',
+              render: <ReactQueryDevtoolsPanel />,
+            },
+            {
+              name: 'TanStack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />,
       )
     })
   }, [])
