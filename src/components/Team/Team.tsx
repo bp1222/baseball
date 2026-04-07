@@ -8,25 +8,15 @@ import { SeriesRecordSkeleton } from '@/components/Team/SeriesRecordSkeleton.tsx
 import { TeamStats } from '@/components/Team/TeamStats.tsx'
 import { useSchedule } from '@/queries/schedule.ts'
 import { Route } from '@/routes/{$sportId}/{$seasonId}/{$teamId}'
-import { SeriesType } from '@/types/Series/SeriesType.ts'
 
 type TeamViewTab = 'schedule' | 'stats'
 
 export const Team = () => {
   const { seasonId, teamId: teamIdParam } = Route.useParams()
-  const interestedTeamId = teamIdParam != null ? Number(teamIdParam) : undefined
   const [narrowTab, setNarrowTab] = useState<TeamViewTab>('schedule')
-  const { data: scheduleData, isPending: isSchedulePending } = useSchedule()
-  let seasonSeries = scheduleData
 
-  if (interestedTeamId != null && seasonSeries != null) {
-    seasonSeries = seasonSeries.filter(
-      (s) =>
-        s.type !== SeriesType.SpringTraining &&
-        s.type !== SeriesType.Exhibition &&
-        s.games.some((g) => g.away.teamId === interestedTeamId || g.home.teamId === interestedTeamId),
-    )
-  }
+  const interestedTeamId = teamIdParam != null ? Number(teamIdParam) : undefined
+  const { data: seasonSeries, isPending: isSchedulePending } = useSchedule(interestedTeamId)
 
   if (isSchedulePending) {
     return (

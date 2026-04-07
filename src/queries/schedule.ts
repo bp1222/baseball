@@ -13,6 +13,8 @@ import { useSeason } from '@/queries/season'
 import { useTeams } from '@/queries/team'
 import { scheduleApi } from '@/services/MlbAPI'
 import { Season } from '@/types/Season'
+import { Series } from '@/types/Series.ts'
+import { SeriesType } from '@/types/Series/SeriesType.ts'
 import { Team } from '@/types/Team'
 
 /**
@@ -54,16 +56,16 @@ const baseGameFields = [
   'venue',
 ]
 
-export const scheduleOptions = (season?: Season, teams?: Team[]) =>
+export const scheduleOptions = (season?: Season, teams?: Team[], selectFilter?: (data: Series[]) => Series[]) =>
   queryOptions({
     queryKey: ['schedule', season?.seasonId],
     staleTime: SCHEDULE_STALE_TIME,
     enabled: !!(season?.seasonId && teams?.length),
+    select: selectFilter,
     queryFn: async () => {
       const scheduleData = await scheduleApi.getSchedule({
         sportId: 1,
         gameTypes: [
-          GameType.Exhibition,
           GameType.SpringTraining,
           GameType.Regular,
           GameType.WildCardSeries,
@@ -82,9 +84,19 @@ export const scheduleOptions = (season?: Season, teams?: Team[]) =>
     },
   })
 
-export const useSchedule = () => {
+export const useSchedule = (teamId?: number) => {
   const { data: season } = useSeason()
   const { data: teams } = useTeams()
 
-  return useQuery(scheduleOptions(season, teams))
+  const selectTeamFilter = teamId
+    ? (series: Series[]) =>
+        series.filter(
+          (s) =>
+            s.type !== SeriesType.Exhibition &&
+            s.type !== SeriesType.SpringTraining &&
+            s.games.some((g) => g.home.teamId === teamId || g.away.teamId === teamId),
+        )
+    : undefined
+
+  return useQuery(scheduleOptions(season, teams, selectTeamFilter))
 }

@@ -53,11 +53,19 @@ export const useSeriesStats = (team: Team | undefined): SeriesStats => {
       }
     }
 
+    const leftPad = <T>(arr: T[], len: number, val: T): T[] =>
+      arr.length >= len ? arr : [...arr, ...Array(len - arr.length).fill(val)]
+
     // Get regular season series results for this team
-    const results = seasonSeries
-      .filter((s) => s.type === SeriesType.Regular)
-      .filter((s) => s.games.some((g) => g.away.teamId === team.id || g.home.teamId === team.id))
-      .map((s) => GetSeriesResult(s, team))
+    const results = leftPad(
+      seasonSeries
+        .filter((s) => s.type === SeriesType.Regular)
+        .filter((s) => s.games.some((g) => g.away.teamId === team.id || g.home.teamId === team.id))
+        .map((s) => GetSeriesResult(s, team))
+        .filter((r) => r !== SeriesResult.Unplayed),
+      10,
+      SeriesResult.Unplayed,
+    )
 
     // Count wins, losses, ties
     const wins = results.filter((r) => r === SeriesResult.Win || r === SeriesResult.Sweep).length
