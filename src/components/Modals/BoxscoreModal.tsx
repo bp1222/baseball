@@ -6,7 +6,7 @@ import { lazy, Suspense } from 'react'
 import { useLinescore } from '@/queries/linescore'
 import { useTeams } from '@/queries/team'
 import { Game } from '@/types/Game'
-import { GameStatus } from '@/types/Game/GameStatus'
+import { GameStatus, isGameLive } from '@/types/Game/GameStatus'
 import type { Team } from '@/types/Team'
 
 const GameBoxscore = lazy(() =>
@@ -23,7 +23,7 @@ type BoxscoreModalProps = {
 export const BoxscoreModal = ({ game, onClose }: BoxscoreModalProps) => {
   const { data: teams } = useTeams()
 
-  const isLive = game.gameStatus === GameStatus.InProgress
+  const isLive = isGameLive(game.gameStatus)
   const { data: linescore } = useLinescore(game.pk, isLive)
   const awayScore = isLive && linescore != null ? linescore.away.runs : (game.away.score ?? 0)
   const homeScore = isLive && linescore != null ? linescore.home.runs : (game.home.score ?? 0)
@@ -36,13 +36,15 @@ export const BoxscoreModal = ({ game, onClose }: BoxscoreModalProps) => {
       ? 'Final'
       : game.gameStatus === GameStatus.InProgress
         ? 'Live'
-        : game.gameStatus === GameStatus.Scheduled
-          ? dayjs(game.gameDate).format('h:mm A')
-          : game.gameStatus === GameStatus.Postponed
-            ? 'Postponed'
-            : game.gameStatus === GameStatus.Canceled
-              ? 'Canceled'
-              : ''
+        : game.gameStatus === GameStatus.Suspended
+          ? 'Suspended'
+          : game.gameStatus === GameStatus.Scheduled
+            ? dayjs(game.gameDate).format('h:mm A')
+            : game.gameStatus === GameStatus.Postponed
+              ? 'Postponed'
+              : game.gameStatus === GameStatus.Canceled
+                ? 'Canceled'
+                : ''
 
   return (
     <Modal

@@ -35,6 +35,7 @@ const baseGameFields = [
   'gamePk',
   'status',
   'codedGameState',
+  'detailedState',
   'gameType',
   'gameDate',
   'rescheduledFromData',
@@ -58,7 +59,7 @@ const baseGameFields = [
 
 export const scheduleOptions = (season?: Season, teams?: Team[], selectFilter?: (data: Series[]) => Series[]) =>
   queryOptions({
-    queryKey: ['schedule', season?.seasonId],
+    queryKey: ['schedule', season?.seasonId, 'v2'],
     staleTime: SCHEDULE_STALE_TIME,
     enabled: !!(season?.seasonId && teams?.length),
     select: selectFilter,

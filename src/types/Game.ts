@@ -20,7 +20,7 @@ export const GameFromMLBGame = (game: MLBGame): Game => ({
   pk: game.gamePk,
   gameDate: dayjs(game.gameDate),
   gameType: GameTypeFromMLBGameType(game.gameType),
-  gameStatus: GameStatusFromMLBGameStatus(game.status.codedGameState!),
+  gameStatus: GameStatusFromMLBGameStatus(game.status?.codedGameState, game.status?.detailedState),
   home: GameTeamFromMLBGameTeam(game.teams.home, true),
   away: GameTeamFromMLBGameTeam(game.teams.away),
   venue: game.venue ? { id: game.venue.id, name: game.venue.name } : undefined,

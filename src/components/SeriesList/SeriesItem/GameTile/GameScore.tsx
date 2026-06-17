@@ -3,7 +3,7 @@ import { Grid, type PaletteColor } from '@mui/material'
 import { useLinescore } from '@/queries/linescore.ts'
 import { useTeam } from '@/queries/team.ts'
 import { Game } from '@/types/Game.ts'
-import { GameStatus } from '@/types/Game/GameStatus.ts'
+import { isGameLive } from '@/types/Game/GameStatus.ts'
 import { GameTeam } from '@/types/GameTeam.ts'
 
 type GameScoreProps = {
@@ -16,7 +16,7 @@ export const GameScore = ({ game, gameTeam, colors }: GameScoreProps) => {
   const isTbd = /[\d/]/
   const { data: team } = useTeam(gameTeam.teamId)
 
-  const isLive = game.gameStatus === GameStatus.InProgress
+  const isLive = isGameLive(game.gameStatus)
   const { data: linescore } = useLinescore(game.pk, isLive)
   const score =
     isLive && linescore

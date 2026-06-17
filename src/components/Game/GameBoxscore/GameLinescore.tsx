@@ -15,7 +15,7 @@ import {
 import { useLinescore } from '@/queries/linescore'
 import { useTeam } from '@/queries/team'
 import { Game } from '@/types/Game'
-import { GameStatus } from '@/types/Game/GameStatus'
+import { GameStatus, isGameLive } from '@/types/Game/GameStatus'
 import { LinescoreTeam } from '@/types/Linescore'
 import { Team } from '@/types/Team'
 
@@ -26,7 +26,7 @@ type GameLinescoreProps = {
 export const GameLinescore = ({ game }: GameLinescoreProps) => {
   const { data: homeTeam } = useTeam(game.home.teamId)
   const { data: awayTeam } = useTeam(game.away.teamId)
-  const isLive = game.gameStatus === GameStatus.InProgress
+  const isLive = isGameLive(game.gameStatus)
   const { data: linescore, isPending, isError, refetch: refetchLinescore } = useLinescore(game.pk, isLive)
 
   const inningCount = linescore ? Math.max(linescore.innings?.length ?? 0, linescore.scheduledInnings ?? 9) : 9
@@ -38,6 +38,7 @@ export const GameLinescore = ({ game }: GameLinescoreProps) => {
         switch (game?.gameStatus) {
           case GameStatus.Scheduled:
           case GameStatus.InProgress:
+          case GameStatus.Suspended:
             return (
               <TableCell key={game.pk + '-linescore-' + team?.id + '-' + index} align="center">
                 {teamInnings?.[index]?.runs ?? ''}

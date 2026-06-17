@@ -10,7 +10,7 @@ import { useLinescore } from '@/queries/linescore'
 import { useTeam } from '@/queries/team'
 import { useCustomPalette } from '@/theme/useCustomPalette'
 import { Game } from '@/types/Game'
-import { GameStatus } from '@/types/Game/GameStatus'
+import { GameStatus, isGameLive, isGameSuspended } from '@/types/Game/GameStatus'
 import { GameTeam } from '@/types/GameTeam'
 
 type ScorecardHeroProps = {
@@ -21,17 +21,20 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
   const { gameStatus } = useCustomPalette()
   const statusColors = gameStatus[game.gameStatus]
 
-  const isLive = game.gameStatus === GameStatus.InProgress
+  const isInProgress = game.gameStatus === GameStatus.InProgress
+  const isSuspended = isGameSuspended(game.gameStatus)
+  const isLive = isGameLive(game.gameStatus)
   const { data: linescore } = useLinescore(game.pk, isLive)
 
   const awayScore = isLive && linescore != null ? linescore.away.runs : (game.away.score ?? 0)
   const homeScore = isLive && linescore != null ? linescore.home.runs : (game.home.score ?? 0)
 
-  const statusLabel =
-    game.gameStatus === GameStatus.Final
-      ? 'FINAL'
-      : game.gameStatus === GameStatus.InProgress
-        ? 'LIVE'
+  const statusLabel = isInProgress
+    ? 'LIVE'
+    : isSuspended
+      ? 'SUSPENDED'
+      : game.gameStatus === GameStatus.Final
+        ? 'FINAL'
         : game.gameStatus === GameStatus.Scheduled
           ? dayjs(game.gameDate).format('h:mm A')
           : game.gameStatus === GameStatus.Postponed
@@ -154,7 +157,7 @@ export const ScorecardHero = ({ game }: ScorecardHeroProps) => {
               </Typography>
             </Box>
           )}
-          {isLive && linescore != null && (
+          {(isInProgress || isSuspended) && linescore != null && (
             <Box
               sx={{
                 display: 'flex',

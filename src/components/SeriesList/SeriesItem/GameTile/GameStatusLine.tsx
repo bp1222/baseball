@@ -6,14 +6,14 @@ import dayjs from 'dayjs'
 import { useLinescore } from '@/queries/linescore.ts'
 import { useTeams } from '@/queries/team.ts'
 import { Game } from '@/types/Game.ts'
-import { GameStatus } from '@/types/Game/GameStatus.ts'
+import { GameStatus, isGameLive } from '@/types/Game/GameStatus.ts'
 
 type GameStatusLineProps = {
   game: Game
 }
 
 export const GameStatusLine = ({ game }: GameStatusLineProps) => {
-  const isLive = game.gameStatus === GameStatus.InProgress
+  const isLive = isGameLive(game.gameStatus)
   const linescore = useLinescore(game.pk, isLive).data
   const { data: teams } = useTeams()
   const awayAbbr = teams?.find((t) => t.id === game.away.teamId)?.abbreviation ?? 'Away'
@@ -98,6 +98,22 @@ export const GameStatusLine = ({ game }: GameStatusLineProps) => {
           color="text.secondary"
         >
           Postponed
+        </Box>
+      )
+    case GameStatus.Suspended:
+      return (
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          sx={{ fontSize: '0.70rem', fontWeight: 600 }}
+          textAlign="center"
+          color="text.secondary"
+        >
+          {linescore?.currentInningOrdinal != null && (
+            <Box sx={{ fontSize: '0.65rem', fontWeight: 400 }}>{linescore.currentInningOrdinal}</Box>
+          )}
         </Box>
       )
     case GameStatus.Canceled:

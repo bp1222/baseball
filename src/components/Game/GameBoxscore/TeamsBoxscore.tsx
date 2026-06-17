@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useBoxscore } from '@/queries/boxscore'
 import { useTeam } from '@/queries/team'
 import { Game } from '@/types/Game'
-import { GameStatus } from '@/types/Game/GameStatus'
+import { isGameLive } from '@/types/Game/GameStatus'
 
 import { TeamBoxscore } from './TeamsBoxscore/TeamBoxscore'
 
@@ -34,7 +34,7 @@ const teamLabelSx = {
 export const TeamsBoxscore = ({ game }: TeamsBoxscoreProps) => {
   const { data: homeTeam } = useTeam(game.home.teamId)
   const { data: awayTeam } = useTeam(game.away.teamId)
-  const isLive = game.gameStatus === GameStatus.InProgress
+  const isLive = isGameLive(game.gameStatus)
   const { data: boxscore, isPending, isError, refetch: refetchBoxscore } = useBoxscore(game.pk, isLive)
 
   const [teamTab, setTeamTab] = useState<TeamTab>('away')

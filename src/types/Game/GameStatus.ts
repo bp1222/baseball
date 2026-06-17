@@ -7,10 +7,24 @@ export enum GameStatus {
   InProgress,
   Challenge,
   Canceled,
+  Suspended,
 }
 
-export const GameStatusFromMLBGameStatus = (status: GameStatusCode) => {
-  switch (status) {
+/** Games that are live or paused mid-game and should use live score/linescore data. */
+export const isGameLive = (status: GameStatus): boolean =>
+  status === GameStatus.InProgress || status === GameStatus.Suspended
+
+export const isGameSuspended = (status: GameStatus): boolean => status === GameStatus.Suspended
+
+export const GameStatusFromMLBGameStatus = (
+  codedState?: GameStatusCode | string,
+  detailedState?: string,
+): GameStatus => {
+  if (codedState === 'U' || detailedState === 'Suspended') {
+    return GameStatus.Suspended
+  }
+
+  switch (codedState) {
     case GameStatusCode.Scheduled:
     case GameStatusCode.Pregame:
       return GameStatus.Scheduled
@@ -18,6 +32,8 @@ export const GameStatusFromMLBGameStatus = (status: GameStatusCode) => {
       return GameStatus.Postponed
     case GameStatusCode.InProgress:
       return GameStatus.InProgress
+    case GameStatusCode.Suspended:
+      return GameStatus.Suspended
     case GameStatusCode.Challenge:
       return GameStatus.Challenge
     case GameStatusCode.Canceled:
@@ -25,5 +41,7 @@ export const GameStatusFromMLBGameStatus = (status: GameStatusCode) => {
     case GameStatusCode.Final:
     case GameStatusCode.GameOver:
       return GameStatus.Final
+    default:
+      return GameStatus.Scheduled
   }
 }

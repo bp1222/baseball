@@ -2,7 +2,7 @@
  * GameTile - The small clickable tile representing a game
  *
  * Displays:
- * - Date badge (or TODAY/PPD/CANC)
+ * - Date badge (or TODAY/PPD/CANC/SUSP)
  * - Game number in series
  * - Team scores
  * - Game status line
@@ -20,7 +20,7 @@ import { useTeam } from '@/queries/team'
 import { useCustomPalette } from '@/theme/useCustomPalette'
 import { Game } from '@/types/Game'
 import { GetGameResult } from '@/types/Game/GameResult'
-import { GameStatus } from '@/types/Game/GameStatus'
+import { GameStatus, isGameSuspended } from '@/types/Game/GameStatus'
 
 import { GameScore } from './GameScore'
 import { GameStatusLine } from './GameStatusLine'
@@ -43,16 +43,27 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
   const { data: homeTeam } = useTeam(game.home.teamId)
 
   const isPostponedOrCanceled = game.gameStatus === GameStatus.Postponed || game.gameStatus === GameStatus.Canceled
-  const postponedCanceledBadge =
-    game.gameStatus === GameStatus.Postponed ? 'PPD' : game.gameStatus === GameStatus.Canceled ? 'CANC' : null
+  const isSuspended = isGameSuspended(game.gameStatus)
+  const statusBadge =
+    game.gameStatus === GameStatus.Postponed
+      ? 'PPD'
+      : game.gameStatus === GameStatus.Canceled
+        ? 'CANC'
+        : isSuspended
+          ? 'SUSP'
+          : null
 
-  const tileColors = interestedTeam ? gameResult[GetGameResult(game, interestedTeam)] : gameStatus[game.gameStatus]
+  const tileColors = isSuspended
+    ? gameStatus[GameStatus.Suspended]
+    : interestedTeam
+      ? gameResult[GetGameResult(game, interestedTeam)]
+      : gameStatus[game.gameStatus]
 
   const awayAbbr = awayTeam?.abbreviation ?? 'Away'
   const homeAbbr = homeTeam?.abbreviation ?? 'Home'
 
-  const awayColors = interestedTeam ? tileColors : gameResult[GetGameResult(game, awayTeam)]
-  const homeColors = interestedTeam ? tileColors : gameResult[GetGameResult(game, homeTeam)]
+  const awayColors = isSuspended || interestedTeam ? tileColors : gameResult[GetGameResult(game, awayTeam)]
+  const homeColors = isSuspended || interestedTeam ? tileColors : gameResult[GetGameResult(game, homeTeam)]
 
   const gameIsToday = dayjs(game.gameDate).isSame(interestedTeam ? dayjs() : selectedDate, 'day')
   const tileBg = gameIsToday ? 'primary.50' : tileColors.light
@@ -88,7 +99,7 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
       borderColor={gameIsToday ? 'primary.main' : tileBorder}
       borderRadius={0.5}
       bgcolor={tileBg}
-      aria-label={`View boxscore: ${awayAbbr} at ${homeAbbr}${postponedCanceledBadge ? ` (${postponedCanceledBadge})` : ''}`}
+      aria-label={`View boxscore: ${awayAbbr} at ${homeAbbr}${statusBadge ? ` (${statusBadge})` : ''}`}
     >
       {/* Date badge */}
       <Box
@@ -100,7 +111,7 @@ export const GameTile = ({ game, selectedDate, gameNumber, gamesInSeries }: Game
         bgcolor={badgeBg}
         fontWeight={gameIsToday ? 700 : 400}
       >
-        {postponedCanceledBadge ? postponedCanceledBadge : dayjs(game.gameDate).format('MMM DD').toUpperCase()}
+        {statusBadge ? statusBadge : dayjs(game.gameDate).format('MMM DD').toUpperCase()}
       </Box>
       {/* Game number in series */}
       {gameNumber != null && gamesInSeries != null && gamesInSeries > 0 && (
