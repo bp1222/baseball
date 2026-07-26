@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Colorado">
+  <!--
+    Flag-style Colorado C: large red arc with terminals aimed at the
+    gold disc center (same construction as the state flag).
+  -->
+  <path
+    fill="#bf0a30"
+    d="M 38.84 29.99 A 16 16 0 1 1 38.84 18.01 L 24 24 Z"
+  />
+  <circle cx="24" cy="24" r="8" fill="#ffd100"/>
+</svg>

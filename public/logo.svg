@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Baseball Series">
+  <rect width="64" height="64" rx="14" fill="#0b3d2e"/>
+  <circle cx="32" cy="32" r="22" fill="#f4f0e6"/>
+  <path
+    d="M18 18c7 6.5 7 21.5 0 28"
+    fill="none"
+    stroke="#c45c26"
+    stroke-width="2.75"
+    stroke-linecap="round"
+  />
+  <path
+    d="M46 18c-7 6.5-7 21.5 0 28"
+    fill="none"
+    stroke="#c45c26"
+    stroke-width="2.75"
+    stroke-linecap="round"
+  />
+  <path
+    d="M20.5 24.5l3.2 1.6M19.2 32l3.5 0M20.5 39.5l3.2-1.6M43.5 24.5l-3.2 1.6M44.8 32l-3.5 0M43.5 39.5l-3.2-1.6"
+    fill="none"
+    stroke="#c45c26"
+    stroke-width="1.75"
+    stroke-linecap="round"
+  />
+</svg>
