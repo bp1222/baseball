@@ -46,12 +46,7 @@ jobs:
         run: pnpm run typecheck
 
       - name: Build
-        env:
-          BASE_PATH: /${{ github.event.repository.name }}/
         run: pnpm run build
-
-      - name: SPA fallback for GitHub Pages
-        run: cp dist/index.html dist/404.html
 
       - name: Upload Pages artifact
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'

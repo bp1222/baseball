@@ -1,7 +1,11 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
+import {
+  RouterProvider,
+  createHashHistory,
+  createRouter,
+} from '@tanstack/react-router'
 import './index.css'
 import { routeTree } from './routeTree.gen'
 
@@ -14,12 +18,14 @@ const queryClient = new QueryClient({
   },
 })
 
+// Hash history for GitHub Pages (no server rewrite support).
+const history = createHashHistory()
+
 const router = createRouter({
   routeTree,
+  history,
   context: { queryClient },
   defaultPreload: 'intent',
-  // Match Vite `base` so deep links work under GitHub Pages (/<repo>/...).
-  basepath: import.meta.env.BASE_URL.replace(/\/$/, '') || '/',
 })
 
 declare module '@tanstack/react-router' {
