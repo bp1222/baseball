@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createHashHistory, createRouter } from '@tanstack/react-router'
 import './index.css'
+import { initAnalytics, trackPageView } from './lib/analytics'
 import { routeTree } from './routeTree.gen'
 
 const queryClient = new QueryClient({
@@ -29,6 +30,11 @@ declare module '@tanstack/react-router' {
     router: typeof router
   }
 }
+
+initAnalytics()
+router.subscribe('onResolved', ({ toLocation }) => {
+  trackPageView(`${toLocation.pathname}${toLocation.searchStr}`)
+})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
