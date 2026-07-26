@@ -37,3 +37,16 @@ export function formatOutsLabel(outs: number | undefined): string {
   if (outs === 1) return '1 out'
   return `${outs} outs`
 }
+
+/**
+ * Inning cell for a linescore half.
+ * Final games use "X" for halves that were never played (e.g. bottom of the 9th).
+ * Live games leave not-yet-played halves blank.
+ */
+export function formatInningRuns(
+  runs: number | null | undefined,
+  gameFinal: boolean,
+): string {
+  if (runs != null) return String(runs)
+  return gameFinal ? 'X' : ''
+}

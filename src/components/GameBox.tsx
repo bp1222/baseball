@@ -31,22 +31,16 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
   const statusGame = liveGame ?? game
 
   const final = isGameFinal(statusGame)
-  const live =
-    !final &&
-    (isGameLive(statusGame) || linescoreHasStarted(linescore))
+  const live = !final && (isGameLive(statusGame) || linescoreHasStarted(linescore))
 
   const home = statusGame.teams.home
   const away = statusGame.teams.away
   const isFocus = focusDate != null && dateKey === focusDate
 
   const awayScore =
-    live && linescore?.teams?.away?.runs != null
-      ? linescore.teams.away.runs
-      : away.score
+    live && linescore?.teams?.away?.runs != null ? linescore.teams.away.runs : away.score
   const homeScore =
-    live && linescore?.teams?.home?.runs != null
-      ? linescore.teams.home.runs
-      : home.score
+    live && linescore?.teams?.home?.runs != null ? linescore.teams.home.runs : home.score
 
   const rowTint = (teamIsWinner: boolean, teamId: number) => {
     if (!final || statusGame.isTie) return undefined
@@ -98,88 +92,88 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
           },
         }}
       >
-      <Box
-        sx={{
-          bgcolor: isFocus ? 'primary.main' : 'grey.200',
-          color: isFocus ? 'primary.contrastText' : 'text.secondary',
-          textAlign: 'center',
-          fontSize: '0.65rem',
-          fontWeight: isFocus ? 700 : 600,
-          py: 0.25,
-          px: 0.5,
-          letterSpacing: 0.2,
-        }}
-      >
-        {formatMonthDayUpper(dateKey)}
-      </Box>
-
-      <Box sx={{ bgcolor: 'background.paper' }}>
-        <ScoreRow
-          abbr={away.team.abbreviation ?? 'AWY'}
-          score={scoreOrDash(awayScore)}
-          bgcolor={rowTint(away.isWinner, away.team.id)}
-          bold={final && away.isWinner}
-        />
-        <ScoreRow
-          abbr={home.team.abbreviation ?? 'HME'}
-          score={scoreOrDash(homeScore)}
-          bgcolor={rowTint(home.isWinner, home.team.id)}
-          bold={final && home.isWinner}
-        />
-
         <Box
           sx={{
-            height: 18,
-            px: 0.25,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: live ? 'secondary.main' : 'text.secondary',
+            bgcolor: isFocus ? 'primary.main' : 'grey.200',
+            color: isFocus ? 'primary.contrastText' : 'text.secondary',
+            textAlign: 'center',
+            fontSize: '0.65rem',
+            fontWeight: isFocus ? 700 : 600,
+            py: 0.25,
+            px: 0.5,
+            letterSpacing: 0.2,
           }}
         >
-          {live && linescore && linescoreHasStarted(linescore) ? (
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 0.35,
-                flexWrap: 'nowrap',
-              }}
-              title={`${formatLinescoreInning(linescore)} · ${formatOutsLabel(outs)}`}
-            >
+          {formatMonthDayUpper(dateKey)}
+        </Box>
+
+        <Box sx={{ bgcolor: 'background.paper' }}>
+          <ScoreRow
+            abbr={away.team.abbreviation ?? 'AWY'}
+            score={scoreOrDash(awayScore)}
+            bgcolor={rowTint(away.isWinner, away.team.id)}
+            bold={final && away.isWinner}
+          />
+          <ScoreRow
+            abbr={home.team.abbreviation ?? 'HME'}
+            score={scoreOrDash(homeScore)}
+            bgcolor={rowTint(home.isWinner, home.team.id)}
+            bold={final && home.isWinner}
+          />
+
+          <Box
+            sx={{
+              height: 18,
+              px: 0.25,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: live ? 'secondary.main' : 'text.secondary',
+            }}
+          >
+            {live && linescore && linescoreHasStarted(linescore) ? (
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 0.35,
+                  flexWrap: 'nowrap',
+                }}
+                title={`${formatLinescoreInning(linescore)} · ${formatOutsLabel(outs)}`}
+              >
+                <Typography
+                  variant="caption"
+                  component="span"
+                  sx={{
+                    fontSize: '0.6rem',
+                    fontWeight: 700,
+                    lineHeight: 1,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {formatLinescoreInning(linescore)}
+                </Typography>
+                <BasePaths bases={bases} />
+                <OutsDots outs={outs ?? 0} />
+              </Box>
+            ) : (
               <Typography
                 variant="caption"
-                component="span"
                 sx={{
+                  display: 'block',
+                  textAlign: 'center',
                   fontSize: '0.6rem',
-                  fontWeight: 700,
+                  fontWeight: live ? 700 : 500,
                   lineHeight: 1,
-                  whiteSpace: 'nowrap',
                 }}
               >
-                {formatLinescoreInning(linescore)}
+                {gameStatusFooter(statusGame)}
               </Typography>
-              <BasePaths bases={bases} />
-              <OutsDots outs={outs ?? 0} />
-            </Box>
-          ) : (
-            <Typography
-              variant="caption"
-              sx={{
-                display: 'block',
-                textAlign: 'center',
-                fontSize: '0.6rem',
-                fontWeight: live ? 700 : 500,
-                lineHeight: 1,
-              }}
-            >
-              {gameStatusFooter(statusGame)}
-            </Typography>
-          )}
+            )}
+          </Box>
         </Box>
-      </Box>
       </Box>
 
       <GameDetailModal

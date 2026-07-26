@@ -16,11 +16,11 @@ export function clinchSeriesLabel(
   return `${abbreviation}\u00A0−\u00A0${key}`
 }
 
-export function clinchFootnote(indicators: Array<string | undefined>): string | undefined {
+export function clinchFootnote(
+  indicators: Array<string | undefined>,
+): string | undefined {
   const present = new Set(
-    indicators
-      .map((i) => i?.trim().toLowerCase())
-      .filter((i): i is string => Boolean(i)),
+    indicators.map((i) => i?.trim().toLowerCase()).filter((i): i is string => Boolean(i)),
   )
   if (present.size === 0) return undefined
 

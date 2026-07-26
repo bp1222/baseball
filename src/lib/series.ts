@@ -1,10 +1,7 @@
 import type { Game, Team } from '@bp1222/stats-api'
 
 export type SeriesStatus =
-  | 'in_progress_today'
-  | 'in_progress_offday'
-  | 'completed'
-  | 'upcoming'
+  'in_progress_today' | 'in_progress_offday' | 'completed' | 'upcoming'
 
 export type SeriesRecord = {
   wins: number
@@ -25,6 +22,8 @@ export type Series = {
   games: Game[]
   gamesInSeries: number
   seriesNumber: number
+  /** MLB game type for the series (R/F/D/L/W/A). */
+  gameType?: Game['gameType']
   homeWins: number
   awayWins: number
   status: SeriesStatus
@@ -49,7 +48,18 @@ function seriesKey(game: Game): string {
   return `${game.season}-${opponentPairKey(game)}-${seriesNumber}`
 }
 
+function isPostponed(game: Game): boolean {
+  const detail = (game.status.detailedState ?? '').toLowerCase()
+  return (
+    detail.includes('postponed') ||
+    game.status.codedGameState === 'D' ||
+    Boolean(game.status.statusCode?.startsWith('D'))
+  )
+}
+
 function isFinal(game: Game): boolean {
+  // MLB sometimes leaves abstractGameState=Final on delayed/postponed shells.
+  if (isPostponed(game)) return false
   return (
     game.status.abstractGameState === 'Final' ||
     game.status.codedGameState === 'F' ||
@@ -58,10 +68,7 @@ function isFinal(game: Game): boolean {
 }
 
 function isLive(game: Game): boolean {
-  return (
-    game.status.abstractGameState === 'Live' ||
-    game.status.codedGameState === 'I'
-  )
+  return game.status.abstractGameState === 'Live' || game.status.codedGameState === 'I'
 }
 
 function isScheduled(game: Game): boolean {
@@ -91,22 +98,28 @@ function compareGames(a: Game, b: Game): number {
   return gameDateKey(a).localeCompare(gameDateKey(b)) || a.gamePk - b.gamePk
 }
 
-function countWins(games: Game[]): { homeWins: number; awayWins: number } {
+/** Wins for the series' fixed home/away clubs (not per-game venue). */
+function countWins(
+  games: Game[],
+  seriesHomeId: number,
+  seriesAwayId: number,
+): { homeWins: number; awayWins: number } {
   let homeWins = 0
   let awayWins = 0
   for (const game of games) {
-    if (!isFinal(game)) continue
-    if (game.isTie) continue
-    if (game.teams.home.isWinner) homeWins += 1
-    else if (game.teams.away.isWinner) awayWins += 1
+    if (!isFinal(game) || game.isTie) continue
+    const winnerId = game.teams.home.isWinner
+      ? game.teams.home.team.id
+      : game.teams.away.isWinner
+        ? game.teams.away.team.id
+        : null
+    if (winnerId === seriesHomeId) homeWins += 1
+    else if (winnerId === seriesAwayId) awayWins += 1
   }
   return { homeWins, awayWins }
 }
 
-export function deriveSeriesStatus(
-  games: Game[],
-  now = new Date(),
-): SeriesStatus {
+export function deriveSeriesStatus(games: Game[], now = new Date()): SeriesStatus {
   const today = todayKey(now)
   const anyFinal = games.some(isFinal)
   const anyLive = games.some(isLive)
@@ -117,15 +130,6 @@ export function deriveSeriesStatus(
   if (!anyFinal && !anyLive) return 'upcoming'
   if (hasTodayGame || anyLive) return 'in_progress_today'
   return 'in_progress_offday'
-}
-
-function isPostponed(game: Game): boolean {
-  const detail = (game.status.detailedState ?? '').toLowerCase()
-  return (
-    detail.includes('postponed') ||
-    game.status.codedGameState === 'D' ||
-    Boolean(game.status.statusCode?.startsWith('D'))
-  )
 }
 
 /** Prefer the played/makeup record when MLB lists the same gamePk twice (postponed + final). */
@@ -152,10 +156,7 @@ function dedupeGamesByPk(games: Game[]): Game[] {
   return [...byPk.values()]
 }
 
-export function groupGamesIntoSeries(
-  games: Game[],
-  now = new Date(),
-): Series[] {
+export function groupGamesIntoSeries(games: Game[], now = new Date()): Series[] {
   const byKey = new Map<string, Game[]>()
 
   for (const game of dedupeGamesByPk(games)) {
@@ -172,7 +173,9 @@ export function groupGamesIntoSeries(
     const first = ordered[0]
     if (!first) continue
 
-    const { homeWins, awayWins } = countWins(ordered)
+    const homeTeam = first.teams.home.team
+    const awayTeam = first.teams.away.team
+    const { homeWins, awayWins } = countWins(ordered, homeTeam.id, awayTeam.id)
     const seriesNumber =
       first.teams.home.seriesNumber ??
       first.teams.away.seriesNumber ??
@@ -181,11 +184,12 @@ export function groupGamesIntoSeries(
 
     series.push({
       id,
-      homeTeam: first.teams.home.team,
-      awayTeam: first.teams.away.team,
+      homeTeam,
+      awayTeam,
       games: ordered,
       gamesInSeries: first.gamesInSeries ?? ordered.length,
       seriesNumber,
+      gameType: first.gameType,
       homeWins,
       awayWins,
       status: deriveSeriesStatus(ordered, now),
@@ -199,9 +203,10 @@ export function groupGamesIntoSeries(
   })
 }
 
-export function activeUnfinishedSeries(
-  series: Series[],
-): { today: Series[]; offday: Series[] } {
+export function activeUnfinishedSeries(series: Series[]): {
+  today: Series[]
+  offday: Series[]
+} {
   const today: Series[] = []
   const offday: Series[] = []
   for (const s of series) {
@@ -217,6 +222,7 @@ export type SeriesOutcome =
   | 'sweep'
   | 'swept'
   | 'split'
+  | 'world_champions'
   | 'in_progress'
   | 'upcoming'
 
@@ -298,13 +304,9 @@ export function gameDatesFromSeries(series: Series[]): string[] {
   return [...set].sort()
 }
 
-export function seriesOutcomeForTeam(
-  series: Series,
-  teamId?: number,
-): SeriesOutcome {
+export function seriesOutcomeForTeam(series: Series, teamId?: number): SeriesOutcome {
   const allFinal = series.games.length > 0 && series.games.every(isFinal)
-  const anyStarted =
-    series.games.some(isFinal) || series.games.some(isLive)
+  const anyStarted = series.games.some(isFinal) || series.games.some(isLive)
 
   if (!anyStarted) return 'upcoming'
   if (!allFinal) return 'in_progress'
@@ -320,9 +322,12 @@ export function seriesOutcomeForTeam(
   const decided = series.games.filter((g) => isFinal(g) && !g.isTie).length
 
   if (teamWins === oppWins) return 'split'
-  if (teamWins > oppWins && oppWins === 0 && decided >= 2) return 'sweep'
+  if (teamWins > oppWins) {
+    if (series.gameType === 'W') return 'world_champions'
+    if (oppWins === 0 && decided >= 2) return 'sweep'
+    return 'win'
+  }
   if (oppWins > teamWins && teamWins === 0 && decided >= 2) return 'swept'
-  if (teamWins > oppWins) return 'win'
   return 'loss'
 }
 
@@ -338,10 +343,64 @@ export function seriesOutcomeLabel(outcome: SeriesOutcome): string {
       return 'Swept'
     case 'split':
       return 'Split'
+    case 'world_champions':
+      return 'World Champions'
     case 'in_progress':
       return 'In progress'
     case 'upcoming':
       return 'Upcoming'
+  }
+}
+
+const AL_LEAGUE_ID = 103
+const NL_LEAGUE_ID = 104
+
+function leaguePrefix(team: Team): 'AL' | 'NL' | null {
+  const id = team.league?.id
+  if (id === AL_LEAGUE_ID) return 'AL'
+  if (id === NL_LEAGUE_ID) return 'NL'
+  return null
+}
+
+export function isPostseasonSeries(series: Series): boolean {
+  const t = series.gameType
+  return t === 'F' || t === 'D' || t === 'L' || t === 'W' || t === 'A'
+}
+
+/**
+ * Short round label for postseason / All-Star series (null for regular season).
+ * Prefers the perspective team's league for AL/NL prefixes when available.
+ */
+export function postseasonRoundLabel(
+  series: Series,
+  perspectiveTeamId?: number,
+): string | null {
+  const t = series.gameType
+  if (!t || t === 'R') return null
+
+  const perspective =
+    perspectiveTeamId != null
+      ? series.homeTeam.id === perspectiveTeamId
+        ? series.homeTeam
+        : series.awayTeam.id === perspectiveTeamId
+          ? series.awayTeam
+          : series.homeTeam
+      : series.homeTeam
+  const lg = leaguePrefix(perspective) ?? leaguePrefix(series.awayTeam)
+
+  switch (t) {
+    case 'F':
+      return lg ? `${lg} Wild Card` : 'Wild Card'
+    case 'D':
+      return lg ? `${lg}DS` : 'Division Series'
+    case 'L':
+      return lg ? `${lg}CS` : 'LCS'
+    case 'W':
+      return 'World Series'
+    case 'A':
+      return 'All-Star'
+    default:
+      return null
   }
 }
 
@@ -360,6 +419,8 @@ export function seriesOutcomeColors(outcome: SeriesOutcome): {
       return { light: '#efebe9', main: '#a1887f' }
     case 'split':
       return { light: '#e3f2fd', main: '#42a5f5' }
+    case 'world_champions':
+      return { light: '#f7efd2', main: '#9a7b0a' }
     case 'in_progress':
       return { light: '#eceff1', main: '#90a4ae' }
     case 'upcoming':
@@ -374,9 +435,7 @@ export function formatMonthDay(isoDate: string): string {
 
 export function formatMonthDayUpper(isoDate: string): string {
   const d = new Date(`${isoDate}T12:00:00`)
-  return d
-    .toLocaleDateString('en-US', { month: 'short', day: '2-digit' })
-    .toUpperCase()
+  return d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase()
 }
 
 export function gameStatusFooter(game: Game): string {
@@ -385,7 +444,8 @@ export function gameStatusFooter(game: Game): string {
   }
   if (isFinal(game)) {
     const detail = game.status.detailedState ?? 'Final'
-    if (detail.startsWith('Final')) return detail === 'Final' ? 'F' : detail.replace('Final', 'F')
+    if (detail.startsWith('Final'))
+      return detail === 'Final' ? 'F' : detail.replace('Final', 'F')
     return detail.length > 6 ? 'F' : detail
   }
   if (game.status.startTimeTBD) return 'TBD'
@@ -415,10 +475,7 @@ export type SeriesStats = TeamSeriesRecord & {
   streak: string
 }
 
-function completedOutcomeChar(
-  series: Series,
-  teamId: number,
-): 'W' | 'L' | 'T' | null {
+function completedOutcomeChar(series: Series, teamId: number): 'W' | 'L' | 'T' | null {
   if (series.status !== 'completed') return null
   const isHome = series.homeTeam.id === teamId
   const isAway = series.awayTeam.id === teamId
@@ -430,10 +487,7 @@ function completedOutcomeChar(
   return 'T'
 }
 
-export function seriesStatsForTeam(
-  seriesList: Series[],
-  teamId: number,
-): SeriesStats {
+export function seriesStatsForTeam(seriesList: Series[], teamId: number): SeriesStats {
   let wins = 0
   let losses = 0
   let ties = 0
@@ -485,6 +539,21 @@ export function formatSeriesScore(series: Series, fromTeamId?: number): string {
 
 export function opponentOf(series: Series, teamId: number): Team {
   return series.homeTeam.id === teamId ? series.awayTeam : series.homeTeam
+}
+
+/** True when both clubs are listed as home in at least one game (e.g. London series). */
+export function isHomeAndHomeSeries(series: Series): boolean {
+  const homeIds = new Set(series.games.map((g) => g.teams.home.team.id))
+  return homeIds.size > 1
+}
+
+/** Perspective matchup word: vs / @ / against (home-and-home). */
+export function seriesOpponentPreposition(
+  series: Series,
+  perspectiveTeamId: number,
+): 'vs' | '@' | 'against' {
+  if (isHomeAndHomeSeries(series)) return 'against'
+  return series.homeTeam.id === perspectiveTeamId ? 'vs' : '@'
 }
 
 export function isGameFinal(game: Game): boolean {

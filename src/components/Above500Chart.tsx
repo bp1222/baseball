@@ -80,7 +80,9 @@ export function Above500Chart({
       )}
 
       {!isLoading && !isError && (points.length === 0 || teams.length === 0) && (
-        <Typography color="text.secondary">No standings history available yet.</Typography>
+        <Typography color="text.secondary">
+          No standings history available yet.
+        </Typography>
       )}
 
       {!isLoading && !isError && points.length > 0 && teams.length > 0 && (

@@ -1,10 +1,4 @@
-import {
-  Box,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from '@mui/material'
+import { Box, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { ModelRecord } from '@bp1222/stats-api'
@@ -58,12 +52,9 @@ function TeamPage() {
 
   leagueRecords.sort((a, b) => Number(a.leagueRank) - Number(b.leagueRank))
 
-  const seasonStart =
-    seasonQuery.data?.regularSeasonStartDate ?? `${year}-03-28`
-  const seasonEndRaw =
-    seasonQuery.data?.regularSeasonEndDate ?? `${year}-10-01`
-  const seasonEnd =
-    seasonEndRaw > localToday() ? localToday() : seasonEndRaw
+  const seasonStart = seasonQuery.data?.regularSeasonStartDate ?? `${year}-03-28`
+  const seasonEndRaw = seasonQuery.data?.regularSeasonEndDate ?? `${year}-10-01`
+  const seasonEnd = seasonEndRaw > localToday() ? localToday() : seasonEndRaw
 
   const gbHistoryQuery = useGamesBehindHistory({
     year,
@@ -117,7 +108,9 @@ function TeamPage() {
         }
         highlightTeamId={teamId}
         history={gbHistoryQuery.data}
-        isLoading={gbHistoryQuery.isLoading || seasonQuery.isLoading || teamQuery.isLoading}
+        isLoading={
+          gbHistoryQuery.isLoading || seasonQuery.isLoading || teamQuery.isLoading
+        }
         isError={gbHistoryQuery.isError}
         errorMessage={gbHistoryQuery.error?.message}
       />
@@ -130,7 +123,9 @@ function TeamPage() {
         }
         highlightTeamId={teamId}
         history={gbHistoryQuery.data}
-        isLoading={gbHistoryQuery.isLoading || seasonQuery.isLoading || teamQuery.isLoading}
+        isLoading={
+          gbHistoryQuery.isLoading || seasonQuery.isLoading || teamQuery.isLoading
+        }
         isError={gbHistoryQuery.isError}
         errorMessage={gbHistoryQuery.error?.message}
       />
@@ -146,8 +141,11 @@ function TeamPage() {
             <Typography variant="h3">{team?.name ?? `Team ${teamId}`}</Typography>
             <Typography color="text.secondary">
               {year}
-              {team?.division?.name ? ` · ${team.division.name}` : ''}
-              {team?.league?.name ? ` · ${team.league.name}` : ''}
+              {team?.division?.name
+                ? ` · ${team.division.name}`
+                : team?.league?.name
+                  ? ` · ${team.league.name}`
+                  : ''}
             </Typography>
           </Box>
         </Stack>

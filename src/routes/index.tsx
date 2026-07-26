@@ -48,16 +48,10 @@ function LandingPage() {
       >
         {playing.length > 0 && (
           <Stack spacing={1.5}>
-            {offday.length > 0 && (
-              <Typography variant="h5">Games today</Typography>
-            )}
+            {offday.length > 0 && <Typography variant="h5">Games today</Typography>}
             <Box sx={seriesGridSx}>
               {playing.map((series) => (
-                <SeriesCard
-                  key={series.id}
-                  series={series}
-                  focusDate={focusDate}
-                />
+                <SeriesCard key={series.id} series={series} focusDate={focusDate} />
               ))}
             </Box>
           </Stack>
@@ -68,12 +62,7 @@ function LandingPage() {
             <Typography variant="h5">Series in progress (off day)</Typography>
             <Box sx={seriesGridSx}>
               {offday.map((series) => (
-                <SeriesCard
-                  key={series.id}
-                  series={series}
-                  muted
-                  focusDate={focusDate}
-                />
+                <SeriesCard key={series.id} series={series} muted focusDate={focusDate} />
               ))}
             </Box>
           </Stack>

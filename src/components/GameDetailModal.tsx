@@ -28,15 +28,11 @@ import type {
 import { useState } from 'react'
 import { useGameDetail } from '../api/gameDetail'
 import {
+  formatInningRuns,
   formatLinescoreInning,
   linescoreHasStarted,
 } from '../lib/linescore'
-import {
-  formatMonthDay,
-  gameStatusFooter,
-  isGameFinal,
-  isGameLive,
-} from '../lib/series'
+import { formatMonthDay, gameStatusFooter, isGameFinal, isGameLive } from '../lib/series'
 import { TeamLogo } from './TeamLogo'
 
 type GameDetailModalProps = {
@@ -59,17 +55,15 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
   const final = isGameFinal(game)
   const live = isGameLive(game)
 
-  const awayRuns =
-    linescore?.teams?.away?.runs ?? away.score
-  const homeRuns =
-    linescore?.teams?.home?.runs ?? home.score
+  const awayRuns = linescore?.teams?.away?.runs ?? away.score
+  const homeRuns = linescore?.teams?.home?.runs ?? home.score
 
-  const statusLabel = live && linescore && linescoreHasStarted(linescore)
-    ? formatLinescoreInning(linescore)
-    : gameStatusFooter(game)
+  const statusLabel =
+    live && linescore && linescoreHasStarted(linescore)
+      ? formatLinescoreInning(linescore)
+      : gameStatusFooter(game)
 
-  const gameStarted =
-    final || live || linescoreHasStarted(linescore)
+  const gameStarted = final || live || linescoreHasStarted(linescore)
 
   const weather = gameData?.weather
   const venue = gameData?.venue ?? game.venue
@@ -108,9 +102,7 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
           </Typography>
           <Typography variant="caption" color="text.secondary">
             {formatMonthDay(game.officialDate || game.gameDate.slice(0, 10))}
-            {datetime?.time
-              ? ` · ${datetime.time} ${datetime.ampm ?? ''}`.trimEnd()
-              : ''}
+            {datetime?.time ? ` · ${datetime.time} ${datetime.ampm ?? ''}`.trimEnd() : ''}
           </Typography>
         </Box>
         <IconButton aria-label="Close" onClick={onClose} size="small">
@@ -151,6 +143,7 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
             {linescore && (linescore.innings?.length ?? 0) > 0 && (
               <LinescoreTable
                 linescore={linescore}
+                gameFinal={final}
                 awayLabel={
                   away.team.teamName ??
                   away.team.abbreviation ??
@@ -192,7 +185,9 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
                 </ToggleButton>
               </ToggleButtonGroup>
 
-              <TeamBoxscorePanel team={side === 'away' ? box.teams.away : box.teams.home} />
+              <TeamBoxscorePanel
+                team={side === 'away' ? box.teams.away : box.teams.home}
+              />
             </Box>
 
             {gameNotes.length > 0 && <GameNotes items={gameNotes} />}
@@ -203,14 +198,7 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
   )
 }
 
-const META_STRIP_LABELS = new Set([
-  'Weather',
-  'Wind',
-  'Venue',
-  'Att',
-  'T',
-  'First pitch',
-])
+const META_STRIP_LABELS = new Set(['Weather', 'Wind', 'Venue', 'Att', 'T', 'First pitch'])
 
 function isGameNoteItem(item: BoxscoreInfoItem): boolean {
   const label = (item.label ?? '').trim()
@@ -286,19 +274,37 @@ function ScoreHero({
 
 function LinescoreTable({
   linescore,
+  gameFinal,
   awayLabel,
   homeLabel,
 }: {
   linescore: Linescore
+  gameFinal: boolean
   awayLabel: string
   homeLabel: string
 }) {
   const innings = linescore.innings ?? []
   const cellSx = { px: 0.75, py: 0.5, fontSize: '0.75rem' }
+  const rheSx = {
+    px: 0.5,
+    py: 0.5,
+    fontSize: '0.75rem',
+    textAlign: 'center' as const,
+  }
   const labels = { away: awayLabel, home: homeLabel } as const
   return (
     <TableContainer sx={{ border: 1, borderColor: 'divider', borderRadius: 1 }}>
-      <Table size="small">
+      <Table size="small" sx={{ width: '100%' }}>
+        <colgroup>
+          <col />
+          {innings.map((inn) => (
+            <col key={inn.num} />
+          ))}
+          <col style={{ width: '0.75rem' }} />
+          <col style={{ width: '2.25rem' }} />
+          <col style={{ width: '2.25rem' }} />
+          <col style={{ width: '2.25rem' }} />
+        </colgroup>
         <TableHead>
           <TableRow>
             <TableCell sx={cellSx} />
@@ -307,13 +313,14 @@ function LinescoreTable({
                 {inn.num}
               </TableCell>
             ))}
-            <TableCell align="center" sx={{ ...cellSx, fontWeight: 700 }}>
+            <TableCell sx={{ p: 0, borderLeft: 1, borderColor: 'divider' }} aria-hidden />
+            <TableCell align="center" sx={{ ...rheSx, fontWeight: 700 }}>
               R
             </TableCell>
-            <TableCell align="center" sx={{ ...cellSx, fontWeight: 700 }}>
+            <TableCell align="center" sx={{ ...rheSx, fontWeight: 700 }}>
               H
             </TableCell>
-            <TableCell align="center" sx={{ ...cellSx, fontWeight: 700 }}>
+            <TableCell align="center" sx={{ ...rheSx, fontWeight: 700 }}>
               E
             </TableCell>
           </TableRow>
@@ -321,21 +328,23 @@ function LinescoreTable({
         <TableBody>
           {(['away', 'home'] as const).map((side) => (
             <TableRow key={side}>
-              <TableCell sx={{ ...cellSx, fontWeight: 700 }}>
-                {labels[side]}
-              </TableCell>
+              <TableCell sx={{ ...cellSx, fontWeight: 700 }}>{labels[side]}</TableCell>
               {innings.map((inn) => (
                 <TableCell key={inn.num} align="center" sx={cellSx}>
-                  {inn[side]?.runs ?? ''}
+                  {formatInningRuns(inn[side]?.runs, gameFinal)}
                 </TableCell>
               ))}
-              <TableCell align="center" sx={{ ...cellSx, fontWeight: 700 }}>
+              <TableCell
+                sx={{ p: 0, borderLeft: 1, borderColor: 'divider' }}
+                aria-hidden
+              />
+              <TableCell align="center" sx={{ ...rheSx, fontWeight: 700 }}>
                 {linescore.teams?.[side]?.runs ?? ''}
               </TableCell>
-              <TableCell align="center" sx={cellSx}>
+              <TableCell align="center" sx={rheSx}>
                 {linescore.teams?.[side]?.hits ?? ''}
               </TableCell>
-              <TableCell align="center" sx={cellSx}>
+              <TableCell align="center" sx={rheSx}>
                 {linescore.teams?.[side]?.errors ?? ''}
               </TableCell>
             </TableRow>
@@ -450,10 +459,7 @@ function PitchingDecisions({
         )}
         {decisions.loser && (
           <Typography variant="caption">
-            <Box
-              component="span"
-              sx={{ fontWeight: 800, color: 'error.dark', mr: 0.5 }}
-            >
+            <Box component="span" sx={{ fontWeight: 800, color: 'error.dark', mr: 0.5 }}>
               L
             </Box>
             {decisions.loser.fullName}
@@ -477,8 +483,8 @@ function PitchingDecisions({
   if (!gameStarted && probable && (probable.away || probable.home)) {
     return (
       <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center' }}>
-        Probables:{' '}
-        {probable.away?.fullName ?? 'TBD'} vs {probable.home?.fullName ?? 'TBD'}
+        Probables: {probable.away?.fullName ?? 'TBD'} vs{' '}
+        {probable.home?.fullName ?? 'TBD'}
       </Typography>
     )
   }
@@ -514,6 +520,12 @@ const pitchCol = {
 } as const
 
 const cell = { px: 0.75, py: 0.4, fontSize: '0.75rem' } as const
+const headCell = {
+  ...cell,
+  py: 0.65,
+  fontSize: '0.8rem',
+  fontWeight: 700,
+} as const
 
 function TeamBoxscorePanel({ team }: { team: BoxscoreTeam }) {
   const batters = lineupBatters(team)
@@ -524,9 +536,6 @@ function TeamBoxscorePanel({ team }: { team: BoxscoreTeam }) {
   return (
     <Stack spacing={2}>
       <Box>
-        <Typography variant="subtitle2" gutterBottom>
-          {team.team.abbreviation ?? team.team.name} batting
-        </Typography>
         {batters.length === 0 ? (
           <Typography variant="body2" color="text.secondary">
             Lineup not available yet.
@@ -545,23 +554,23 @@ function TeamBoxscorePanel({ team }: { team: BoxscoreTeam }) {
               </colgroup>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={cell}>Player</TableCell>
-                  <TableCell sx={cell} align="right">
+                  <TableCell sx={headCell}>Batter</TableCell>
+                  <TableCell sx={headCell} align="right">
                     AB
                   </TableCell>
-                  <TableCell sx={cell} align="right">
+                  <TableCell sx={headCell} align="right">
                     R
                   </TableCell>
-                  <TableCell sx={cell} align="right">
+                  <TableCell sx={headCell} align="right">
                     H
                   </TableCell>
-                  <TableCell sx={cell} align="right">
+                  <TableCell sx={headCell} align="right">
                     RBI
                   </TableCell>
-                  <TableCell sx={cell} align="right">
+                  <TableCell sx={headCell} align="right">
                     BB
                   </TableCell>
-                  <TableCell sx={cell} align="right">
+                  <TableCell sx={headCell} align="right">
                     K
                   </TableCell>
                 </TableRow>
@@ -637,9 +646,6 @@ function TeamBoxscorePanel({ team }: { team: BoxscoreTeam }) {
       <Divider />
 
       <Box>
-        <Typography variant="subtitle2" gutterBottom>
-          Pitching
-        </Typography>
         {pitchers.length === 0 ? (
           <Typography variant="body2" color="text.secondary">
             Pitching lines not available yet.
@@ -658,23 +664,23 @@ function TeamBoxscorePanel({ team }: { team: BoxscoreTeam }) {
               </colgroup>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={cell}>Pitcher</TableCell>
-                  <TableCell sx={cell} align="right">
+                  <TableCell sx={headCell}>Pitcher</TableCell>
+                  <TableCell sx={headCell} align="right">
                     IP
                   </TableCell>
-                  <TableCell sx={cell} align="right">
+                  <TableCell sx={headCell} align="right">
                     H
                   </TableCell>
-                  <TableCell sx={cell} align="right">
+                  <TableCell sx={headCell} align="right">
                     R
                   </TableCell>
-                  <TableCell sx={cell} align="right">
+                  <TableCell sx={headCell} align="right">
                     ER
                   </TableCell>
-                  <TableCell sx={cell} align="right">
+                  <TableCell sx={headCell} align="right">
                     BB
                   </TableCell>
-                  <TableCell sx={cell} align="right">
+                  <TableCell sx={headCell} align="right">
                     K
                   </TableCell>
                 </TableRow>

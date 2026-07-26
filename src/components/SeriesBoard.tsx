@@ -4,6 +4,7 @@ import {
   formatMonthDay,
   opponentOf,
   seriesDateRange,
+  seriesOpponentPreposition,
   seriesOutcomeColors,
   seriesOutcomeForTeam,
   seriesOutcomeLabel,
@@ -11,6 +12,7 @@ import {
 } from '../lib/series'
 import { GameBox } from './GameBox'
 import { SERIES_CARD_MAX_WIDTH } from './SeriesCard'
+import { SeriesRoundBadge } from './SeriesRoundBadge'
 import { TeamLogo } from './TeamLogo'
 
 type SeriesBoardProps = {
@@ -49,9 +51,7 @@ function teamMarketLabel(team: Team): string | undefined {
  */
 export function SeriesBoard({ seriesList, teamId }: SeriesBoardProps) {
   if (seriesList.length === 0) {
-    return (
-      <Typography color="text.secondary">No series found for this team.</Typography>
-    )
+    return <Typography color="text.secondary">No series found for this team.</Typography>
   }
 
   return (
@@ -66,7 +66,7 @@ export function SeriesBoard({ seriesList, teamId }: SeriesBoardProps) {
         const outcome = seriesOutcomeForTeam(series, teamId)
         const colors = seriesOutcomeColors(outcome)
         const { start, end } = seriesDateRange(series)
-        const home = series.homeTeam.id === teamId
+        const preposition = seriesOpponentPreposition(series, teamId)
         const market = teamMarketLabel(opponent)
 
         return (
@@ -124,7 +124,7 @@ export function SeriesBoard({ seriesList, teamId }: SeriesBoardProps) {
                   variant="caption"
                   sx={{ fontSize: '0.65rem', textAlign: 'center', lineHeight: 1.2 }}
                 >
-                  {market ? `${home ? 'vs' : '@'} ${market}` : home ? 'vs' : '@'}
+                  {market ? `${preposition} ${market}` : preposition}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -137,9 +137,14 @@ export function SeriesBoard({ seriesList, teamId }: SeriesBoardProps) {
                 >
                   {opponent.teamName ?? opponent.abbreviation ?? opponent.name}
                 </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center' }}>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ textAlign: 'center' }}
+                >
                   {formatMonthDay(start)} – {formatMonthDay(end)}
                 </Typography>
+                <SeriesRoundBadge series={series} perspectiveTeamId={teamId} />
               </Stack>
 
               <Box
@@ -157,11 +162,7 @@ export function SeriesBoard({ seriesList, teamId }: SeriesBoardProps) {
                 }}
               >
                 {series.games.map((game) => (
-                  <GameBox
-                    key={game.gamePk}
-                    game={game}
-                    perspectiveTeamId={teamId}
-                  />
+                  <GameBox key={game.gamePk} game={game} perspectiveTeamId={teamId} />
                 ))}
               </Box>
             </Stack>

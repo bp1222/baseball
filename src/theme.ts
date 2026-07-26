@@ -10,7 +10,11 @@ function ensureContrast(
   adjust: (c: string, amount: number) => string,
 ): string {
   let adjusted = color
-  for (let i = 0; i < 10 && getContrastRatio(adjusted, background) < contrastThreshold; i++) {
+  for (
+    let i = 0;
+    i < 10 && getContrastRatio(adjusted, background) < contrastThreshold;
+    i++
+  ) {
     adjusted = adjust(adjusted, 0.12)
   }
   return adjusted
@@ -32,14 +36,9 @@ function withAlpha(hex: string, alpha: number): string {
   return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`
 }
 
-export function createAppTheme(
-  teamId?: number,
-  options?: { flatBackground?: boolean },
-) {
+export function createAppTheme(teamId?: number, options?: { flatBackground?: boolean }) {
   const colors =
-    teamId != null
-      ? getTeamColors(teamId)
-      : { primary: '#0b3d2e', secondary: '#c45c26' }
+    teamId != null ? getTeamColors(teamId) : { primary: '#0b3d2e', secondary: '#c45c26' }
 
   const primary = ensureContrast(colors.primary, lightBg, darken)
   const secondary = ensureContrast(colors.secondary, lightBg, darken)

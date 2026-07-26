@@ -27,11 +27,7 @@ export function QueryState({
   }
 
   if (isError) {
-    return (
-      <Alert severity="error">
-        {error?.message ?? 'Failed to load data.'}
-      </Alert>
-    )
+    return <Alert severity="error">{error?.message ?? 'Failed to load data.'}</Alert>
   }
 
   if (isEmpty) {

@@ -51,8 +51,7 @@ export function GamesBehindChart({
       // in sync with hover markers without drawing per-point marks.
       showMark: highlighted || clinched ? ('end' as const) : () => false,
       connectNulls: true,
-      valueFormatter: (value: number | null) =>
-        value == null ? '' : `${value} GB`,
+      valueFormatter: (value: number | null) => (value == null ? '' : `${value} GB`),
     }
   })
 
@@ -78,7 +77,9 @@ export function GamesBehindChart({
       )}
 
       {!isLoading && !isError && (points.length === 0 || teams.length === 0) && (
-        <Typography color="text.secondary">No standings history available yet.</Typography>
+        <Typography color="text.secondary">
+          No standings history available yet.
+        </Typography>
       )}
 
       {!isLoading && !isError && points.length > 0 && teams.length > 0 && (

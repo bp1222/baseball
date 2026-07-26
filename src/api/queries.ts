@@ -35,28 +35,20 @@ export const queryKeys = {
   teams: (year: string) => ['teams', year] as const,
   team: (year: string, teamId: number) => ['team', year, teamId] as const,
   seasonSchedule: (year: string) => ['seasonSchedule', year] as const,
-  standings: (year: string, leagueId: number) =>
-    ['standings', year, leagueId] as const,
+  standings: (year: string, leagueId: number) => ['standings', year, leagueId] as const,
   season: (year: string) => ['season', year] as const,
   dailyLinescores: (date: string) => ['dailyLinescores', date] as const,
 }
 
-function flattenScheduleGames(
-  dates: { games: Game[] }[] | undefined,
-): Game[] {
+function flattenScheduleGames(dates: { games: Game[] }[] | undefined): Game[] {
   if (!dates) return []
   return dates.flatMap((d) => d.games ?? [])
 }
 
 function seasonBounds(season: Season | undefined, year: string) {
   const start =
-    season?.regularSeasonStartDate ??
-    season?.springStartDate ??
-    `${year}-03-01`
-  const end =
-    season?.postSeasonEndDate ??
-    season?.regularSeasonEndDate ??
-    `${year}-11-15`
+    season?.regularSeasonStartDate ?? season?.springStartDate ?? `${year}-03-01`
+  const end = season?.postSeasonEndDate ?? season?.regularSeasonEndDate ?? `${year}-11-15`
   return { start, end }
 }
 
@@ -65,9 +57,7 @@ export function useSeasons() {
     queryKey: queryKeys.seasons,
     queryFn: async (): Promise<Season[]> => {
       const res = await referenceApi.getAllSeasons({ sportId: MLB_SPORT_ID })
-      return [...(res.seasons ?? [])].sort((a, b) =>
-        b.seasonId.localeCompare(a.seasonId),
-      )
+      return [...(res.seasons ?? [])].sort((a, b) => b.seasonId.localeCompare(a.seasonId))
     },
     staleTime: 1000 * 60 * 60,
   })
@@ -347,8 +337,7 @@ export function useGamesBehindHistory(options: {
         s.games.filter(
           (g) =>
             g.gameType === GameType.Regular &&
-            (teamIds.has(g.teams.home.team.id) ||
-              teamIds.has(g.teams.away.team.id)),
+            (teamIds.has(g.teams.home.team.id) || teamIds.has(g.teams.away.team.id)),
         ),
       )
 

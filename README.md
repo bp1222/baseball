@@ -11,7 +11,7 @@ Track Major League Baseball by **series**, not just individual games.
 
 ## Features
 
-- **Landing (`/`)**: unfinished series that have started, split into *Playing today* and *Mid-series off day*
+- **Landing (`/`)**: unfinished series that have started, split into _Playing today_ and _Mid-series off day_
 - **Season (`/season/$year`)**: MLB teams for that season
 - **Team (`/season/$year/teams/$teamId`)**: series columns, series record, division + league standings, games-behind chart
 
@@ -27,9 +27,9 @@ npm run dev
 
 ## Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start Vite dev server |
-| `npm run build` | Typecheck + production build |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Oxlint |
+| Script            | Description                  |
+| ----------------- | ---------------------------- |
+| `npm run dev`     | Start Vite dev server        |
+| `npm run build`   | Typecheck + production build |
+| `npm run preview` | Preview production build     |
+| `npm run lint`    | Oxlint                       |

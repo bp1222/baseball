@@ -6,11 +6,7 @@ type DateNavigationProps = {
   onChange: (date: string) => void
 }
 
-export function DateNavigation({
-  focusDate,
-  gameDates,
-  onChange,
-}: DateNavigationProps) {
+export function DateNavigation({ focusDate, gameDates, onChange }: DateNavigationProps) {
   const idx = gameDates.indexOf(focusDate)
   const prev = idx > 0 ? gameDates[idx - 1] : findPrev(gameDates, focusDate)
   const next =
@@ -32,7 +28,11 @@ export function DateNavigation({
         slotProps={{ inputLabel: { shrink: true } }}
         sx={{ minWidth: 200 }}
       />
-      <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ flexWrap: 'wrap', justifyContent: 'center' }}
+      >
         <Button
           size="small"
           variant="outlined"

@@ -18,6 +18,8 @@ const router = createRouter({
   routeTree,
   context: { queryClient },
   defaultPreload: 'intent',
+  // Match Vite `base` so deep links work under GitHub Pages (/<repo>/...).
+  basepath: import.meta.env.BASE_URL.replace(/\/$/, '') || '/',
 })
 
 declare module '@tanstack/react-router' {

@@ -2,6 +2,7 @@ import { Box, Paper, Stack, Typography } from '@mui/material'
 import type { Series } from '../lib/series'
 import { formatMonthDay, seriesDateRange } from '../lib/series'
 import { GameBox } from './GameBox'
+import { SeriesRoundBadge } from './SeriesRoundBadge'
 import { TeamLogo } from './TeamLogo'
 
 type SeriesCardProps = {
@@ -20,11 +21,7 @@ const GAMES_ROW_MAX_WIDTH =
 /** Opponent block + one games row + padding — keeps cards from stretching wide. */
 export const SERIES_CARD_MAX_WIDTH = 480
 
-export function SeriesCard({
-  series,
-  muted = false,
-  focusDate,
-}: SeriesCardProps) {
+export function SeriesCard({ series, muted = false, focusDate }: SeriesCardProps) {
   const away = series.awayTeam
   const home = series.homeTeam
   const { start, end } = seriesDateRange(series)
@@ -77,6 +74,7 @@ export function SeriesCard({
           <Typography variant="caption" color="text.secondary">
             {formatMonthDay(start)} – {formatMonthDay(end)}
           </Typography>
+          <SeriesRoundBadge series={series} />
         </Stack>
 
         <Box
@@ -94,11 +92,7 @@ export function SeriesCard({
           }}
         >
           {series.games.map((game) => (
-            <GameBox
-              key={game.gamePk}
-              game={game}
-              focusDate={focusDate}
-            />
+            <GameBox key={game.gamePk} game={game} focusDate={focusDate} />
           ))}
         </Box>
       </Stack>
