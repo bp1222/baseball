@@ -29,7 +29,7 @@ export function StandingsTable({
   if (records.length === 0) {
     return (
       <Paper sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
           {title}
         </Typography>
         <Typography color="text.secondary">Standings unavailable.</Typography>
@@ -39,7 +39,7 @@ export function StandingsTable({
 
   return (
     <Paper sx={{ p: 2 }}>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
         {title}
       </Typography>
       <TableContainer>

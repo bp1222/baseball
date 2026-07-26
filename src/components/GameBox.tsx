@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material'
 import type { Game } from '@bp1222/stats-api'
 import { useState } from 'react'
 import { useGameLinescore } from '../api/queries'
+import { BasePaths, OutsDots } from './BasesOuts'
 import { GameDetailModal } from './GameDetailModal'
 import {
   formatLinescoreInning,
@@ -210,62 +211,6 @@ function ScoreRow({
     >
       <Box component="span">{abbr}</Box>
       <Box component="span">{score}</Box>
-    </Box>
-  )
-}
-
-function BasePaths({
-  bases,
-}: {
-  bases: { first: boolean; second: boolean; third: boolean }
-}) {
-  const occupied = 'currentColor'
-  const open = 'transparent'
-  return (
-    <Box
-      component="svg"
-      viewBox="0 0 16 14"
-      aria-hidden
-      sx={{ width: 11, height: 10, display: 'block', flexShrink: 0 }}
-    >
-      <polygon
-        points="8,1 11,4 8,7 5,4"
-        fill={bases.second ? occupied : open}
-        stroke="currentColor"
-        strokeWidth="1.25"
-      />
-      <polygon
-        points="3,6 6,9 3,12 0,9"
-        fill={bases.third ? occupied : open}
-        stroke="currentColor"
-        strokeWidth="1.25"
-      />
-      <polygon
-        points="13,6 16,9 13,12 10,9"
-        fill={bases.first ? occupied : open}
-        stroke="currentColor"
-        strokeWidth="1.25"
-      />
-    </Box>
-  )
-}
-
-function OutsDots({ outs }: { outs: number }) {
-  const filled = Math.max(0, Math.min(3, outs))
-  return (
-    <Box sx={{ display: 'flex', gap: '1.5px', alignItems: 'center' }} aria-hidden>
-      {[0, 1, 2].map((i) => (
-        <Box
-          key={i}
-          sx={{
-            width: 3.5,
-            height: 3.5,
-            borderRadius: '50%',
-            bgcolor: i < filled ? 'currentColor' : 'transparent',
-            border: '1px solid currentColor',
-          }}
-        />
-      ))}
     </Box>
   )
 }

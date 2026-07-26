@@ -30,7 +30,6 @@ export function Above500Chart({
 }: Above500ChartProps) {
   const points = history?.over500Points ?? []
   const teams = history?.teams ?? []
-  const scope = history?.scope ?? 'league'
   const footnote = clinchFootnote(teams.map((t) => t.clinchIndicator))
 
   const orderedTeams = [
@@ -60,11 +59,8 @@ export function Above500Chart({
 
   return (
     <Paper sx={{ p: 2 }}>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
         {title}
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Games above/below .500 (wins − losses) — all {scope} teams
       </Typography>
 
       {isLoading && (

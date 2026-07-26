@@ -86,19 +86,21 @@ export function SeriesBoard({ seriesList, teamId }: SeriesBoardProps) {
               maxWidth: SERIES_CARD_MAX_WIDTH,
             }}
           >
-            <Chip
-              size="small"
-              label={seriesOutcomeLabel(outcome)}
-              sx={{
-                position: 'absolute',
-                top: -10,
-                left: 8,
-                height: 22,
-                fontWeight: 700,
-                bgcolor: colors.main,
-                color: '#fff',
-              }}
-            />
+            {outcome !== 'upcoming' && (
+              <Chip
+                size="small"
+                label={seriesOutcomeLabel(outcome)}
+                sx={{
+                  position: 'absolute',
+                  top: -10,
+                  left: 8,
+                  height: 22,
+                  fontWeight: 700,
+                  bgcolor: colors.main,
+                  color: '#fff',
+                }}
+              />
+            )}
 
             <Stack
               direction="row"

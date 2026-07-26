@@ -68,8 +68,7 @@ function TeamPage() {
   const isError = teamQuery.isError || seriesQuery.isError
   const error = teamQuery.error ?? seriesQuery.error ?? null
 
-  const hasDivision = team?.division?.id != null
-  const useDivisionStandings = hasDivision && divisionRecords.length > 0
+  const useDivisionStandings = team?.division?.id != null && divisionRecords.length > 0
 
   const statsColumn = (
     <Stack spacing={2}>
@@ -85,14 +84,14 @@ function TeamPage() {
         <>
           {useDivisionStandings && (
             <StandingsTable
-              title={`${team?.division?.name ?? 'Division'} Standings`}
+              title="Division Standings"
               records={divisionRecords}
               highlightTeamId={teamId}
               gamesBackField="divisionGamesBack"
             />
           )}
           <StandingsTable
-            title={`${team?.league?.name ?? 'League'} Standings`}
+            title="League Standings"
             records={leagueRecords}
             highlightTeamId={teamId}
             gamesBackField="leagueGamesBack"
@@ -101,11 +100,7 @@ function TeamPage() {
       )}
 
       <GamesBehindChart
-        title={
-          hasDivision
-            ? `Games behind — ${team?.division?.name ?? 'division'}`
-            : `Games behind — ${team?.league?.name ?? 'league'}`
-        }
+        title="Games Behind"
         highlightTeamId={teamId}
         history={gbHistoryQuery.data}
         isLoading={
@@ -116,11 +111,7 @@ function TeamPage() {
       />
 
       <Above500Chart
-        title={
-          hasDivision
-            ? `Above / below .500 — ${team?.division?.name ?? 'division'}`
-            : `Above / below .500 — ${team?.league?.name ?? 'league'}`
-        }
+        title="Above / Below .500"
         highlightTeamId={teamId}
         history={gbHistoryQuery.data}
         isLoading={

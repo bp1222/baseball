@@ -23,7 +23,6 @@ export function GamesBehindChart({
 }: GamesBehindChartProps) {
   const points = history?.points ?? []
   const teams = history?.teams ?? []
-  const scope = history?.scope ?? 'league'
   const footnote = clinchFootnote(teams.map((t) => t.clinchIndicator))
 
   // Non-highlighted first so the selected team series is drawn last (on top).
@@ -57,11 +56,8 @@ export function GamesBehindChart({
 
   return (
     <Paper sx={{ p: 2 }}>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
         {title}
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Games behind the {scope} leader over the season — all {scope} teams
       </Typography>
 
       {isLoading && (

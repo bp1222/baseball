@@ -30,9 +30,19 @@ import { useGameDetail } from '../api/gameDetail'
 import {
   formatInningRuns,
   formatLinescoreInning,
+  formatOutsLabel,
+  linescoreBases,
   linescoreHasStarted,
+  padLinescoreInnings,
 } from '../lib/linescore'
-import { formatMonthDay, gameStatusFooter, isGameFinal, isGameLive } from '../lib/series'
+import {
+  formatGameStartTime,
+  formatMonthDay,
+  gameStatusFooter,
+  isGameFinal,
+  isGameLive,
+} from '../lib/series'
+import { BasePaths, OutsDots } from './BasesOuts'
 import { TeamLogo } from './TeamLogo'
 
 type GameDetailModalProps = {
@@ -67,9 +77,9 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
 
   const weather = gameData?.weather
   const venue = gameData?.venue ?? game.venue
-  const datetime = gameData?.datetime
   const decisions = feed?.liveData?.decisions
   const probable = gameData?.probablePitchers
+  const startTime = formatGameStartTime(game)
 
   const metaFromInfo = (box?.info ?? []).filter((i) =>
     META_STRIP_LABELS.has(i.label ?? ''),
@@ -102,7 +112,7 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
           </Typography>
           <Typography variant="caption" color="text.secondary">
             {formatMonthDay(game.officialDate || game.gameDate.slice(0, 10))}
-            {datetime?.time ? ` · ${datetime.time} ${datetime.ampm ?? ''}`.trimEnd() : ''}
+            {startTime ? ` · ${startTime}` : ''}
           </Typography>
         </Box>
         <IconButton aria-label="Close" onClick={onClose} size="small">
@@ -130,6 +140,11 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
               awayRuns={awayRuns}
               homeRuns={homeRuns}
               statusLabel={statusLabel}
+              linescore={
+                live && linescore && linescoreHasStarted(linescore)
+                  ? linescore
+                  : undefined
+              }
             />
 
             <MetaStrip
@@ -140,9 +155,10 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
               infoItems={metaFromInfo}
             />
 
-            {linescore && (linescore.innings?.length ?? 0) > 0 && (
+            {(linescore || game.scheduledInnings) && (
               <LinescoreTable
                 linescore={linescore}
+                scheduledInnings={game.scheduledInnings}
                 gameFinal={final}
                 awayLabel={
                   away.team.teamName ??
@@ -214,14 +230,18 @@ function ScoreHero({
   awayRuns,
   homeRuns,
   statusLabel,
+  linescore,
 }: {
   game: Game
   awayRuns?: number
   homeRuns?: number
   statusLabel: string
+  linescore?: Linescore
 }) {
   const away = game.teams.away
   const home = game.teams.home
+  const bases = linescoreBases(linescore)
+  const outs = linescore?.outs
   return (
     <Stack
       direction="row"
@@ -255,6 +275,21 @@ function ScoreHero({
         <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
           {statusLabel}
         </Typography>
+        {linescore && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              mt: 0.75,
+              color: 'secondary.main',
+            }}
+            title={formatOutsLabel(outs)}
+          >
+            <BasePaths bases={bases} size="md" />
+            <OutsDots outs={outs ?? 0} size="md" />
+          </Box>
+        )}
       </Stack>
 
       <Stack sx={{ alignItems: 'center', minWidth: 72 }}>
@@ -274,16 +309,18 @@ function ScoreHero({
 
 function LinescoreTable({
   linescore,
+  scheduledInnings,
   gameFinal,
   awayLabel,
   homeLabel,
 }: {
-  linescore: Linescore
+  linescore?: Linescore
+  scheduledInnings?: number
   gameFinal: boolean
   awayLabel: string
   homeLabel: string
 }) {
-  const innings = linescore.innings ?? []
+  const innings = padLinescoreInnings(linescore, scheduledInnings)
   const cellSx = { px: 0.75, py: 0.5, fontSize: '0.75rem' }
   const rheSx = {
     px: 0.5,
@@ -339,13 +376,13 @@ function LinescoreTable({
                 aria-hidden
               />
               <TableCell align="center" sx={{ ...rheSx, fontWeight: 700 }}>
-                {linescore.teams?.[side]?.runs ?? ''}
+                {linescore?.teams?.[side]?.runs ?? ''}
               </TableCell>
               <TableCell align="center" sx={rheSx}>
-                {linescore.teams?.[side]?.hits ?? ''}
+                {linescore?.teams?.[side]?.hits ?? ''}
               </TableCell>
               <TableCell align="center" sx={rheSx}>
-                {linescore.teams?.[side]?.errors ?? ''}
+                {linescore?.teams?.[side]?.errors ?? ''}
               </TableCell>
             </TableRow>
           ))}

@@ -438,6 +438,18 @@ export function formatMonthDayUpper(isoDate: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase()
 }
 
+export function formatGameStartTime(game: Game): string | null {
+  if (game.status.startTimeTBD) return 'TBD'
+  try {
+    return new Date(game.gameDate).toLocaleTimeString(undefined, {
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+  } catch {
+    return null
+  }
+}
+
 export function gameStatusFooter(game: Game): string {
   if (isLive(game)) {
     return game.status.detailedState ?? 'Live'
@@ -448,15 +460,7 @@ export function gameStatusFooter(game: Game): string {
       return detail === 'Final' ? 'F' : detail.replace('Final', 'F')
     return detail.length > 6 ? 'F' : detail
   }
-  if (game.status.startTimeTBD) return 'TBD'
-  try {
-    return new Date(game.gameDate).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-    })
-  } catch {
-    return game.status.detailedState ?? 'Sched'
-  }
+  return formatGameStartTime(game) ?? game.status.detailedState ?? 'Sched'
 }
 
 /** Series W–L–T from the perspective of `teamId`. */
