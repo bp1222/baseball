@@ -10,6 +10,7 @@ import {
 import { Link } from '@tanstack/react-router'
 import { useMemo, type ReactNode } from 'react'
 import { createAppTheme } from '../theme'
+import { AnalyticsConsentBanner } from './AnalyticsConsentBanner'
 import { AppFooter } from './AppFooter'
 import { AppLogo } from './AppLogo'
 import { SeasonTeamSelect } from './SeasonTeamSelect'
@@ -57,6 +58,7 @@ export function AppShell({ children, year, teamId, flatBackground }: AppShellPro
           {children}
         </Container>
         <AppFooter />
+        <AnalyticsConsentBanner />
       </Box>
     </ThemeProvider>
   )
