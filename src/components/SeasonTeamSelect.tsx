@@ -9,6 +9,7 @@ import {
 } from '@mui/material'
 import { useNavigate } from '@tanstack/react-router'
 import { useSeasonTeams, useSeasons } from '../api/queries'
+import { trackEvent } from '../lib/analytics'
 import { localToday } from '../lib/series'
 
 type SeasonTeamSelectProps = {
@@ -41,6 +42,12 @@ export function SeasonTeamSelect({ year, teamId }: SeasonTeamSelectProps) {
 
   const onSeasonChange = (event: SelectChangeEvent) => {
     const nextYear = event.target.value
+    const selectedTeam = teamId != null ? teams.find((t) => t.id === teamId) : undefined
+    trackEvent({
+      name: 'select_season',
+      season: nextYear,
+      team_name: selectedTeam?.name,
+    })
     if (teamId != null) {
       void navigate({
         to: '/season/$year/teams/$teamId',
@@ -54,6 +61,14 @@ export function SeasonTeamSelect({ year, teamId }: SeasonTeamSelectProps) {
   const onTeamChange = (event: SelectChangeEvent) => {
     const nextTeamId = event.target.value
     if (!nextTeamId) return
+    const selectedTeam = teams.find((t) => String(t.id) === nextTeamId)
+    if (selectedTeam?.name) {
+      trackEvent({
+        name: 'select_team',
+        season: effectiveYear,
+        team_name: selectedTeam.name,
+      })
+    }
     void navigate({
       to: '/season/$year/teams/$teamId',
       params: { year: effectiveYear, teamId: nextTeamId },
@@ -61,6 +76,12 @@ export function SeasonTeamSelect({ year, teamId }: SeasonTeamSelectProps) {
   }
 
   const clearTeam = () => {
+    const selectedTeam = teamId != null ? teams.find((t) => t.id === teamId) : undefined
+    trackEvent({
+      name: 'clear_team',
+      season: effectiveYear,
+      team_name: selectedTeam?.name,
+    })
     void navigate({ to: '/season/$year', params: { year: effectiveYear } })
   }
 

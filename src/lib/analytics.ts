@@ -75,3 +75,42 @@ export function trackPageView(path: string): void {
     page_location: window.location.href,
   })
 }
+
+export type AnalyticsEvent =
+  | {
+      name: 'select_season'
+      season: string
+      team_name?: string
+    }
+  | {
+      name: 'select_team'
+      season: string
+      team_name: string
+    }
+  | {
+      name: 'clear_team'
+      season: string
+      team_name?: string
+    }
+  | {
+      name: 'view_season'
+      season: string
+    }
+  | {
+      name: 'view_team'
+      season: string
+      team_name: string
+    }
+
+/** Custom GA4 event (no-ops without consent). */
+export function trackEvent(event: AnalyticsEvent): void {
+  if (!MEASUREMENT_ID || !hasAnalyticsConsent() || !window.gtag) return
+
+  const { name, ...params } = event
+  const payload: Record<string, string | number | boolean> = {}
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null) payload[key] = value
+  }
+
+  window.gtag('event', name, payload)
+}

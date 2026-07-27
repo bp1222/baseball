@@ -1,6 +1,6 @@
 import { Box, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { ModelRecord } from '@bp1222/stats-api'
 import {
   useGamesBehindHistory,
@@ -16,6 +16,7 @@ import { SeriesBoard } from '../components/SeriesBoard'
 import { StandingsTable } from '../components/StandingsTable'
 import { SeriesRecordCards } from '../components/SeriesRecordCards'
 import { TeamLogo } from '../components/TeamLogo'
+import { trackEvent } from '../lib/analytics'
 import { localToday, seriesStatsForTeam } from '../lib/series'
 
 export const Route = createFileRoute('/season/$year/teams/$teamId')({
@@ -38,6 +39,16 @@ function TeamPage() {
   const team = teamQuery.data
   const seriesList = seriesQuery.data ?? []
   const seriesStats = seriesStatsForTeam(seriesList, teamId)
+  const trackedTeamName = team?.name
+
+  useEffect(() => {
+    if (trackedTeamName == null) return
+    trackEvent({
+      name: 'view_team',
+      season: year,
+      team_name: trackedTeamName,
+    })
+  }, [year, trackedTeamName])
 
   const divisionId = team?.division?.id
   const divisionRecords: ModelRecord[] = []

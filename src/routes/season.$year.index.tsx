@@ -1,8 +1,10 @@
 import { Box, Paper, Stack, Typography } from '@mui/material'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { useEffect } from 'react'
 import { useSeasonTeams } from '../api/queries'
 import { QueryState } from '../components/QueryState'
 import { TeamLogo } from '../components/TeamLogo'
+import { trackEvent } from '../lib/analytics'
 
 export const Route = createFileRoute('/season/$year/')({
   component: SeasonPage,
@@ -11,6 +13,10 @@ export const Route = createFileRoute('/season/$year/')({
 function SeasonPage() {
   const { year } = Route.useParams()
   const { data, isLoading, isError, error } = useSeasonTeams(year)
+
+  useEffect(() => {
+    trackEvent({ name: 'view_season', season: year })
+  }, [year])
 
   return (
     <Stack spacing={3}>
