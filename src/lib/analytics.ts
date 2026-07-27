@@ -6,8 +6,10 @@ export type AnalyticsConsent = 'granted' | 'denied'
 
 declare global {
   interface Window {
-    dataLayer?: unknown[]
-    gtag?: (...args: unknown[]) => void
+    dataLayer?: IArguments[]
+    // GA's stub must use `arguments` (not a rest array) — see initAnalytics.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    gtag?: (...args: any[]) => void
   }
 }
 
@@ -44,20 +46,23 @@ export function initAnalytics(): void {
   if (initialized || !MEASUREMENT_ID || !hasAnalyticsConsent()) return
   initialized = true
 
-  const script = document.createElement('script')
-  script.async = true
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`
-  document.head.appendChild(script)
-
+  // Match Google's snippet exactly: queue via `arguments`, then load the script.
+  // Pushing a rest-parameter array breaks processing — only js?id= loads, no g/collect.
   window.dataLayer = window.dataLayer ?? []
-  window.gtag = function gtag(...args: unknown[]) {
-    window.dataLayer?.push(args)
+  window.gtag = function gtag() {
+    // eslint-disable-next-line prefer-rest-params
+    window.dataLayer!.push(arguments)
   }
 
   window.gtag('js', new Date())
   window.gtag('config', MEASUREMENT_ID, {
     send_page_view: false,
   })
+
+  const script = document.createElement('script')
+  script.async = true
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`
+  document.head.appendChild(script)
 }
 
 /** SPA page view — call on every resolved route change when consented. */
