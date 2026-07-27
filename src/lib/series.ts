@@ -293,7 +293,43 @@ export function seriesForFocusDate(
       offday.push(s)
     }
   }
+  playing.sort((a, b) => compareSeriesByGameStart(a, b, focusDate))
+  offday.sort((a, b) => compareSeriesByNextGameStart(a, b, focusDate))
   return { playing, offday }
+}
+
+/** Earliest start time among games on the focus date (ISO `gameDate`). */
+function earliestStartOnDate(series: Series, focusDate: string): number {
+  let earliest = Number.POSITIVE_INFINITY
+  for (const game of series.games) {
+    if (gameDateKey(game) !== focusDate) continue
+    const t = Date.parse(game.gameDate)
+    if (!Number.isNaN(t) && t < earliest) earliest = t
+  }
+  return earliest
+}
+
+/** Next scheduled game on or after focusDate (for off-day ordering). */
+function nextStartOnOrAfter(series: Series, focusDate: string): number {
+  let earliest = Number.POSITIVE_INFINITY
+  for (const game of series.games) {
+    if (gameDateKey(game) < focusDate) continue
+    const t = Date.parse(game.gameDate)
+    if (!Number.isNaN(t) && t < earliest) earliest = t
+  }
+  return earliest
+}
+
+function compareSeriesByGameStart(a: Series, b: Series, focusDate: string): number {
+  const byTime = earliestStartOnDate(a, focusDate) - earliestStartOnDate(b, focusDate)
+  if (byTime !== 0) return byTime
+  return a.id.localeCompare(b.id)
+}
+
+function compareSeriesByNextGameStart(a: Series, b: Series, focusDate: string): number {
+  const byTime = nextStartOnOrAfter(a, focusDate) - nextStartOnOrAfter(b, focusDate)
+  if (byTime !== 0) return byTime
+  return a.id.localeCompare(b.id)
 }
 
 export function gameDatesFromSeries(series: Series[]): string[] {
@@ -302,6 +338,22 @@ export function gameDatesFromSeries(series: Series[]): string[] {
     for (const g of s.games) set.add(gameDateKey(g))
   }
   return [...set].sort()
+}
+
+/**
+ * Default day for season browsing: last day a game was played (on or before today).
+ * If the season has not started yet, the first scheduled game day.
+ */
+export function defaultSeasonFocusDate(
+  gameDates: string[],
+  today: string = localToday(),
+): string | undefined {
+  let lastPlayed: string | undefined
+  for (const d of gameDates) {
+    if (d <= today) lastPlayed = d
+    else break
+  }
+  return lastPlayed ?? gameDates[0]
 }
 
 export function seriesOutcomeForTeam(series: Series, teamId?: number): SeriesOutcome {

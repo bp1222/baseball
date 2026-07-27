@@ -3,6 +3,12 @@ export type TeamColors = {
   secondary: string
 }
 
+/** MLB league brand — used on home / season day views (no team selected). */
+export const MLB_BRAND_COLORS: TeamColors = {
+  primary: '#002D72',
+  secondary: '#D50032',
+}
+
 /** Official-ish MLB franchise colors keyed by Stats API team id. */
 const TEAM_COLORS: Record<number, TeamColors> = {
   108: { primary: '#003263', secondary: '#BA0021' }, // Angels
@@ -37,10 +43,7 @@ const TEAM_COLORS: Record<number, TeamColors> = {
   158: { primary: '#FFC52F', secondary: '#12284B' }, // Brewers
 }
 
-const FALLBACK: TeamColors = {
-  primary: '#0b3d2e',
-  secondary: '#c45c26',
-}
+const FALLBACK: TeamColors = MLB_BRAND_COLORS
 
 export function getTeamColors(teamId: number): TeamColors {
   return TEAM_COLORS[teamId] ?? FALLBACK

@@ -1,8 +1,8 @@
 import { createTheme, darken, getContrastRatio, lighten } from '@mui/material/styles'
-import { getTeamColors } from './lib/teamColors'
+import { getTeamColors, MLB_BRAND_COLORS } from './lib/teamColors'
 
 const contrastThreshold = 4.5
-const lightBg = '#f7faf5'
+const lightBg = '#f5f7fa'
 
 function ensureContrast(
   color: string,
@@ -36,33 +36,31 @@ function withAlpha(hex: string, alpha: number): string {
   return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`
 }
 
-export function createAppTheme(teamId?: number, options?: { flatBackground?: boolean }) {
-  const colors =
-    teamId != null ? getTeamColors(teamId) : { primary: '#0b3d2e', secondary: '#c45c26' }
+export function createAppTheme(teamId?: number) {
+  const colors = teamId != null ? getTeamColors(teamId) : MLB_BRAND_COLORS
 
   const primary = ensureContrast(colors.primary, lightBg, darken)
   const secondary = ensureContrast(colors.secondary, lightBg, darken)
   const primaryMid = lighten(primary, 0.12)
-  const flatBackground = options?.flatBackground === true
 
   return createTheme({
     palette: {
       mode: 'light',
       primary: {
         main: primary,
-        contrastText: getContrastRatio(primary, '#ffffff') >= 3 ? '#ffffff' : '#14241c',
+        contrastText: getContrastRatio(primary, '#ffffff') >= 3 ? '#ffffff' : '#142033',
       },
       secondary: {
         main: secondary,
-        contrastText: getContrastRatio(secondary, '#ffffff') >= 3 ? '#ffffff' : '#14241c',
+        contrastText: getContrastRatio(secondary, '#ffffff') >= 3 ? '#ffffff' : '#142033',
       },
       background: {
-        default: flatBackground ? lightBg : '#e8efe6',
-        paper: '#f7faf5',
+        default: '#e8eef4',
+        paper: lightBg,
       },
       text: {
-        primary: '#14241c',
-        secondary: '#3d5448',
+        primary: '#142033',
+        secondary: '#3d4a5c',
       },
       success: { main: '#1b7a4e' },
       error: { main: '#a33b2a' },
@@ -83,10 +81,7 @@ export function createAppTheme(teamId?: number, options?: { flatBackground?: boo
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            backgroundImage: flatBackground
-              ? 'none'
-              : `radial-gradient(ellipse at top left, ${withAlpha(secondary, 0.12)}, transparent 42%), radial-gradient(ellipse 80% 55% at 85% 12%, ${withAlpha(primary, 0.18)}, transparent 55%)`,
-            backgroundColor: flatBackground ? lightBg : undefined,
+            backgroundImage: `radial-gradient(ellipse at top left, ${withAlpha(secondary, 0.12)}, transparent 42%), radial-gradient(ellipse 80% 55% at 85% 12%, ${withAlpha(primary, 0.18)}, transparent 55%)`,
             minHeight: '100vh',
             transition: 'background-image 280ms ease, background-color 280ms ease',
           },
@@ -96,7 +91,7 @@ export function createAppTheme(teamId?: number, options?: { flatBackground?: boo
         defaultProps: { elevation: 0 },
         styleOverrides: {
           root: {
-            border: '1px solid rgba(20, 36, 28, 0.12)',
+            border: '1px solid rgba(20, 32, 51, 0.12)',
           },
         },
       },

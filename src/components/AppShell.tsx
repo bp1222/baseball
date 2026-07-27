@@ -19,14 +19,10 @@ type AppShellProps = {
   children: ReactNode
   year?: string
   teamId?: number
-  flatBackground?: boolean
 }
 
-export function AppShell({ children, year, teamId, flatBackground }: AppShellProps) {
-  const theme = useMemo(
-    () => createAppTheme(teamId, { flatBackground }),
-    [teamId, flatBackground],
-  )
+export function AppShell({ children, year, teamId }: AppShellProps) {
+  const theme = useMemo(() => createAppTheme(teamId), [teamId])
 
   return (
     <ThemeProvider theme={theme}>

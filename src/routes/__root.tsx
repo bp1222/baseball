@@ -6,21 +6,18 @@ export const Route = createRootRoute({
 })
 
 function RootComponent() {
-  const { params, pathname } = useRouterState({
-    select: (s) => ({
-      params: s.matches[s.matches.length - 1]?.params as {
+  const params = useRouterState({
+    select: (s) =>
+      s.matches[s.matches.length - 1]?.params as {
         year?: string
         teamId?: string
       },
-      pathname: s.location.pathname,
-    }),
   })
 
   return (
     <AppShell
       year={params?.year}
       teamId={params?.teamId ? Number(params.teamId) : undefined}
-      flatBackground={pathname === '/'}
     >
       <Outlet />
     </AppShell>

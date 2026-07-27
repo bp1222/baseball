@@ -1,10 +1,10 @@
-import { Box, Paper, Stack, Typography } from '@mui/material'
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect } from 'react'
-import { useSeasonTeams } from '../api/queries'
+import { createFileRoute } from '@tanstack/react-router'
+import { useEffect, useMemo, useState } from 'react'
+import { useSeasonSchedule } from '../api/queries'
 import { QueryState } from '../components/QueryState'
-import { TeamLogo } from '../components/TeamLogo'
+import { SeriesDayBoard } from '../components/SeriesDayBoard'
 import { trackEvent } from '../lib/analytics'
+import { defaultSeasonFocusDate, gameDatesFromSeries } from '../lib/series'
 
 export const Route = createFileRoute('/season/$year/')({
   component: SeasonPage,
@@ -12,77 +12,54 @@ export const Route = createFileRoute('/season/$year/')({
 
 function SeasonPage() {
   const { year } = Route.useParams()
-  const { data, isLoading, isError, error } = useSeasonTeams(year)
+  const scheduleQuery = useSeasonSchedule(year)
+  const gameDates = useMemo(
+    () => gameDatesFromSeries(scheduleQuery.data ?? []),
+    [scheduleQuery.data],
+  )
+  const defaultFocus = useMemo(() => defaultSeasonFocusDate(gameDates), [gameDates])
+
+  // undefined → use season default once schedule loads; reset when year changes.
+  const [focusDate, setFocusDate] = useState<string | undefined>()
+  useEffect(() => {
+    setFocusDate(undefined)
+  }, [year])
 
   useEffect(() => {
     trackEvent({ name: 'view_season', season: year })
   }, [year])
 
-  return (
-    <Stack spacing={3}>
-      <Box>
-        <Typography variant="h3" gutterBottom>
-          {year} Teams
-        </Typography>
-        <Typography color="text.secondary">
-          Select a team to view series results and standings.
-        </Typography>
-      </Box>
+  const effectiveFocus = focusDate ?? defaultFocus
 
-      <QueryState
-        isLoading={isLoading}
-        isError={isError}
-        error={error}
-        isEmpty={!isLoading && (data?.length ?? 0) === 0}
-        emptyMessage="No MLB teams found for this season."
-      >
-        <Box
-          sx={{
-            display: 'grid',
-            gap: 1.5,
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: 'repeat(2, 1fr)',
-              md: 'repeat(3, 1fr)',
-              lg: 'repeat(4, 1fr)',
-            },
-          }}
-        >
-          {(data ?? []).map((team) => (
-            <Link
-              key={team.id}
-              to="/season/$year/teams/$teamId"
-              params={{ year, teamId: String(team.id) }}
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              <Paper
-                sx={{
-                  p: 1.5,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  height: '100%',
-                  transition: 'transform 180ms ease, box-shadow 180ms ease',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 20px rgba(11,61,46,0.14)',
-                  },
-                }}
-              >
-                <TeamLogo teamId={team.id} alt={team.name} size={40} />
-                <Box sx={{ minWidth: 0 }}>
-                  <Typography noWrap sx={{ fontWeight: 700 }}>
-                    {team.name}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" noWrap>
-                    {team.division?.name ?? team.league?.name ?? 'MLB'}
-                  </Typography>
-                </Box>
-              </Paper>
-            </Link>
-          ))}
-        </Box>
-      </QueryState>
-    </Stack>
+  const onFocusDateChange = (date: string) => {
+    if (gameDates.length === 0) {
+      setFocusDate(date)
+      return
+    }
+    if (date.slice(0, 4) !== year) {
+      const first = gameDates[0]!
+      const last = gameDates[gameDates.length - 1]!
+      setFocusDate(date < first ? first : last)
+      return
+    }
+    setFocusDate(date)
+  }
+
+  return (
+    <QueryState
+      isLoading={scheduleQuery.isLoading || !effectiveFocus}
+      isError={scheduleQuery.isError}
+      error={scheduleQuery.error}
+      isEmpty={!scheduleQuery.isLoading && gameDates.length === 0}
+      emptyMessage="No games found for this season."
+    >
+      {effectiveFocus && (
+        <SeriesDayBoard
+          focusDate={effectiveFocus}
+          onFocusDateChange={onFocusDateChange}
+          gameDates={gameDates}
+        />
+      )}
+    </QueryState>
   )
 }
