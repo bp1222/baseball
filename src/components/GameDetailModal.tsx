@@ -1,5 +1,6 @@
 import {
   Box,
+  ButtonBase,
   CircularProgress,
   Dialog,
   DialogContent,
@@ -46,8 +47,9 @@ import {
   isGameFinal,
   isGameLive,
 } from '../lib/series'
-import { teamAbbr } from '../lib/mlb'
+import { teamAbbr, teamShortName } from '../lib/mlb'
 import { BasePaths, OutsDots } from './BasesOuts'
+import { GameScorebook } from './GameScorebook'
 import { PlayerDetailModal } from './PlayerDetailModal'
 import { TeamLogo } from './TeamLogo'
 
@@ -57,13 +59,19 @@ type GameDetailModalProps = {
   onClose: () => void
 }
 
+type DetailViewTab = 'boxscore' | 'scorebook'
+
 export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
   const detailQuery = useGameDetail(game, open)
   const [side, setSide] = useState<'away' | 'home'>('away')
+  const [view, setView] = useState<DetailViewTab>('boxscore')
   const [playerId, setPlayerId] = useState<number | null>(null)
 
   useEffect(() => {
-    if (!open) setPlayerId(null)
+    if (!open) {
+      setPlayerId(null)
+      setView('boxscore')
+    }
   }, [open])
 
   const box = detailQuery.data?.boxscore
@@ -73,6 +81,9 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
 
   const away = game.teams.away
   const home = game.teams.home
+  const awayShort = teamShortName(away.team, 'Away')
+  const homeShort = teamShortName(home.team, 'Home')
+  const teamChipMinWidth = `calc(${Math.max(awayShort.length, homeShort.length)}ch + 24px)`
   const final = isGameFinal(game)
   const live = isGameLive(game)
 
@@ -109,7 +120,13 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
         fullWidth
         scroll="paper"
         aria-labelledby="game-detail-title"
-        sx={{ '& .MuiDialog-paper': { maxWidth: 720, width: '100%' } }}
+        sx={{
+          '& .MuiDialog-paper': {
+            maxWidth: 720,
+            width: '100%',
+            overflowX: 'hidden',
+          },
+        }}
       >
         <DialogTitle
           id="game-detail-title"
@@ -135,7 +152,7 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
           </IconButton>
         </DialogTitle>
 
-        <DialogContent dividers sx={{ pt: 2 }}>
+        <DialogContent dividers sx={{ pt: 2, overflowX: 'hidden', minWidth: 0 }}>
           {detailQuery.isLoading && (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
               <CircularProgress size={32} />
@@ -191,9 +208,13 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
 
               <Box
                 sx={{
-                  display: 'grid',
-                  justifyItems: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
                   width: '100%',
+                  minWidth: 0,
+                  maxWidth: '100%',
+                  gap: 1.5,
                 }}
               >
                 <Box
@@ -202,32 +223,68 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
                     maxWidth: 520,
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
+                    alignItems: 'stretch',
+                    gap: 1,
                   }}
                 >
                   <ToggleButtonGroup
                     exclusive
+                    fullWidth
                     size="small"
-                    value={side}
-                    onChange={(_, v) => {
-                      if (v) setSide(v)
+                    value={view}
+                    onChange={(_, v: DetailViewTab | null) => {
+                      if (v) setView(v)
                     }}
-                    sx={{ mb: 1.5 }}
+                    aria-label="Boxscore or scorebook"
                   >
-                    <ToggleButton value="away">
-                      {teamAbbr(away.team, 'Away')}
-                    </ToggleButton>
-                    <ToggleButton value="home">
-                      {teamAbbr(home.team, 'Home')}
-                    </ToggleButton>
+                    <ToggleButton value="boxscore">Boxscore</ToggleButton>
+                    <ToggleButton value="scorebook">Scorebook</ToggleButton>
                   </ToggleButtonGroup>
 
-                  <Box sx={{ width: '100%' }}>
+                  <Stack
+                    direction="row"
+                    spacing={0.75}
+                    sx={{ justifyContent: 'center', alignItems: 'center' }}
+                    role="group"
+                    aria-label="Team"
+                  >
+                    <TeamSideChip
+                      selected={side === 'away'}
+                      label={awayShort}
+                      minWidth={teamChipMinWidth}
+                      onClick={() => setSide('away')}
+                    />
+                    <TeamSideChip
+                      selected={side === 'home'}
+                      label={homeShort}
+                      minWidth={teamChipMinWidth}
+                      onClick={() => setSide('home')}
+                    />
+                  </Stack>
+                </Box>
+
+                <Box
+                  sx={{
+                    width: '100%',
+                    maxWidth: view === 'scorebook' ? '100%' : 520,
+                    minWidth: 0,
+                  }}
+                >
+                  {view === 'boxscore' ? (
                     <TeamBoxscorePanel
                       team={side === 'away' ? box.teams.away : box.teams.home}
                       onPlayerClick={openPlayer}
                     />
-                  </Box>
+                  ) : (
+                    <GameScorebook
+                      gamePk={game.gamePk}
+                      team={side === 'away' ? box.teams.away : box.teams.home}
+                      side={side}
+                      seedPlays={feed?.liveData?.plays}
+                      officialRuns={linescore?.teams?.[side]?.runs}
+                      officialHits={linescore?.teams?.[side]?.hits}
+                    />
+                  )}
                 </Box>
               </Box>
 
@@ -577,6 +634,52 @@ function PitchingDecisions({
   }
 
   return null
+}
+
+function TeamSideChip({
+  selected,
+  label,
+  minWidth,
+  onClick,
+}: {
+  selected: boolean
+  label: string
+  minWidth: string
+  onClick: () => void
+}) {
+  return (
+    <ButtonBase
+      onClick={onClick}
+      aria-pressed={selected}
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minWidth,
+        px: 1.25,
+        py: 0.4,
+        borderRadius: 1,
+        border: 1,
+        borderColor: selected ? 'primary.main' : 'divider',
+        bgcolor: selected ? 'primary.main' : 'transparent',
+        color: selected ? 'primary.contrastText' : 'text.secondary',
+        fontSize: '0.72rem',
+        fontWeight: 700,
+        lineHeight: 1.2,
+        whiteSpace: 'nowrap',
+        transition: (theme) =>
+          theme.transitions.create(['background-color', 'border-color', 'color'], {
+            duration: theme.transitions.duration.shorter,
+          }),
+        '&:hover': {
+          bgcolor: selected ? 'primary.dark' : 'action.hover',
+          borderColor: selected ? 'primary.dark' : 'text.disabled',
+        },
+      }}
+    >
+      {label}
+    </ButtonBase>
+  )
 }
 
 function PlayerNameLink({

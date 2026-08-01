@@ -33,3 +33,11 @@ export function teamAbbr(
 ): string {
   return team?.abbreviation ?? team?.teamName ?? team?.shortName ?? team?.name ?? fallback
 }
+
+/** Club short name (e.g. "Phillies"), with fallbacks. */
+export function teamShortName(
+  team: Pick<Team, 'shortName' | 'teamName' | 'name' | 'abbreviation'> | undefined | null,
+  fallback = '—',
+): string {
+  return team?.shortName ?? team?.teamName ?? team?.name ?? team?.abbreviation ?? fallback
+}
