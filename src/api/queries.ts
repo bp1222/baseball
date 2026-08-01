@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   GameType,
+  StandingsTypeCode,
   type DivisionStandings,
   type Game,
   type Linescore,
@@ -242,7 +243,7 @@ export function useStandings(year: string, leagueId: number | undefined) {
       const res = await standingsApi.getStandings({
         leagueId: leagueId!,
         season: year,
-        standingsTypes: 'regularSeason',
+        standingsTypes: StandingsTypeCode.RegularSeason,
         hydrate: 'division',
       })
       return res.records ?? []
@@ -302,7 +303,7 @@ export function useGamesBehindHistory(options: {
       const standings = await standingsApi.getStandings({
         leagueId: leagueId!,
         season: year,
-        standingsTypes: 'regularSeason',
+        standingsTypes: StandingsTypeCode.RegularSeason,
         hydrate: 'division,team',
       })
 

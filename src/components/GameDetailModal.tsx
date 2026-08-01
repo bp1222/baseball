@@ -618,6 +618,7 @@ function TeamBoxscorePanel({ team }: { team: BoxscoreTeam }) {
                   const sub = isSubstituteBatter(p)
                   const name = p.person.boxscoreName ?? p.person.fullName
                   const pos = p.position.abbreviation
+                  const note = b?.note ?? p.note
                   return (
                     <TableRow key={p.person.id}>
                       <TableCell
@@ -631,6 +632,16 @@ function TeamBoxscorePanel({ team }: { team: BoxscoreTeam }) {
                         }}
                         title={p.person.fullName}
                       >
+                        {note ? (
+                          <Typography
+                            component="span"
+                            variant="caption"
+                            color="text.secondary"
+                            sx={{ mr: 0.5 }}
+                          >
+                            {note}
+                          </Typography>
+                        ) : null}
                         {name}
                         {pos ? (
                           <Typography
@@ -640,16 +651,6 @@ function TeamBoxscorePanel({ team }: { team: BoxscoreTeam }) {
                             sx={{ ml: 0.75, fontWeight: 600 }}
                           >
                             {pos}
-                          </Typography>
-                        ) : null}
-                        {p.note ? (
-                          <Typography
-                            component="span"
-                            variant="caption"
-                            color="text.secondary"
-                            sx={{ ml: 0.5 }}
-                          >
-                            {p.note}
                           </Typography>
                         ) : null}
                       </TableCell>
@@ -725,6 +726,7 @@ function TeamBoxscorePanel({ team }: { team: BoxscoreTeam }) {
               <TableBody>
                 {pitchers.map((p) => {
                   const pit = p.stats?.pitching
+                  const note = pit?.note ?? p.note
                   return (
                     <TableRow key={p.person.id}>
                       <TableCell
@@ -737,14 +739,14 @@ function TeamBoxscorePanel({ team }: { team: BoxscoreTeam }) {
                         title={p.person.fullName}
                       >
                         {p.person.boxscoreName ?? p.person.fullName}
-                        {p.note ? (
+                        {note ? (
                           <Typography
                             component="span"
                             variant="caption"
                             color="text.secondary"
                             sx={{ ml: 0.5 }}
                           >
-                            {p.note}
+                            {note}
                           </Typography>
                         ) : null}
                       </TableCell>
