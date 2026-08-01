@@ -2,6 +2,7 @@ import {
   Configuration,
   GameType,
   GamesApi,
+  PeopleApi,
   ReferenceApi,
   ScheduleApi,
   StandingsApi,
@@ -15,6 +16,7 @@ export const scheduleApi = new ScheduleApi(configuration)
 export const referenceApi = new ReferenceApi(configuration)
 export const standingsApi = new StandingsApi(configuration)
 export const gamesApi = new GamesApi(configuration)
+export const peopleApi = new PeopleApi(configuration)
 
 export const MLB_SPORT_ID = 1
 

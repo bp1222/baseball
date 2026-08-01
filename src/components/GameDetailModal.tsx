@@ -6,6 +6,7 @@ import {
   DialogTitle,
   Divider,
   IconButton,
+  Link,
   Stack,
   Table,
   TableBody,
@@ -22,10 +23,13 @@ import type {
   BoxscoreTeam,
   BoxscoreTeamInfoSection,
   Game,
+  GameDecisions,
   Linescore,
+  Person,
   Player,
+  ProbablePitchers,
 } from '@bp1222/stats-api'
-import { useState } from 'react'
+import { useState, useEffect, type MouseEvent, type ReactNode } from 'react'
 import { useGameDetail } from '../api/gameDetail'
 import {
   formatInningRuns,
@@ -43,6 +47,7 @@ import {
   isGameLive,
 } from '../lib/series'
 import { BasePaths, OutsDots } from './BasesOuts'
+import { PlayerDetailModal } from './PlayerDetailModal'
 import { TeamLogo } from './TeamLogo'
 
 type GameDetailModalProps = {
@@ -54,6 +59,11 @@ type GameDetailModalProps = {
 export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
   const detailQuery = useGameDetail(game, open)
   const [side, setSide] = useState<'away' | 'home'>('away')
+  const [playerId, setPlayerId] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (!open) setPlayerId(null)
+  }, [open])
 
   const box = detailQuery.data?.boxscore
   const linescore = detailQuery.data?.linescore
@@ -87,130 +97,143 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
 
   const gameNotes = (box?.info ?? []).filter((i) => isGameNoteItem(i))
 
+  const openPlayer = (id: number) => setPlayerId(id)
+
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      scroll="paper"
-      aria-labelledby="game-detail-title"
-    >
-      <DialogTitle
-        id="game-detail-title"
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 1,
-          pr: 1,
-        }}
+    <>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        maxWidth="md"
+        fullWidth
+        scroll="paper"
+        aria-labelledby="game-detail-title"
       >
-        <Box sx={{ flex: 1, minWidth: 0, textAlign: 'center' }}>
-          <Typography variant="h6" component="div" sx={{ lineHeight: 1.2 }}>
-            {away.team.abbreviation ?? 'AWY'} @ {home.team.abbreviation ?? 'HME'}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            {formatMonthDay(game.officialDate || game.gameDate.slice(0, 10))}
-            {startTime ? ` · ${startTime}` : ''}
-          </Typography>
-        </Box>
-        <IconButton aria-label="Close" onClick={onClose} size="small">
-          ×
-        </IconButton>
-      </DialogTitle>
-
-      <DialogContent dividers sx={{ pt: 2 }}>
-        {detailQuery.isLoading && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-            <CircularProgress size={32} />
+        <DialogTitle
+          id="game-detail-title"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 1,
+            pr: 1,
+          }}
+        >
+          <Box sx={{ flex: 1, minWidth: 0, textAlign: 'center' }}>
+            <Typography variant="h6" component="div" sx={{ lineHeight: 1.2 }}>
+              {away.team.abbreviation ?? 'AWY'} @ {home.team.abbreviation ?? 'HME'}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {formatMonthDay(game.officialDate || game.gameDate.slice(0, 10))}
+              {startTime ? ` · ${startTime}` : ''}
+            </Typography>
           </Box>
-        )}
+          <IconButton aria-label="Close" onClick={onClose} size="small">
+            ×
+          </IconButton>
+        </DialogTitle>
 
-        {detailQuery.isError && (
-          <Typography color="error" sx={{ py: 2 }}>
-            Couldn’t load game details. Try again in a moment.
-          </Typography>
-        )}
-
-        {detailQuery.isSuccess && box && (
-          <Stack spacing={2.5}>
-            <ScoreHero
-              game={game}
-              awayRuns={awayRuns}
-              homeRuns={homeRuns}
-              statusLabel={statusLabel}
-              linescore={
-                live && linescore && linescoreHasStarted(linescore)
-                  ? linescore
-                  : undefined
-              }
-            />
-
-            <MetaStrip
-              venueName={venue?.name}
-              weather={weather}
-              attendance={gameData?.gameInfo?.attendance}
-              gameDuration={gameData?.gameInfo?.gameDurationMinutes}
-              infoItems={metaFromInfo}
-            />
-
-            {(linescore || game.scheduledInnings) && (
-              <LinescoreTable
-                linescore={linescore}
-                scheduledInnings={game.scheduledInnings}
-                gameFinal={final}
-                awayLabel={
-                  away.team.teamName ??
-                  away.team.abbreviation ??
-                  away.team.shortName ??
-                  'Away'
-                }
-                homeLabel={
-                  home.team.teamName ??
-                  home.team.abbreviation ??
-                  home.team.shortName ??
-                  'Home'
-                }
-              />
-            )}
-
-            {(decisions || (!gameStarted && probable)) && (
-              <PitchingDecisions
-                decisions={decisions}
-                probable={probable}
-                gameStarted={gameStarted}
-              />
-            )}
-
-            <Box>
-              <ToggleButtonGroup
-                exclusive
-                size="small"
-                value={side}
-                onChange={(_, v) => {
-                  if (v) setSide(v)
-                }}
-                sx={{ mb: 1.5 }}
-              >
-                <ToggleButton value="away">
-                  {away.team.teamName ?? away.team.abbreviation ?? 'Away'}
-                </ToggleButton>
-                <ToggleButton value="home">
-                  {home.team.teamName ?? home.team.abbreviation ?? 'Home'}
-                </ToggleButton>
-              </ToggleButtonGroup>
-
-              <TeamBoxscorePanel
-                team={side === 'away' ? box.teams.away : box.teams.home}
-              />
+        <DialogContent dividers sx={{ pt: 2 }}>
+          {detailQuery.isLoading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+              <CircularProgress size={32} />
             </Box>
+          )}
 
-            {gameNotes.length > 0 && <GameNotes items={gameNotes} />}
-          </Stack>
-        )}
-      </DialogContent>
-    </Dialog>
+          {detailQuery.isError && (
+            <Typography color="error" sx={{ py: 2 }}>
+              Couldn’t load game details. Try again in a moment.
+            </Typography>
+          )}
+
+          {detailQuery.isSuccess && box && (
+            <Stack spacing={2.5}>
+              <ScoreHero
+                game={game}
+                awayRuns={awayRuns}
+                homeRuns={homeRuns}
+                statusLabel={statusLabel}
+                linescore={
+                  live && linescore && linescoreHasStarted(linescore)
+                    ? linescore
+                    : undefined
+                }
+              />
+
+              <MetaStrip
+                venueName={venue?.name}
+                weather={weather}
+                attendance={gameData?.gameInfo?.attendance}
+                gameDuration={gameData?.gameInfo?.gameDurationMinutes}
+                infoItems={metaFromInfo}
+              />
+
+              {(linescore || game.scheduledInnings) && (
+                <LinescoreTable
+                  linescore={linescore}
+                  scheduledInnings={game.scheduledInnings}
+                  gameFinal={final}
+                  awayLabel={
+                    away.team.teamName ??
+                    away.team.abbreviation ??
+                    away.team.shortName ??
+                    'Away'
+                  }
+                  homeLabel={
+                    home.team.teamName ??
+                    home.team.abbreviation ??
+                    home.team.shortName ??
+                    'Home'
+                  }
+                />
+              )}
+
+              {(decisions || (!gameStarted && probable)) && (
+                <PitchingDecisions
+                  decisions={decisions}
+                  probable={probable}
+                  gameStarted={gameStarted}
+                  onPlayerClick={openPlayer}
+                />
+              )}
+
+              <Box>
+                <ToggleButtonGroup
+                  exclusive
+                  size="small"
+                  value={side}
+                  onChange={(_, v) => {
+                    if (v) setSide(v)
+                  }}
+                  sx={{ mb: 1.5 }}
+                >
+                  <ToggleButton value="away">
+                    {away.team.teamName ?? away.team.abbreviation ?? 'Away'}
+                  </ToggleButton>
+                  <ToggleButton value="home">
+                    {home.team.teamName ?? home.team.abbreviation ?? 'Home'}
+                  </ToggleButton>
+                </ToggleButtonGroup>
+
+                <TeamBoxscorePanel
+                  team={side === 'away' ? box.teams.away : box.teams.home}
+                  onPlayerClick={openPlayer}
+                />
+              </Box>
+
+              {gameNotes.length > 0 && <GameNotes items={gameNotes} />}
+            </Stack>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <PlayerDetailModal
+        personId={playerId}
+        open={playerId != null}
+        onClose={() => setPlayerId(null)}
+        defaultSeason={game.season}
+      />
+    </>
   )
 }
 
@@ -464,17 +487,12 @@ function PitchingDecisions({
   decisions,
   probable,
   gameStarted,
+  onPlayerClick,
 }: {
-  decisions?: {
-    winner?: { fullName?: string }
-    loser?: { fullName?: string }
-    save?: { fullName?: string }
-  }
-  probable?: {
-    away?: { fullName?: string }
-    home?: { fullName?: string }
-  }
+  decisions?: GameDecisions
+  probable?: ProbablePitchers
   gameStarted: boolean
+  onPlayerClick: (personId: number) => void
 }) {
   if (decisions?.winner || decisions?.loser || decisions?.save) {
     return (
@@ -491,7 +509,7 @@ function PitchingDecisions({
             >
               W
             </Box>
-            {decisions.winner.fullName}
+            <PlayerNameLink person={decisions.winner} onPlayerClick={onPlayerClick} />
           </Typography>
         )}
         {decisions.loser && (
@@ -499,7 +517,7 @@ function PitchingDecisions({
             <Box component="span" sx={{ fontWeight: 800, color: 'error.dark', mr: 0.5 }}>
               L
             </Box>
-            {decisions.loser.fullName}
+            <PlayerNameLink person={decisions.loser} onPlayerClick={onPlayerClick} />
           </Typography>
         )}
         {decisions.save && (
@@ -510,7 +528,7 @@ function PitchingDecisions({
             >
               SV
             </Box>
-            {decisions.save.fullName}
+            <PlayerNameLink person={decisions.save} onPlayerClick={onPlayerClick} />
           </Typography>
         )}
       </Stack>
@@ -520,13 +538,57 @@ function PitchingDecisions({
   if (!gameStarted && probable && (probable.away || probable.home)) {
     return (
       <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center' }}>
-        Probables: {probable.away?.fullName ?? 'TBD'} vs{' '}
-        {probable.home?.fullName ?? 'TBD'}
+        Probables:{' '}
+        {probable.away ? (
+          <PlayerNameLink person={probable.away} onPlayerClick={onPlayerClick} />
+        ) : (
+          'TBD'
+        )}{' '}
+        vs{' '}
+        {probable.home ? (
+          <PlayerNameLink person={probable.home} onPlayerClick={onPlayerClick} />
+        ) : (
+          'TBD'
+        )}
       </Typography>
     )
   }
 
   return null
+}
+
+function PlayerNameLink({
+  person,
+  onPlayerClick,
+  children,
+}: {
+  person: Pick<Person, 'id' | 'fullName' | 'boxscoreName'>
+  onPlayerClick: (personId: number) => void
+  children?: ReactNode
+}) {
+  const label = children ?? person.boxscoreName ?? person.fullName
+  if (!person.id) return <>{label}</>
+  return (
+    <Link
+      component="button"
+      type="button"
+      underline="hover"
+      color="inherit"
+      onClick={(e: MouseEvent) => {
+        e.stopPropagation()
+        onPlayerClick(person.id)
+      }}
+      sx={{
+        font: 'inherit',
+        fontWeight: 'inherit',
+        verticalAlign: 'baseline',
+        textAlign: 'left',
+        cursor: 'pointer',
+      }}
+    >
+      {label}
+    </Link>
+  )
 }
 
 function playerKey(id: number) {
@@ -564,7 +626,13 @@ const headCell = {
   fontWeight: 700,
 } as const
 
-function TeamBoxscorePanel({ team }: { team: BoxscoreTeam }) {
+function TeamBoxscorePanel({
+  team,
+  onPlayerClick,
+}: {
+  team: BoxscoreTeam
+  onPlayerClick: (personId: number) => void
+}) {
   const batters = lineupBatters(team)
   const pitchers = (team.pitchers ?? [])
     .map((id) => team.players[playerKey(id)])
@@ -642,7 +710,9 @@ function TeamBoxscorePanel({ team }: { team: BoxscoreTeam }) {
                             {note}
                           </Typography>
                         ) : null}
-                        {name}
+                        <PlayerNameLink person={p.person} onPlayerClick={onPlayerClick}>
+                          {name}
+                        </PlayerNameLink>
                         {pos ? (
                           <Typography
                             component="span"
@@ -738,7 +808,9 @@ function TeamBoxscorePanel({ team }: { team: BoxscoreTeam }) {
                         }}
                         title={p.person.fullName}
                       >
-                        {p.person.boxscoreName ?? p.person.fullName}
+                        <PlayerNameLink person={p.person} onPlayerClick={onPlayerClick}>
+                          {p.person.boxscoreName ?? p.person.fullName}
+                        </PlayerNameLink>
                         {note ? (
                           <Typography
                             component="span"
