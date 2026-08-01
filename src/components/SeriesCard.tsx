@@ -1,6 +1,7 @@
 import { Box, Paper, Stack, Typography } from '@mui/material'
 import type { Series } from '../lib/series'
 import { formatMonthDay, seriesDateRange } from '../lib/series'
+import { teamAbbr } from '../lib/mlb'
 import { GameBox } from './GameBox'
 import { SeriesRoundBadge } from './SeriesRoundBadge'
 import { TeamLogo } from './TeamLogo'
@@ -69,7 +70,7 @@ export function SeriesCard({ series, muted = false, focusDate }: SeriesCardProps
             variant="caption"
             sx={{ fontWeight: 700, textAlign: 'center', lineHeight: 1.2 }}
           >
-            {away.abbreviation ?? away.teamName} @ {home.abbreviation ?? home.teamName}
+            {teamAbbr(away, 'Away')} @ {teamAbbr(home, 'Home')}
           </Typography>
           <Typography variant="caption" color="text.secondary">
             {formatMonthDay(start)} – {formatMonthDay(end)}

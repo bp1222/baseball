@@ -1,4 +1,5 @@
 import type { Game, Team } from '@bp1222/stats-api'
+import { AL_LEAGUE_ID, NL_LEAGUE_ID } from './mlb'
 
 export type SeriesStatus =
   'in_progress_today' | 'in_progress_offday' | 'completed' | 'upcoming'
@@ -403,9 +404,6 @@ export function seriesOutcomeLabel(outcome: SeriesOutcome): string {
       return 'Upcoming'
   }
 }
-
-const AL_LEAGUE_ID = 103
-const NL_LEAGUE_ID = 104
 
 function leaguePrefix(team: Team): 'AL' | 'NL' | null {
   const id = team.league?.id

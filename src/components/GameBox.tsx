@@ -17,6 +17,7 @@ import {
   isGameFinal,
   isGameLive,
 } from '../lib/series'
+import { teamAbbr } from '../lib/mlb'
 
 type GameBoxProps = {
   game: Game
@@ -63,7 +64,7 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
       <Box
         role="button"
         tabIndex={0}
-        aria-label={`Open details for ${away.team.abbreviation} at ${home.team.abbreviation}`}
+        aria-label={`Open details for ${teamAbbr(away.team, 'Away')} at ${teamAbbr(home.team, 'Home')}`}
         onClick={() => setDetailOpen(true)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -110,13 +111,13 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
 
         <Box sx={{ bgcolor: 'background.paper' }}>
           <ScoreRow
-            abbr={away.team.abbreviation ?? 'AWY'}
+            abbr={teamAbbr(away.team, 'AWY')}
             score={scoreOrDash(awayScore)}
             bgcolor={rowTint(away.isWinner, away.team.id)}
             bold={final && away.isWinner}
           />
           <ScoreRow
-            abbr={home.team.abbreviation ?? 'HME'}
+            abbr={teamAbbr(home.team, 'HME')}
             score={scoreOrDash(homeScore)}
             bgcolor={rowTint(home.isWinner, home.team.id)}
             bold={final && home.isWinner}

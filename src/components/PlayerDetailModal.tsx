@@ -19,17 +19,20 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   defaultStatGroup,
   pickDefaultSeason,
+  seasonStatSplit,
   usePersonCareer,
   usePersonGameLog,
   type PlayerStatGroup,
 } from '../api/playerDetail'
+import { seasonWheelGamesFromLog } from '../api/playerAtBats'
 import { useSeasonTeams } from '../api/queries'
 import { playerHeadshotUrl } from '../lib/headshots'
 import { formatMonthDay } from '../lib/series'
+import { PlayerSeasonWheel } from './PlayerSeasonWheel'
 import { TeamLogo } from './TeamLogo'
 
 type PlayerDetailModalProps = {
@@ -38,6 +41,8 @@ type PlayerDetailModalProps = {
   onClose: () => void
   defaultSeason?: string | null
 }
+
+type HittingViewTab = 'gameLog' | 'seasonWheel'
 
 const cell = { px: 0.6, py: 0.4, fontSize: '0.75rem' } as const
 const headCell = {
@@ -88,15 +93,18 @@ export function PlayerDetailModal({
   const [group, setGroup] = useState<PlayerStatGroup>('hitting')
   const [season, setSeason] = useState<string | null>(null)
   const [groupReady, setGroupReady] = useState(false)
+  const [hittingView, setHittingView] = useState<HittingViewTab>('gameLog')
 
   useEffect(() => {
     if (!open) {
       setGroupReady(false)
       setSeason(null)
+      setHittingView('gameLog')
       return
     }
     setGroupReady(false)
     setSeason(null)
+    setHittingView('gameLog')
   }, [open, personId])
 
   useEffect(() => {
@@ -116,11 +124,19 @@ export function PlayerDetailModal({
     setSeason(pickDefaultSeason(list, defaultSeason))
   }, [group, season, groupReady, bundle, defaultSeason])
 
+  useEffect(() => {
+    if (group !== 'hitting') setHittingView('gameLog')
+  }, [group])
+
   const gameLogQuery = usePersonGameLog(
     personId,
     season,
     group,
     open && groupReady && Boolean(season),
+  )
+  const wheelGames = useMemo(
+    () => (group === 'hitting' ? seasonWheelGamesFromLog(gameLogQuery.data) : []),
+    [group, gameLogQuery.data],
   )
   const teamsQuery = useSeasonTeams(season ?? '')
   const teamAbbrById = new Map<number, string>()
@@ -135,6 +151,12 @@ export function PlayerDetailModal({
   const showGroupToggle = Boolean(bundle?.hasHitting && bundle?.hasPitching)
   const seasonTeamIds =
     season != null ? (bundle?.teamsBySeasonByGroup[group][season] ?? []) : []
+  const seasonHittingSplit =
+    season != null
+      ? seasonStatSplit(bundle?.yearByYearSplitsByGroup.hitting ?? [], season)
+      : undefined
+  const wheelTeamId = seasonTeamIds[0] ?? person?.currentTeam?.id
+  const showSeasonWheel = group === 'hitting' && Boolean(season)
 
   return (
     <Dialog
@@ -211,7 +233,7 @@ export function PlayerDetailModal({
                   </ToggleButtonGroup>
                 ) : (
                   <Typography variant="subtitle2" color="text.secondary">
-                    {group === 'hitting' ? 'Hitting' : 'Pitching'} game log
+                    {group === 'hitting' ? 'Hitting' : 'Pitching'}
                   </Typography>
                 )}
 
@@ -234,6 +256,22 @@ export function PlayerDetailModal({
               </Stack>
             )}
 
+            {showSeasonWheel && (
+              <ToggleButtonGroup
+                exclusive
+                fullWidth
+                size="small"
+                value={hittingView}
+                onChange={(_, v: HittingViewTab | null) => {
+                  if (v) setHittingView(v)
+                }}
+                aria-label="Game log or season wheel"
+              >
+                <ToggleButton value="gameLog">Game log</ToggleButton>
+                <ToggleButton value="seasonWheel">Season wheel</ToggleButton>
+              </ToggleButtonGroup>
+            )}
+
             {!season ? (
               <Typography color="text.secondary" variant="body2">
                 No season game log available.
@@ -246,6 +284,21 @@ export function PlayerDetailModal({
               <Typography color="error" variant="body2">
                 Couldn’t load game log.
               </Typography>
+            ) : group === 'hitting' && hittingView === 'seasonWheel' ? (
+              wheelGames.length === 0 ? (
+                <Typography color="text.secondary" variant="body2">
+                  No hitting data for season wheel in {season}.
+                </Typography>
+              ) : (
+                <PlayerSeasonWheel
+                  personId={personId!}
+                  teamId={wheelTeamId}
+                  season={season}
+                  seasonSplit={seasonHittingSplit}
+                  games={wheelGames}
+                  teamAbbrById={teamAbbrById}
+                />
+              )
             ) : (
               <GameLogTable
                 group={group}

@@ -46,6 +46,7 @@ import {
   isGameFinal,
   isGameLive,
 } from '../lib/series'
+import { teamAbbr } from '../lib/mlb'
 import { BasePaths, OutsDots } from './BasesOuts'
 import { PlayerDetailModal } from './PlayerDetailModal'
 import { TeamLogo } from './TeamLogo'
@@ -122,7 +123,7 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
         >
           <Box sx={{ flex: 1, minWidth: 0, textAlign: 'center' }}>
             <Typography variant="h6" component="div" sx={{ lineHeight: 1.2 }}>
-              {away.team.abbreviation ?? 'AWY'} @ {home.team.abbreviation ?? 'HME'}
+              {teamAbbr(away.team, 'AWY')} @ {teamAbbr(home.team, 'HME')}
             </Typography>
             <Typography variant="caption" color="text.secondary">
               {formatMonthDay(game.officialDate || game.gameDate.slice(0, 10))}
@@ -174,18 +175,8 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
                   linescore={linescore}
                   scheduledInnings={game.scheduledInnings}
                   gameFinal={final}
-                  awayLabel={
-                    away.team.teamName ??
-                    away.team.abbreviation ??
-                    away.team.shortName ??
-                    'Away'
-                  }
-                  homeLabel={
-                    home.team.teamName ??
-                    home.team.abbreviation ??
-                    home.team.shortName ??
-                    'Home'
-                  }
+                  awayLabel={teamAbbr(away.team, 'Away')}
+                  homeLabel={teamAbbr(home.team, 'Home')}
                 />
               )}
 
@@ -224,10 +215,10 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
                     sx={{ mb: 1.5 }}
                   >
                     <ToggleButton value="away">
-                      {away.team.teamName ?? away.team.abbreviation ?? 'Away'}
+                      {teamAbbr(away.team, 'Away')}
                     </ToggleButton>
                     <ToggleButton value="home">
-                      {home.team.teamName ?? home.team.abbreviation ?? 'Home'}
+                      {teamAbbr(home.team, 'Home')}
                     </ToggleButton>
                   </ToggleButtonGroup>
 
@@ -309,7 +300,7 @@ function ScoreHero({
       <Stack sx={{ alignItems: 'center', minWidth: 72 }}>
         <TeamLogo teamId={away.team.id} alt={away.team.name} size={48} />
         <Typography variant="caption" sx={{ fontWeight: 700 }}>
-          {away.team.abbreviation}
+          {teamAbbr(away.team, 'Away')}
         </Typography>
         {away.leagueRecord && (
           <Typography variant="caption" color="text.secondary">
@@ -349,7 +340,7 @@ function ScoreHero({
       <Stack sx={{ alignItems: 'center', minWidth: 72 }}>
         <TeamLogo teamId={home.team.id} alt={home.team.name} size={48} />
         <Typography variant="caption" sx={{ fontWeight: 700 }}>
-          {home.team.abbreviation}
+          {teamAbbr(home.team, 'Home')}
         </Typography>
         {home.leagueRecord && (
           <Typography variant="caption" color="text.secondary">
@@ -720,7 +711,7 @@ function TeamBoxscorePanel({
                   const b = p.stats?.batting
                   const sub = isSubstituteBatter(p)
                   const name = p.person.boxscoreName ?? p.person.fullName
-                  const pos = p.position.abbreviation
+                  const pos = p.position?.abbreviation
                   const note = b?.note ?? p.note
                   return (
                     <TableRow key={p.person.id}>

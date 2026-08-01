@@ -17,6 +17,7 @@ import {
   scheduleApi,
   standingsApi,
 } from './client'
+import { isMlbMajorLeagueGame, isMlbMajorLeagueTeam } from '../lib/mlb'
 import {
   addDays,
   gameDatesFromSeries,
@@ -33,17 +34,17 @@ const LINESCORE_REFETCH_MS = 1000 * 60
 
 export const queryKeys = {
   seasons: ['seasons'] as const,
-  teams: (year: string) => ['teams', year] as const,
+  teams: (year: string) => ['teams', year, 'alNl'] as const,
   team: (year: string, teamId: number) => ['team', year, teamId] as const,
-  seasonSchedule: (year: string) => ['seasonSchedule', year] as const,
+  seasonSchedule: (year: string) => ['seasonSchedule', year, 'alNl'] as const,
   standings: (year: string, leagueId: number) => ['standings', year, leagueId] as const,
   season: (year: string) => ['season', year] as const,
-  dailyLinescores: (date: string) => ['dailyLinescores', date] as const,
+  dailyLinescores: (date: string) => ['dailyLinescores', date, 'alNl'] as const,
 }
 
 function flattenScheduleGames(dates: { games: Game[] }[] | undefined): Game[] {
   if (!dates) return []
-  return dates.flatMap((d) => d.games ?? [])
+  return dates.flatMap((d) => d.games ?? []).filter(isMlbMajorLeagueGame)
 }
 
 function seasonBounds(season: Season | undefined, year: string) {
@@ -85,7 +86,7 @@ export function useDailyLinescores(date: string, enabled = true) {
         startDate: date,
         endDate: date,
         gameTypes: COMPETITIVE_GAME_TYPES,
-        hydrate: 'team',
+        hydrate: 'league,team',
       })
       const games = flattenScheduleGames(res.dates)
       const map = new Map<number, DailyLinescoreEntry>()
@@ -151,11 +152,11 @@ export function useSeasonTeams(year: string) {
       const res = await referenceApi.getTeams({
         season: year,
         sportId: MLB_SPORT_ID,
-        hydrate: 'division',
+        hydrate: 'league,division',
       })
-      return [...(res.teams ?? [])].sort((a, b) =>
-        (a.name ?? '').localeCompare(b.name ?? ''),
-      )
+      return [...(res.teams ?? [])]
+        .filter(isMlbMajorLeagueTeam)
+        .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))
     },
     enabled: Boolean(year),
     staleTime: 1000 * 60 * 30,
@@ -191,7 +192,7 @@ export function useSeasonSchedule(year: string) {
         startDate: start,
         endDate: end,
         gameTypes: COMPETITIVE_GAME_TYPES,
-        hydrate: 'team',
+        hydrate: 'league,team',
       })
       return groupGamesIntoSeries(flattenScheduleGames(schedule.dates))
     },

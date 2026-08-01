@@ -16,6 +16,8 @@ export type PlayerCareerBundle = {
   seasonsByGroup: Record<PlayerStatGroup, string[]>
   /** Team ids per season from yearByYear splits (excludes season totals). */
   teamsBySeasonByGroup: Record<PlayerStatGroup, Record<string, number[]>>
+  /** Raw yearByYear splits per group (includes per-team and season-total rows). */
+  yearByYearSplitsByGroup: Record<PlayerStatGroup, PersonStatSplit[]>
   hasHitting: boolean
   hasPitching: boolean
 }
@@ -115,6 +117,10 @@ export function usePersonCareer(personId: number | null, enabled: boolean) {
         hitting: teamsBySeasonFromYearByYear(ybyHitting),
         pitching: teamsBySeasonFromYearByYear(ybyPitching),
       }
+      const yearByYearSplitsByGroup: Record<PlayerStatGroup, PersonStatSplit[]> = {
+        hitting: ybyHitting?.splits ?? [],
+        pitching: ybyPitching?.splits ?? [],
+      }
       const careerByGroup: Record<PlayerStatGroup, PersonStatSplit | undefined> = {
         hitting: careerHitting,
         pitching: careerPitching,
@@ -125,6 +131,7 @@ export function usePersonCareer(personId: number | null, enabled: boolean) {
         careerByGroup,
         seasonsByGroup,
         teamsBySeasonByGroup,
+        yearByYearSplitsByGroup,
         hasHitting: hasGroupData(careerHitting, seasonsByGroup.hitting),
         hasPitching: hasGroupData(careerPitching, seasonsByGroup.pitching),
       }
@@ -178,4 +185,18 @@ export function pickDefaultSeason(
   if (seasons.length === 0) return null
   if (preferred && seasons.includes(preferred)) return preferred
   return seasons[0] ?? null
+}
+
+/** Prefer season-total split (no team) when a player changed clubs mid-year. */
+export function seasonStatSplit(
+  splits: PersonStatSplit[],
+  season: string,
+): PersonStatSplit | undefined {
+  const forSeason = splits.filter((s) => s.season === season)
+  if (forSeason.length === 0) return undefined
+  return (
+    forSeason.find((s) => s.team?.id == null) ??
+    forSeason.find((s) => (s.numTeams ?? 0) > 1) ??
+    forSeason[0]
+  )
 }
