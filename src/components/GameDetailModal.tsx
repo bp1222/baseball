@@ -104,10 +104,11 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
       <Dialog
         open={open}
         onClose={onClose}
-        maxWidth="md"
+        maxWidth={false}
         fullWidth
         scroll="paper"
         aria-labelledby="game-detail-title"
+        sx={{ '& .MuiDialog-paper': { maxWidth: 720, width: '100%' } }}
       >
         <DialogTitle
           id="game-detail-title"
@@ -197,31 +198,61 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
                 />
               )}
 
-              <Box>
-                <ToggleButtonGroup
-                  exclusive
-                  size="small"
-                  value={side}
-                  onChange={(_, v) => {
-                    if (v) setSide(v)
+              <Box
+                sx={{
+                  display: 'grid',
+                  justifyItems: 'center',
+                  width: '100%',
+                }}
+              >
+                <Box
+                  sx={{
+                    width: '100%',
+                    maxWidth: 520,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
                   }}
-                  sx={{ mb: 1.5 }}
                 >
-                  <ToggleButton value="away">
-                    {away.team.teamName ?? away.team.abbreviation ?? 'Away'}
-                  </ToggleButton>
-                  <ToggleButton value="home">
-                    {home.team.teamName ?? home.team.abbreviation ?? 'Home'}
-                  </ToggleButton>
-                </ToggleButtonGroup>
+                  <ToggleButtonGroup
+                    exclusive
+                    size="small"
+                    value={side}
+                    onChange={(_, v) => {
+                      if (v) setSide(v)
+                    }}
+                    sx={{ mb: 1.5 }}
+                  >
+                    <ToggleButton value="away">
+                      {away.team.teamName ?? away.team.abbreviation ?? 'Away'}
+                    </ToggleButton>
+                    <ToggleButton value="home">
+                      {home.team.teamName ?? home.team.abbreviation ?? 'Home'}
+                    </ToggleButton>
+                  </ToggleButtonGroup>
 
-                <TeamBoxscorePanel
-                  team={side === 'away' ? box.teams.away : box.teams.home}
-                  onPlayerClick={openPlayer}
-                />
+                  <Box sx={{ width: '100%' }}>
+                    <TeamBoxscorePanel
+                      team={side === 'away' ? box.teams.away : box.teams.home}
+                      onPlayerClick={openPlayer}
+                    />
+                  </Box>
+                </Box>
               </Box>
 
-              {gameNotes.length > 0 && <GameNotes items={gameNotes} />}
+              {gameNotes.length > 0 && (
+                <Box
+                  sx={{
+                    display: 'grid',
+                    justifyItems: 'center',
+                    width: '100%',
+                  }}
+                >
+                  <Box sx={{ width: '100%', maxWidth: 520 }}>
+                    <GameNotes items={gameNotes} />
+                  </Box>
+                </Box>
+              )}
             </Stack>
           )}
         </DialogContent>
@@ -608,23 +639,27 @@ function isSubstituteBatter(player: Player): boolean {
 }
 
 const batCol = {
-  player: '46%',
-  stat: '9%',
+  player: '42%',
+  stat: '9.7%',
 } as const
 
 const pitchCol = {
-  pitcher: '40%',
-  ip: '12%',
-  stat: '9.6%',
+  pitcher: '38%',
+  ip: '11%',
+  stat: '10.2%',
 } as const
 
-const cell = { px: 0.75, py: 0.4, fontSize: '0.75rem' } as const
+const cell = { px: 0.5, py: 0.35, fontSize: '0.75rem' } as const
 const headCell = {
   ...cell,
-  py: 0.65,
-  fontSize: '0.8rem',
+  py: 0.55,
+  fontSize: '0.72rem',
   fontWeight: 700,
 } as const
+const firstCell = { ...cell, pl: 1 } as const
+const lastCell = { ...cell, pr: 1 } as const
+const firstHead = { ...headCell, pl: 1 } as const
+const lastHead = { ...headCell, pr: 1 } as const
 
 function TeamBoxscorePanel({
   team,
@@ -659,7 +694,7 @@ function TeamBoxscorePanel({
               </colgroup>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={headCell}>Batter</TableCell>
+                  <TableCell sx={firstHead}>Batter</TableCell>
                   <TableCell sx={headCell} align="right">
                     AB
                   </TableCell>
@@ -675,7 +710,7 @@ function TeamBoxscorePanel({
                   <TableCell sx={headCell} align="right">
                     BB
                   </TableCell>
-                  <TableCell sx={headCell} align="right">
+                  <TableCell sx={lastHead} align="right">
                     K
                   </TableCell>
                 </TableRow>
@@ -691,8 +726,8 @@ function TeamBoxscorePanel({
                     <TableRow key={p.person.id}>
                       <TableCell
                         sx={{
-                          ...cell,
-                          pl: sub ? 2.5 : 0.75,
+                          ...firstCell,
+                          pl: sub ? 2.25 : 1,
                           fontStyle: sub ? 'italic' : undefined,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -739,7 +774,7 @@ function TeamBoxscorePanel({
                       <TableCell sx={cell} align="right">
                         {b?.baseOnBalls ?? 0}
                       </TableCell>
-                      <TableCell sx={cell} align="right">
+                      <TableCell sx={lastCell} align="right">
                         {b?.strikeOuts ?? 0}
                       </TableCell>
                     </TableRow>
@@ -772,7 +807,7 @@ function TeamBoxscorePanel({
               </colgroup>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={headCell}>Pitcher</TableCell>
+                  <TableCell sx={firstHead}>Pitcher</TableCell>
                   <TableCell sx={headCell} align="right">
                     IP
                   </TableCell>
@@ -788,7 +823,7 @@ function TeamBoxscorePanel({
                   <TableCell sx={headCell} align="right">
                     BB
                   </TableCell>
-                  <TableCell sx={headCell} align="right">
+                  <TableCell sx={lastHead} align="right">
                     K
                   </TableCell>
                 </TableRow>
@@ -801,7 +836,7 @@ function TeamBoxscorePanel({
                     <TableRow key={p.person.id}>
                       <TableCell
                         sx={{
-                          ...cell,
+                          ...firstCell,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
@@ -837,7 +872,7 @@ function TeamBoxscorePanel({
                       <TableCell sx={cell} align="right">
                         {pit?.baseOnBalls ?? 0}
                       </TableCell>
-                      <TableCell sx={cell} align="right">
+                      <TableCell sx={lastCell} align="right">
                         {pit?.strikeOuts ?? 0}
                       </TableCell>
                     </TableRow>
