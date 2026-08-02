@@ -44,6 +44,7 @@ import {
 import {
   formatGameStartTime,
   formatMonthDay,
+  gameDelayLabel,
   gameStatusFooter,
   isGameFinal,
   isGameLive,
@@ -110,10 +111,15 @@ export function GameDetailModal({
   const awayRuns = linescore?.teams?.away?.runs ?? away.score
   const homeRuns = linescore?.teams?.home?.runs ?? home.score
 
+  const delayLabel = gameDelayLabel(game)
   const statusLabel =
-    live && linescore && linescoreHasStarted(linescore)
-      ? formatLinescoreInning(linescore)
-      : gameStatusFooter(game)
+    delayLabel != null
+      ? linescore && linescoreHasStarted(linescore)
+        ? `${formatLinescoreInning(linescore)} ${delayLabel}`
+        : delayLabel
+      : live && linescore && linescoreHasStarted(linescore)
+        ? formatLinescoreInning(linescore)
+        : gameStatusFooter(game)
 
   const gameStarted = final || live || linescoreHasStarted(linescore)
 

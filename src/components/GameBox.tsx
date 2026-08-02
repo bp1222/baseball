@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Tooltip, Typography } from '@mui/material'
 import type { Game } from '@bp1222/stats-api'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { useGameLinescore } from '../api/queries'
@@ -12,7 +12,10 @@ import {
 import {
   formatGameDate,
   formatMonthDayUpper,
+  gameDelayLabel,
+  gameDelayLabelShort,
   gameStatusFooter,
+  isGameDelayed,
   isGameFinal,
   isGameLive,
 } from '../lib/series'
@@ -37,7 +40,26 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
   const statusGame = liveGame ?? game
 
   const final = isGameFinal(statusGame)
+  const delayed = isGameDelayed(statusGame)
   const live = !final && (isGameLive(statusGame) || linescoreHasStarted(linescore))
+  const delayFull = delayed ? gameDelayLabel(statusGame) : null
+  const delayShort = delayed ? gameDelayLabelShort(statusGame) : null
+  const delayInning =
+    delayed && linescore && linescoreHasStarted(linescore)
+      ? formatLinescoreInning(linescore)
+      : null
+  const delayStatus =
+    delayShort == null
+      ? undefined
+      : delayInning
+        ? `${delayInning} ${delayShort}`
+        : delayShort
+  const delayTooltip =
+    delayFull == null
+      ? undefined
+      : delayInning
+        ? `${delayInning} ${delayFull}`
+        : delayFull
 
   const home = statusGame.teams.home
   const away = statusGame.teams.away
@@ -86,6 +108,65 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
       search,
     })
   }
+
+  const status = delayed ? (
+    <Typography
+      variant="caption"
+      sx={{
+        display: 'block',
+        textAlign: 'center',
+        fontSize: '0.58rem',
+        fontWeight: 700,
+        lineHeight: 1,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        px: 0.25,
+      }}
+    >
+      {delayStatus}
+    </Typography>
+  ) : live && linescore && linescoreHasStarted(linescore) ? (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 0.35,
+        flexWrap: 'nowrap',
+      }}
+      title={`${formatLinescoreInning(linescore)} · ${formatOutsLabel(outs)}`}
+    >
+      <Typography
+        variant="caption"
+        component="span"
+        sx={{
+          fontSize: '0.6rem',
+          fontWeight: 700,
+          lineHeight: 1,
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {formatLinescoreInning(linescore)}
+      </Typography>
+      <BasePaths bases={bases} />
+      <OutsDots outs={outs ?? 0} />
+    </Box>
+  ) : (
+    <Typography
+      variant="caption"
+      sx={{
+        display: 'block',
+        textAlign: 'center',
+        fontSize: '0.6rem',
+        fontWeight: live ? 700 : 500,
+        lineHeight: 1,
+      }}
+    >
+      {gameStatusFooter(statusGame)}
+    </Typography>
+  )
 
   return (
     <Box
@@ -136,73 +217,70 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
         {formatMonthDayUpper(dateKey)}
       </Box>
 
-      <Box sx={{ bgcolor: 'background.paper' }}>
-        <ScoreRow
-          abbr={teamAbbr(away.team, 'AWY')}
-          score={scoreOrDash(awayScore)}
-          bgcolor={rowTint(away.isWinner, away.team.id)}
-          bold={final && away.isWinner}
-        />
-        <ScoreRow
-          abbr={teamAbbr(home.team, 'HME')}
-          score={scoreOrDash(homeScore)}
-          bgcolor={rowTint(home.isWinner, home.team.id)}
-          bold={final && home.isWinner}
-        />
-
-        <Box
-          sx={{
-            height: 18,
-            px: 0.25,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: live ? 'secondary.main' : 'text.secondary',
-          }}
+      {delayTooltip ? (
+        <Tooltip
+          title={delayTooltip}
+          arrow
+          placement="bottom"
+          enterDelay={200}
+          describeChild
+          disableInteractive
         >
-          {live && linescore && linescoreHasStarted(linescore) ? (
+          <Box sx={{ bgcolor: 'background.paper' }}>
+            <ScoreRow
+              abbr={teamAbbr(away.team, 'AWY')}
+              score={scoreOrDash(awayScore)}
+              bgcolor={rowTint(away.isWinner, away.team.id)}
+              bold={final && away.isWinner}
+            />
+            <ScoreRow
+              abbr={teamAbbr(home.team, 'HME')}
+              score={scoreOrDash(homeScore)}
+              bgcolor={rowTint(home.isWinner, home.team.id)}
+              bold={final && home.isWinner}
+            />
             <Box
               sx={{
+                height: 18,
+                px: 0.25,
                 display: 'flex',
-                flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 0.35,
-                flexWrap: 'nowrap',
+                color: 'secondary.main',
               }}
-              title={`${formatLinescoreInning(linescore)} · ${formatOutsLabel(outs)}`}
             >
-              <Typography
-                variant="caption"
-                component="span"
-                sx={{
-                  fontSize: '0.6rem',
-                  fontWeight: 700,
-                  lineHeight: 1,
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {formatLinescoreInning(linescore)}
-              </Typography>
-              <BasePaths bases={bases} />
-              <OutsDots outs={outs ?? 0} />
+              {status}
             </Box>
-          ) : (
-            <Typography
-              variant="caption"
-              sx={{
-                display: 'block',
-                textAlign: 'center',
-                fontSize: '0.6rem',
-                fontWeight: live ? 700 : 500,
-                lineHeight: 1,
-              }}
-            >
-              {gameStatusFooter(statusGame)}
-            </Typography>
-          )}
+          </Box>
+        </Tooltip>
+      ) : (
+        <Box sx={{ bgcolor: 'background.paper' }}>
+          <ScoreRow
+            abbr={teamAbbr(away.team, 'AWY')}
+            score={scoreOrDash(awayScore)}
+            bgcolor={rowTint(away.isWinner, away.team.id)}
+            bold={final && away.isWinner}
+          />
+          <ScoreRow
+            abbr={teamAbbr(home.team, 'HME')}
+            score={scoreOrDash(homeScore)}
+            bgcolor={rowTint(home.isWinner, home.team.id)}
+            bold={final && home.isWinner}
+          />
+          <Box
+            sx={{
+              height: 18,
+              px: 0.25,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: delayed || live ? 'secondary.main' : 'text.secondary',
+            }}
+          >
+            {status}
+          </Box>
         </Box>
-      </Box>
+      )}
     </Box>
   )
 }

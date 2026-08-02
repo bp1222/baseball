@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@bp1222/stats-api':
-        specifier: ^0.11.0
-        version: 0.11.0
+        specifier: ^0.11.1
+        version: 0.11.1
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.2.18)(react@19.2.8)
@@ -150,8 +150,8 @@ packages:
       '@types/react':
         optional: true
 
-  '@bp1222/stats-api@0.11.0':
-    resolution: {integrity: sha512-8uPQrl+h2IspOUZXpNAoeub4JspcSwwuZv6WPLh5NdFJgjZwmDi6rCpW6tt6lAEkugccccdA0xlWDuXEiIndOg==}
+  '@bp1222/stats-api@0.11.1':
+    resolution: {integrity: sha512-L/AIjXc50tYG7KV0R5OMO67wVB/QD1oDj8o/tR9xD7gwX4/T86IqPyfVO+4vUrnPm8ymb3RmzG1jHMVoFX5yPw==}
 
   '@emnapi/core@2.0.0-alpha.3':
     resolution: {integrity: sha512-AZypUeJ/yByuxyS7BlSNRDOMLMlROYtjYdIAuBmJssVz1UJDSeYxLrdizhXCFYhedC5bqd/ASy8EuNXbVVXp9g==}
@@ -1540,7 +1540,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.18
 
-  '@bp1222/stats-api@0.11.0': {}
+  '@bp1222/stats-api@0.11.1': {}
 
   '@emnapi/core@2.0.0-alpha.3':
     dependencies:

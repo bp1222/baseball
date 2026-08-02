@@ -72,6 +72,15 @@ function isLive(game: Game): boolean {
   return game.status.abstractGameState === 'Live' || game.status.codedGameState === 'I'
 }
 
+/** In-progress delay/suspension (rain, weather, etc.) — still abstractGameState=Live. */
+function isDelayed(game: Game): boolean {
+  const detail = (game.status.detailedState ?? '').toLowerCase()
+  if (detail.includes('delay') || detail.includes('suspended')) return true
+  const code = game.status.statusCode ?? ''
+  // Multi-char I* codes (IR rain delay, etc.) are delayed in-progress states.
+  return code.startsWith('I') && code.length > 1
+}
+
 function isScheduled(game: Game): boolean {
   return (
     game.status.abstractGameState === 'Preview' ||
@@ -501,6 +510,8 @@ export function formatGameStartTime(game: Game): string | null {
 }
 
 export function gameStatusFooter(game: Game): string {
+  const delay = gameDelayLabel(game)
+  if (delay) return delay
   if (isLive(game)) {
     return game.status.detailedState ?? 'Live'
   }
@@ -511,6 +522,34 @@ export function gameStatusFooter(game: Game): string {
     return detail.length > 6 ? 'F' : detail
   }
   return formatGameStartTime(game) ?? game.status.detailedState ?? 'Sched'
+}
+
+/** Full delay copy for tooltips / modal (e.g. "Delayed Rain"). */
+export function gameDelayLabel(game: Game): string | null {
+  if (!isDelayed(game)) return null
+  const reason = gameStatusReason(game)
+  if (reason) return `Delayed ${reason}`
+  const detailed = game.status.detailedState?.trim()
+  if (detailed) {
+    const normalized = detailed.replace(/^delayed:\s*/i, 'Delayed ').trim()
+    if (normalized) return normalized
+  }
+  return 'Delayed'
+}
+
+/** Short label for tiny game boxes — always "Delayed"; reason lives in the tooltip. */
+export function gameDelayLabelShort(game: Game): string | null {
+  if (!isDelayed(game)) return null
+  return 'Delayed'
+}
+
+/** MLB sometimes includes `reason` on delayed statuses. */
+function gameStatusReason(game: Game): string | undefined {
+  const reason = game.status.reason?.trim()
+  if (reason) return reason
+  const detailed = game.status.detailedState ?? ''
+  const m = /^delayed:\s*(.+)$/i.exec(detailed.trim())
+  return m?.[1]?.trim() || undefined
 }
 
 /** Series W–L–T from the perspective of `teamId`. */
@@ -616,6 +655,10 @@ export function isGameFinal(game: Game): boolean {
 
 export function isGameLive(game: Game): boolean {
   return isLive(game)
+}
+
+export function isGameDelayed(game: Game): boolean {
+  return isDelayed(game)
 }
 
 export function isGameScheduled(game: Game): boolean {

@@ -1,2 +1,2 @@
 minimumReleaseAgeExclude:
-  - '@bp1222/stats-api@0.11.0'
+  - '@bp1222/stats-api@0.11.1'
