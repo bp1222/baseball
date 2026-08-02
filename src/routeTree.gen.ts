@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SeasonYearRouteImport } from './routes/season.$year'
 import { Route as SeasonYearIndexRouteImport } from './routes/season.$year.index'
+import { Route as SeasonYearGamesGamePkRouteImport } from './routes/season.$year.games.$gamePk'
 import { Route as SeasonYearTeamsTeamIdRouteImport } from './routes/season.$year.teams.$teamId'
+import { Route as SeasonYearTeamsTeamIdGamesGamePkRouteImport } from './routes/season.$year.teams.$teamId.games.$gamePk'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,42 +31,71 @@ const SeasonYearIndexRoute = SeasonYearIndexRouteImport.update({
   path: '/',
   getParentRoute: () => SeasonYearRoute,
 } as any)
+const SeasonYearGamesGamePkRoute = SeasonYearGamesGamePkRouteImport.update({
+  id: '/games/$gamePk',
+  path: '/games/$gamePk',
+  getParentRoute: () => SeasonYearRoute,
+} as any)
 const SeasonYearTeamsTeamIdRoute = SeasonYearTeamsTeamIdRouteImport.update({
   id: '/teams/$teamId',
   path: '/teams/$teamId',
   getParentRoute: () => SeasonYearRoute,
 } as any)
+const SeasonYearTeamsTeamIdGamesGamePkRoute =
+  SeasonYearTeamsTeamIdGamesGamePkRouteImport.update({
+    id: '/games/$gamePk',
+    path: '/games/$gamePk',
+    getParentRoute: () => SeasonYearTeamsTeamIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/season/$year': typeof SeasonYearRouteWithChildren
   '/season/$year/': typeof SeasonYearIndexRoute
-  '/season/$year/teams/$teamId': typeof SeasonYearTeamsTeamIdRoute
+  '/season/$year/games/$gamePk': typeof SeasonYearGamesGamePkRoute
+  '/season/$year/teams/$teamId': typeof SeasonYearTeamsTeamIdRouteWithChildren
+  '/season/$year/teams/$teamId/games/$gamePk': typeof SeasonYearTeamsTeamIdGamesGamePkRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/season/$year': typeof SeasonYearIndexRoute
-  '/season/$year/teams/$teamId': typeof SeasonYearTeamsTeamIdRoute
+  '/season/$year/games/$gamePk': typeof SeasonYearGamesGamePkRoute
+  '/season/$year/teams/$teamId': typeof SeasonYearTeamsTeamIdRouteWithChildren
+  '/season/$year/teams/$teamId/games/$gamePk': typeof SeasonYearTeamsTeamIdGamesGamePkRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/season/$year': typeof SeasonYearRouteWithChildren
   '/season/$year/': typeof SeasonYearIndexRoute
-  '/season/$year/teams/$teamId': typeof SeasonYearTeamsTeamIdRoute
+  '/season/$year/games/$gamePk': typeof SeasonYearGamesGamePkRoute
+  '/season/$year/teams/$teamId': typeof SeasonYearTeamsTeamIdRouteWithChildren
+  '/season/$year/teams/$teamId/games/$gamePk': typeof SeasonYearTeamsTeamIdGamesGamePkRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/season/$year' | '/season/$year/' | '/season/$year/teams/$teamId'
+    | '/'
+    | '/season/$year'
+    | '/season/$year/'
+    | '/season/$year/games/$gamePk'
+    | '/season/$year/teams/$teamId'
+    | '/season/$year/teams/$teamId/games/$gamePk'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/season/$year' | '/season/$year/teams/$teamId'
+  to:
+    | '/'
+    | '/season/$year'
+    | '/season/$year/games/$gamePk'
+    | '/season/$year/teams/$teamId'
+    | '/season/$year/teams/$teamId/games/$gamePk'
   id:
     | '__root__'
     | '/'
     | '/season/$year'
     | '/season/$year/'
+    | '/season/$year/games/$gamePk'
     | '/season/$year/teams/$teamId'
+    | '/season/$year/teams/$teamId/games/$gamePk'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -95,6 +126,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SeasonYearIndexRouteImport
       parentRoute: typeof SeasonYearRoute
     }
+    '/season/$year/games/$gamePk': {
+      id: '/season/$year/games/$gamePk'
+      path: '/games/$gamePk'
+      fullPath: '/season/$year/games/$gamePk'
+      preLoaderRoute: typeof SeasonYearGamesGamePkRouteImport
+      parentRoute: typeof SeasonYearRoute
+    }
     '/season/$year/teams/$teamId': {
       id: '/season/$year/teams/$teamId'
       path: '/teams/$teamId'
@@ -102,17 +140,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SeasonYearTeamsTeamIdRouteImport
       parentRoute: typeof SeasonYearRoute
     }
+    '/season/$year/teams/$teamId/games/$gamePk': {
+      id: '/season/$year/teams/$teamId/games/$gamePk'
+      path: '/games/$gamePk'
+      fullPath: '/season/$year/teams/$teamId/games/$gamePk'
+      preLoaderRoute: typeof SeasonYearTeamsTeamIdGamesGamePkRouteImport
+      parentRoute: typeof SeasonYearTeamsTeamIdRoute
+    }
   }
 }
 
+interface SeasonYearTeamsTeamIdRouteChildren {
+  SeasonYearTeamsTeamIdGamesGamePkRoute: typeof SeasonYearTeamsTeamIdGamesGamePkRoute
+}
+
+const SeasonYearTeamsTeamIdRouteChildren: SeasonYearTeamsTeamIdRouteChildren = {
+  SeasonYearTeamsTeamIdGamesGamePkRoute: SeasonYearTeamsTeamIdGamesGamePkRoute,
+}
+
+const SeasonYearTeamsTeamIdRouteWithChildren =
+  SeasonYearTeamsTeamIdRoute._addFileChildren(
+    SeasonYearTeamsTeamIdRouteChildren,
+  )
+
 interface SeasonYearRouteChildren {
   SeasonYearIndexRoute: typeof SeasonYearIndexRoute
-  SeasonYearTeamsTeamIdRoute: typeof SeasonYearTeamsTeamIdRoute
+  SeasonYearGamesGamePkRoute: typeof SeasonYearGamesGamePkRoute
+  SeasonYearTeamsTeamIdRoute: typeof SeasonYearTeamsTeamIdRouteWithChildren
 }
 
 const SeasonYearRouteChildren: SeasonYearRouteChildren = {
   SeasonYearIndexRoute: SeasonYearIndexRoute,
-  SeasonYearTeamsTeamIdRoute: SeasonYearTeamsTeamIdRoute,
+  SeasonYearGamesGamePkRoute: SeasonYearGamesGamePkRoute,
+  SeasonYearTeamsTeamIdRoute: SeasonYearTeamsTeamIdRouteWithChildren,
 }
 
 const SeasonYearRouteWithChildren = SeasonYearRoute._addFileChildren(

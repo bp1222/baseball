@@ -32,6 +32,7 @@ import type {
 } from '@bp1222/stats-api'
 import { useState, useEffect, type MouseEvent, type ReactNode } from 'react'
 import { useGameDetail } from '../api/gameDetail'
+import type { GameDetailSide, GameDetailView } from '../lib/gameDetailSearch'
 import {
   formatInningRuns,
   formatLinescoreInning,
@@ -57,22 +58,41 @@ type GameDetailModalProps = {
   game: Game
   open: boolean
   onClose: () => void
+  /** Controlled tab; defaults to internal state when omitted. */
+  view?: GameDetailView
+  side?: GameDetailSide
+  onViewChange?: (view: GameDetailView) => void
+  onSideChange?: (side: GameDetailSide) => void
 }
 
-type DetailViewTab = 'boxscore' | 'scorebook'
+type DetailViewTab = GameDetailView
 
-export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
+export function GameDetailModal({
+  game,
+  open,
+  onClose,
+  view: viewProp,
+  side: sideProp,
+  onViewChange,
+  onSideChange,
+}: GameDetailModalProps) {
   const detailQuery = useGameDetail(game, open)
-  const [side, setSide] = useState<'away' | 'home'>('away')
-  const [view, setView] = useState<DetailViewTab>('boxscore')
+  const [sideState, setSideState] = useState<GameDetailSide>('away')
+  const [viewState, setViewState] = useState<DetailViewTab>('boxscore')
   const [playerId, setPlayerId] = useState<number | null>(null)
+
+  const side = sideProp ?? sideState
+  const view = viewProp ?? viewState
+  const setSide = onSideChange ?? setSideState
+  const setView = onViewChange ?? setViewState
 
   useEffect(() => {
     if (!open) {
       setPlayerId(null)
-      setView('boxscore')
+      if (viewProp == null) setViewState('boxscore')
+      if (sideProp == null) setSideState('away')
     }
-  }, [open])
+  }, [open, viewProp, sideProp])
 
   const box = detailQuery.data?.boxscore
   const linescore = detailQuery.data?.linescore

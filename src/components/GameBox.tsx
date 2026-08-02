@@ -1,9 +1,8 @@
 import { Box, Typography } from '@mui/material'
 import type { Game } from '@bp1222/stats-api'
-import { useState } from 'react'
+import { useNavigate, useParams } from '@tanstack/react-router'
 import { useGameLinescore } from '../api/queries'
 import { BasePaths, OutsDots } from './BasesOuts'
-import { GameDetailModal } from './GameDetailModal'
 import {
   formatLinescoreInning,
   formatOutsLabel,
@@ -27,7 +26,11 @@ type GameBoxProps = {
 }
 
 export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
-  const [detailOpen, setDetailOpen] = useState(false)
+  const navigate = useNavigate()
+  const routeParams = useParams({ strict: false }) as {
+    year?: string
+    teamId?: string
+  }
   const dateKey = formatGameDate(game)
   const { linescore, liveGame } = useGameLinescore(game.gamePk, dateKey)
   const statusGame = liveGame ?? game
@@ -59,131 +62,145 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
   const bases = linescoreBases(linescore)
   const outs = linescore?.outs
 
+  const openDetail = () => {
+    const year = routeParams.year ?? dateKey.slice(0, 4)
+    const search = { view: 'boxscore' as const, side: 'away' as const }
+    if (routeParams.teamId) {
+      void navigate({
+        to: '/season/$year/teams/$teamId/games/$gamePk',
+        params: {
+          year,
+          teamId: routeParams.teamId,
+          gamePk: String(game.gamePk),
+        },
+        search,
+      })
+      return
+    }
+    void navigate({
+      to: '/season/$year/games/$gamePk',
+      params: { year, gamePk: String(game.gamePk) },
+      search,
+    })
+  }
+
   return (
-    <>
+    <Box
+      role="button"
+      tabIndex={0}
+      aria-label={`Open details for ${teamAbbr(away.team, 'Away')} at ${teamAbbr(home.team, 'Home')}`}
+      onClick={openDetail}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          openDetail()
+        }
+      }}
+      sx={{
+        width: 72,
+        minWidth: 72,
+        border: isFocus ? 2 : '1px solid',
+        borderColor: isFocus ? 'primary.main' : live ? 'secondary.main' : 'divider',
+        borderRadius: 1,
+        overflow: 'hidden',
+        // Match the date bar when focused so anti-aliased corner pixels
+        // don't show a different background seeping through.
+        bgcolor: isFocus ? 'primary.main' : 'background.paper',
+        boxShadow: isFocus ? 2 : 0,
+        cursor: 'pointer',
+        '&:hover': {
+          borderColor: isFocus ? 'primary.main' : 'primary.light',
+        },
+        '&:focus-visible': {
+          outline: '2px solid',
+          outlineColor: 'primary.main',
+          outlineOffset: 2,
+        },
+      }}
+    >
       <Box
-        role="button"
-        tabIndex={0}
-        aria-label={`Open details for ${teamAbbr(away.team, 'Away')} at ${teamAbbr(home.team, 'Home')}`}
-        onClick={() => setDetailOpen(true)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            setDetailOpen(true)
-          }
-        }}
         sx={{
-          width: 72,
-          minWidth: 72,
-          border: isFocus ? 2 : '1px solid',
-          borderColor: isFocus ? 'primary.main' : live ? 'secondary.main' : 'divider',
-          borderRadius: 1,
-          overflow: 'hidden',
-          // Match the date bar when focused so anti-aliased corner pixels
-          // don't show a different background seeping through.
-          bgcolor: isFocus ? 'primary.main' : 'background.paper',
-          boxShadow: isFocus ? 2 : 0,
-          cursor: 'pointer',
-          '&:hover': {
-            borderColor: isFocus ? 'primary.main' : 'primary.light',
-          },
-          '&:focus-visible': {
-            outline: '2px solid',
-            outlineColor: 'primary.main',
-            outlineOffset: 2,
-          },
+          bgcolor: isFocus ? 'primary.main' : 'grey.200',
+          color: isFocus ? 'primary.contrastText' : 'text.secondary',
+          textAlign: 'center',
+          fontSize: '0.65rem',
+          fontWeight: isFocus ? 700 : 600,
+          py: 0.25,
+          px: 0.5,
+          letterSpacing: 0.2,
         }}
       >
-        <Box
-          sx={{
-            bgcolor: isFocus ? 'primary.main' : 'grey.200',
-            color: isFocus ? 'primary.contrastText' : 'text.secondary',
-            textAlign: 'center',
-            fontSize: '0.65rem',
-            fontWeight: isFocus ? 700 : 600,
-            py: 0.25,
-            px: 0.5,
-            letterSpacing: 0.2,
-          }}
-        >
-          {formatMonthDayUpper(dateKey)}
-        </Box>
-
-        <Box sx={{ bgcolor: 'background.paper' }}>
-          <ScoreRow
-            abbr={teamAbbr(away.team, 'AWY')}
-            score={scoreOrDash(awayScore)}
-            bgcolor={rowTint(away.isWinner, away.team.id)}
-            bold={final && away.isWinner}
-          />
-          <ScoreRow
-            abbr={teamAbbr(home.team, 'HME')}
-            score={scoreOrDash(homeScore)}
-            bgcolor={rowTint(home.isWinner, home.team.id)}
-            bold={final && home.isWinner}
-          />
-
-          <Box
-            sx={{
-              height: 18,
-              px: 0.25,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: live ? 'secondary.main' : 'text.secondary',
-            }}
-          >
-            {live && linescore && linescoreHasStarted(linescore) ? (
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 0.35,
-                  flexWrap: 'nowrap',
-                }}
-                title={`${formatLinescoreInning(linescore)} · ${formatOutsLabel(outs)}`}
-              >
-                <Typography
-                  variant="caption"
-                  component="span"
-                  sx={{
-                    fontSize: '0.6rem',
-                    fontWeight: 700,
-                    lineHeight: 1,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {formatLinescoreInning(linescore)}
-                </Typography>
-                <BasePaths bases={bases} />
-                <OutsDots outs={outs ?? 0} />
-              </Box>
-            ) : (
-              <Typography
-                variant="caption"
-                sx={{
-                  display: 'block',
-                  textAlign: 'center',
-                  fontSize: '0.6rem',
-                  fontWeight: live ? 700 : 500,
-                  lineHeight: 1,
-                }}
-              >
-                {gameStatusFooter(statusGame)}
-              </Typography>
-            )}
-          </Box>
-        </Box>
+        {formatMonthDayUpper(dateKey)}
       </Box>
 
-      <GameDetailModal
-        game={statusGame}
-        open={detailOpen}
-        onClose={() => setDetailOpen(false)}
-      />
-    </>
+      <Box sx={{ bgcolor: 'background.paper' }}>
+        <ScoreRow
+          abbr={teamAbbr(away.team, 'AWY')}
+          score={scoreOrDash(awayScore)}
+          bgcolor={rowTint(away.isWinner, away.team.id)}
+          bold={final && away.isWinner}
+        />
+        <ScoreRow
+          abbr={teamAbbr(home.team, 'HME')}
+          score={scoreOrDash(homeScore)}
+          bgcolor={rowTint(home.isWinner, home.team.id)}
+          bold={final && home.isWinner}
+        />
+
+        <Box
+          sx={{
+            height: 18,
+            px: 0.25,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: live ? 'secondary.main' : 'text.secondary',
+          }}
+        >
+          {live && linescore && linescoreHasStarted(linescore) ? (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 0.35,
+                flexWrap: 'nowrap',
+              }}
+              title={`${formatLinescoreInning(linescore)} · ${formatOutsLabel(outs)}`}
+            >
+              <Typography
+                variant="caption"
+                component="span"
+                sx={{
+                  fontSize: '0.6rem',
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {formatLinescoreInning(linescore)}
+              </Typography>
+              <BasePaths bases={bases} />
+              <OutsDots outs={outs ?? 0} />
+            </Box>
+          ) : (
+            <Typography
+              variant="caption"
+              sx={{
+                display: 'block',
+                textAlign: 'center',
+                fontSize: '0.6rem',
+                fontWeight: live ? 700 : 500,
+                lineHeight: 1,
+              }}
+            >
+              {gameStatusFooter(statusGame)}
+            </Typography>
+          )}
+        </Box>
+      </Box>
+    </Box>
   )
 }
 

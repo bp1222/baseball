@@ -1,5 +1,5 @@
 import { Box, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import { createFileRoute } from '@tanstack/react-router'
+import { Outlet, createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import type { ModelRecord } from '@bp1222/stats-api'
 import {
@@ -188,6 +188,7 @@ function TeamPage() {
           <Box sx={{ minWidth: 0 }}>{statsColumn}</Box>
         </Box>
       </Stack>
+      <Outlet />
     </QueryState>
   )
 }

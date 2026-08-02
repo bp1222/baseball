@@ -18,6 +18,7 @@ import {
   standingsApi,
 } from './client'
 import { isMlbMajorLeagueGame, isMlbMajorLeagueTeam } from '../lib/mlb'
+import { findGameInSeriesList } from '../lib/findGame'
 import {
   addDays,
   gameDatesFromSeries,
@@ -199,6 +200,22 @@ export function useSeasonSchedule(year: string) {
     enabled: Boolean(year) && seasonQuery.isSuccess,
     staleTime: SEASON_SCHEDULE_STALE_TIME,
   })
+}
+
+/** Resolve a Game from the season schedule cache by gamePk. */
+export function useScheduledGame(year: string, gamePk: number) {
+  const scheduleQuery = useSeasonSchedule(year)
+  const game = useMemo(
+    () => findGameInSeriesList(scheduleQuery.data, gamePk),
+    [scheduleQuery.data, gamePk],
+  )
+  return {
+    game,
+    isLoading: scheduleQuery.isLoading || scheduleQuery.isPending,
+    isError: scheduleQuery.isError,
+    error: scheduleQuery.error,
+    isNotFound: scheduleQuery.isSuccess && game == null,
+  }
 }
 
 export function useSeriesForDate(focusDate: string) {
