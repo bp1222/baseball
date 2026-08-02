@@ -131,6 +131,14 @@ function isAtBat(play: Play): boolean {
   return play.result?.type === 'atBat'
 }
 
+/** Finished plate appearances only — in-progress ABs (mound visits, etc.) stay blank. */
+function isCompleteAtBat(play: Play): boolean {
+  if (play.about?.isComplete === false) return false
+  if (play.about?.isComplete === true) return true
+  // Older feeds may omit the flag; require a real result.
+  return Boolean(play.result?.eventType || play.result?.event)
+}
+
 function halfOf(play: Play): HalfInning {
   return play.about?.halfInning === 'bottom' ? 'bottom' : 'top'
 }
@@ -424,6 +432,20 @@ function resultCodeFor(play: Play, runners: ScorebookRunnerMove[]): string {
 
   if (mapped) return mapped
 
+  // Ignore mid-PA status/actions that sometimes land on result.event
+  if (
+    !eventType ||
+    eventType === 'mound_visit' ||
+    eventType.includes('substitution') ||
+    eventType.includes('conference') ||
+    eventType.includes('challenge') ||
+    eventType.includes('review') ||
+    /^mound\b/i.test(event) ||
+    /visit/i.test(event)
+  ) {
+    return ''
+  }
+
   // Fallback: shorten event name
   if (event) {
     const short = event
@@ -432,7 +454,7 @@ function resultCodeFor(play: Play, runners: ScorebookRunnerMove[]): string {
       .replace(/Home Run/i, 'HR')
     return short.length > 8 ? short.slice(0, 8) : short
   }
-  return '?'
+  return ''
 }
 
 function pitchSequenceFidelity(play: Play): boolean {
@@ -752,7 +774,7 @@ export function buildScorebook(
   let prevInning: number | null = null
 
   for (const play of plays?.allPlays ?? []) {
-    if (!isAtBat(play)) continue
+    if (!isAtBat(play) || !isCompleteAtBat(play)) continue
     const playHalf = halfOf(play)
     const inning = play.about?.inning ?? 0
     if (inning < 1) continue
