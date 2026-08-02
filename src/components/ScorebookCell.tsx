@@ -207,46 +207,58 @@ function PaBox({ pa }: { pa: ScorebookPA }) {
           boxSizing: 'border-box',
         }}
       >
-        <Box sx={{ width: '100%', height: '100%', minWidth: 0, minHeight: 0 }}>
-          <DiamondSvg journey={journey} />
-        </Box>
-      </Box>
-
-      {pa.resultCode ? (
-        <Typography
+        <Box
           sx={{
-            position: 'absolute',
-            // Center in the body below the header strip.
-            top: `calc(${CELL_HEADER_H}px + (100% - ${CELL_HEADER_H}px) / 2)`,
-            left: '50%',
-            transform: isLookingK
-              ? 'translate(-50%, -50%) scaleX(-1)'
-              : 'translate(-50%, -50%)',
-            zIndex: 3,
-            fontWeight: 800,
-            fontSize: multilineCode
-              ? '0.5rem'
-              : pa.resultCode.length > 5
-                ? '0.55rem'
-                : isK
-                  ? '0.85rem'
-                  : '0.68rem',
-            lineHeight: multilineCode ? 1.15 : 1,
-            color: isK ? 'error.main' : 'text.primary',
-            bgcolor: 'background.paper',
-            px: 0.25,
-            borderRadius: 0.5,
-            pointerEvents: 'none',
-            whiteSpace: multilineCode ? 'pre-line' : 'nowrap',
-            textAlign: 'center',
-            maxWidth: '85%',
-            overflow: 'hidden',
-            textOverflow: multilineCode ? 'clip' : 'ellipsis',
+            position: 'relative',
+            width: '100%',
+            height: '100%',
+            minWidth: 0,
+            minHeight: 0,
           }}
         >
-          {isLookingK ? 'K' : pa.resultCode}
-        </Typography>
-      ) : null}
+          {pa.resultCode ? (
+            <Typography
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: isLookingK
+                  ? 'translate(-50%, -50%) scaleX(-1)'
+                  : 'translate(-50%, -50%)',
+                zIndex: 0,
+                fontWeight: 800,
+                fontSize: multilineCode
+                  ? '0.5rem'
+                  : pa.resultCode.length > 5
+                    ? '0.55rem'
+                    : isK
+                      ? '0.85rem'
+                      : '0.68rem',
+                lineHeight: multilineCode ? 1.15 : 1,
+                color: isK ? 'error.main' : 'text.primary',
+                pointerEvents: 'none',
+                whiteSpace: multilineCode ? 'pre-line' : 'nowrap',
+                textAlign: 'center',
+                maxWidth: '85%',
+                overflow: 'hidden',
+                textOverflow: multilineCode ? 'clip' : 'ellipsis',
+              }}
+            >
+              {isLookingK ? 'K' : pa.resultCode}
+            </Typography>
+          ) : null}
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 1,
+              pointerEvents: 'none',
+            }}
+          >
+            <DiamondSvg journey={journey} />
+          </Box>
+        </Box>
+      </Box>
 
       {pa.showCount && pa.balls != null && pa.strikes != null && (
         <Typography
@@ -305,6 +317,8 @@ type Journey = {
   segs: [boolean, boolean, boolean, boolean]
   /** Segments advanced via stolen base (same indices as segs) */
   stolenSegs: [boolean, boolean, boolean, boolean]
+  /** Lineup # of batter who advanced this runner on that segment */
+  advanceLabels: [string | null, string | null, string | null, string | null]
   scored: boolean
   /** Out while advancing toward this base level (slash mid-path) */
   outOnAdvance: number | null
@@ -320,8 +334,8 @@ function levelOf(base: BaseId | null | undefined): number {
   return 4
 }
 
-function markStolenSegs(
-  stolen: [boolean, boolean, boolean, boolean],
+function markSegRange(
+  flags: [boolean, boolean, boolean, boolean],
   start: BaseId | null,
   end: BaseId | null,
 ) {
@@ -329,7 +343,21 @@ function markStolenSegs(
   const endLvl = levelOf(end)
   for (let lvl = startLvl + 1; lvl <= endLvl; lvl++) {
     const idx = lvl - 1
-    if (idx >= 0 && idx < 4) stolen[idx] = true
+    if (idx >= 0 && idx < 4) flags[idx] = true
+  }
+}
+
+function markAdvanceLabels(
+  labels: [string | null, string | null, string | null, string | null],
+  start: BaseId | null,
+  end: BaseId | null,
+  label: string,
+) {
+  const startLvl = levelOf(start)
+  const endLvl = levelOf(end)
+  for (let lvl = startLvl + 1; lvl <= endLvl; lvl++) {
+    const idx = lvl - 1
+    if (idx >= 0 && idx < 4 && labels[idx] == null) labels[idx] = label
   }
 }
 
@@ -339,6 +367,12 @@ function journeyFromMoves(moves: ScorebookRunnerMove[]): Journey {
   let outAtBase: number | null = null
   let scored = false
   const stolenSegs: [boolean, boolean, boolean, boolean] = [false, false, false, false]
+  const advanceLabels: [string | null, string | null, string | null, string | null] = [
+    null,
+    null,
+    null,
+    null,
+  ]
 
   for (const m of moves) {
     if (m.isOut && m.start != null) {
@@ -366,7 +400,9 @@ function journeyFromMoves(moves: ScorebookRunnerMove[]): Journey {
     if (endLvl > maxSafe) maxSafe = endLvl
     if (m.isScoringEvent || m.end === 'score') scored = true
     if (m.isStolenBase && !m.isOut) {
-      markStolenSegs(stolenSegs, m.start, m.end)
+      markSegRange(stolenSegs, m.start, m.end)
+    } else if (m.advancedBySlot != null && m.advancedBySlot > 0 && !m.isOut) {
+      markAdvanceLabels(advanceLabels, m.start, m.end, String(m.advancedBySlot))
     }
   }
 
@@ -374,6 +410,7 @@ function journeyFromMoves(moves: ScorebookRunnerMove[]): Journey {
   return {
     segs: [maxSafe >= 1, maxSafe >= 2, maxSafe >= 3, maxSafe >= 4 || scored],
     stolenSegs,
+    advanceLabels,
     scored: scored || maxSafe >= 4,
     outOnAdvance,
     outAtBase,
@@ -412,24 +449,28 @@ function DiamondSvg({ journey }: { journey: Journey }) {
       b: first,
       on: journey.segs[0] && journey.outOnAdvance !== 1,
       sb: journey.stolenSegs[0],
+      label: journey.advanceLabels[0],
     },
     {
       a: first,
       b: second,
       on: journey.segs[1] && journey.outOnAdvance !== 2,
       sb: journey.stolenSegs[1],
+      label: journey.advanceLabels[1],
     },
     {
       a: second,
       b: third,
       on: journey.segs[2] && journey.outOnAdvance !== 3,
       sb: journey.stolenSegs[2],
+      label: journey.advanceLabels[2],
     },
     {
       a: third,
       b: home,
       on: journey.segs[3] && journey.outOnAdvance !== 4,
       sb: journey.stolenSegs[3],
+      label: journey.advanceLabels[3],
     },
   ]
 
@@ -474,16 +515,30 @@ function DiamondSvg({ journey }: { journey: Journey }) {
             />
             {e.sb && (
               <text
-                x={mx + nx * 7}
-                y={my + ny * 7}
+                x={mx + nx * 9}
+                y={my + ny * 9}
                 fill="#142033"
-                fontSize={7}
+                fontSize={11}
                 fontWeight={700}
                 fontFamily="system-ui, sans-serif"
                 textAnchor="middle"
                 dominantBaseline="central"
               >
                 sb
+              </text>
+            )}
+            {!e.sb && e.label && (
+              <text
+                x={mx + nx * 9}
+                y={my + ny * 9}
+                fill="#142033"
+                fontSize={11}
+                fontWeight={700}
+                fontFamily="system-ui, sans-serif"
+                textAnchor="middle"
+                dominantBaseline="central"
+              >
+                {e.label}
               </text>
             )}
           </g>

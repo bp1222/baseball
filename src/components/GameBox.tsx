@@ -17,6 +17,7 @@ import {
   isGameLive,
 } from '../lib/series'
 import { teamAbbr } from '../lib/mlb'
+import { skipSeasonFocusSyncFor } from '../lib/seasonFocusNav'
 
 type GameBoxProps = {
   game: Game
@@ -65,6 +66,8 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
   const openDetail = () => {
     const year = routeParams.year ?? dateKey.slice(0, 4)
     const search = { view: 'boxscore' as const, side: 'away' as const }
+    // Clicks keep the current season day; cold links sync focus in the game route.
+    skipSeasonFocusSyncFor(game.gamePk)
     if (routeParams.teamId) {
       void navigate({
         to: '/season/$year/teams/$teamId/games/$gamePk',

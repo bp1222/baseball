@@ -31,6 +31,11 @@ export type ScorebookRunnerMove = {
   isStolenBase: boolean
   /** True when put out via pickoff (out at the occupied base) */
   isPickoff: boolean
+  /**
+   * Lineup slot (1–9) of the batter who advanced this runner on a later PA.
+   * Drawn on path segments like classic scorebooks (alongside `sb` for steals).
+   */
+  advancedBySlot?: number | null
   eventType?: string
   credits: Array<{ credit: string; positionCode?: string; positionAbbr?: string }>
 }
@@ -705,7 +710,10 @@ function attributeRunnerPaths(pas: ScorebookPA[]): void {
     for (const move of otherMoves) {
       const owner = open.get(move.runnerId)
       if (owner) {
-        owner.runners.push(move)
+        owner.runners.push({
+          ...move,
+          advancedBySlot: advanceLabelSlot(move, pa),
+        })
         refreshOutNumbers(owner)
       }
       if (move.isOut || move.end === 'score' || move.isScoringEvent) {
@@ -724,6 +732,28 @@ function attributeRunnerPaths(pas: ScorebookPA[]): void {
 
     refreshOutNumbers(pa)
   }
+}
+
+/** Lineup number to draw on a redistributed advance, or null for SB/WP/etc. */
+function advanceLabelSlot(
+  move: ScorebookRunnerMove,
+  causingPa: ScorebookPA,
+): number | null {
+  if (move.isOut || move.isStolenBase || move.isPickoff) return null
+  if (move.start == null) return null
+  const et = (move.eventType ?? causingPa.resultEventType ?? '').toLowerCase()
+  if (
+    et.startsWith('stolen_base') ||
+    et.startsWith('caught_stealing') ||
+    et.startsWith('pickoff') ||
+    et === 'wild_pitch' ||
+    et === 'passed_ball' ||
+    et === 'balk' ||
+    et.includes('defensive_indiff')
+  ) {
+    return null
+  }
+  return causingPa.slot > 0 ? causingPa.slot : null
 }
 
 /**

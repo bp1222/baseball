@@ -5,6 +5,10 @@ import { useScheduledGame } from '../api/queries'
 import { GameDetailModal } from '../components/GameDetailModal'
 import { useSeasonFocus } from '../context/useSeasonFocus'
 import { validateGameDetailSearch, type GameDetailSearch } from '../lib/gameDetailSearch'
+import {
+  clearSeasonFocusSyncSkip,
+  shouldSkipSeasonFocusSync,
+} from '../lib/seasonFocusNav'
 import { formatGameDate } from '../lib/series'
 
 export const Route = createFileRoute('/season/$year/games/$gamePk')({
@@ -21,9 +25,17 @@ function SeasonGameModalRoute() {
   const gamePk = Number(gamePkParam)
   const { game, isLoading, isError, isNotFound } = useScheduledGame(year, gamePk)
 
+  // Cold load / shared link only — board clicks call skipSeasonFocusSyncFor.
   useEffect(() => {
-    if (game) focus?.setFocusDate(formatGameDate(game))
+    if (!game || shouldSkipSeasonFocusSync(game.gamePk)) return
+    focus?.setFocusDate(formatGameDate(game))
   }, [game, focus])
+
+  useEffect(() => {
+    return () => {
+      clearSeasonFocusSyncSkip()
+    }
+  }, [gamePk])
 
   const close = () => {
     void navigate({ to: '/season/$year', params: { year } })
