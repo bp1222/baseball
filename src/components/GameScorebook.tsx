@@ -23,9 +23,6 @@ type GameScorebookProps = {
   team: BoxscoreTeam
   side: 'away' | 'home'
   seedPlays?: Plays
-  /** Optional official R/H from linescore when available */
-  officialRuns?: number
-  officialHits?: number
 }
 
 function linesForSlot(slot: ScorebookSlot): number {
@@ -37,14 +34,7 @@ function slotLineOccupants(slot: ScorebookSlot): Array<ScorebookOccupant | null>
   return Array.from({ length: n }, (_, i) => slot.occupants[i] ?? null)
 }
 
-export function GameScorebook({
-  gamePk,
-  team,
-  side,
-  seedPlays,
-  officialRuns,
-  officialHits,
-}: GameScorebookProps) {
+export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookProps) {
   const { book, isLoading, isError, hasPlays } = useGameScorebook(
     gamePk,
     team,
@@ -80,8 +70,6 @@ export function GameScorebook({
     )
   }
 
-  const runs = officialRuns ?? book.runs
-  const hits = officialHits ?? book.hits
   const columns = book.columns
   const statsW = STAT_COLS.length * STAT_W
   const bodyRows = book.slots.reduce((sum, s) => sum + linesForSlot(s), 0)
@@ -374,20 +362,6 @@ export function GameScorebook({
           })}
         </Box>
       </Box>
-
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{ justifyContent: 'space-between', alignItems: 'center', px: 0.5 }}
-      >
-        <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
-          Result codes · red tint = scored · corner slash = end of inning · bold edge =
-          substitution · struck header = continued inning
-        </Typography>
-        <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.7rem' }}>
-          R {runs} · H {hits}
-        </Typography>
-      </Stack>
     </Stack>
   )
 }

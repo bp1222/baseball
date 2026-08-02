@@ -37,10 +37,16 @@ export function ScorebookCell({ pas }: ScorebookCellProps) {
 
 function PaBox({ pa }: { pa: ScorebookPA }) {
   const journey = journeyFromMoves(pa.runners)
-  const endOfInning = pa.outNumbers.includes(3)
+  // Corner slash marks the PA that ended the inning, not every square that
+  // recorded the third out (e.g. a pickoff attributed back to a runner).
+  const endOfInning = pa.outsAfter >= 3
   const outLabel = pa.outNumbers.length > 0 ? String(Math.max(...pa.outNumbers)) : null
   const isK =
-    pa.resultCode === 'K' || Boolean(pa.resultEventType?.startsWith('strikeout'))
+    pa.resultCode === 'K' ||
+    pa.resultCode === 'Kb' ||
+    Boolean(pa.resultEventType?.startsWith('strikeout'))
+  const isLookingK = pa.resultCode === 'Kb'
+  const multilineCode = pa.resultCode.includes('\n')
 
   return (
     <Box
@@ -84,23 +90,32 @@ function PaBox({ pa }: { pa: ScorebookPA }) {
           position: 'absolute',
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%)',
+          transform: isLookingK
+            ? 'translate(-50%, -50%) scaleX(-1)'
+            : 'translate(-50%, -50%)',
           zIndex: 3,
           fontWeight: 800,
-          fontSize: pa.resultCode.length > 5 ? '0.55rem' : isK ? '0.85rem' : '0.68rem',
-          lineHeight: 1,
+          fontSize: multilineCode
+            ? '0.5rem'
+            : pa.resultCode.length > 5
+              ? '0.55rem'
+              : isK
+                ? '0.85rem'
+                : '0.68rem',
+          lineHeight: multilineCode ? 1.15 : 1,
           color: isK ? 'error.main' : 'text.primary',
           bgcolor: 'background.paper',
           px: 0.25,
           borderRadius: 0.5,
           pointerEvents: 'none',
-          whiteSpace: 'nowrap',
+          whiteSpace: multilineCode ? 'pre-line' : 'nowrap',
+          textAlign: 'center',
           maxWidth: '85%',
           overflow: 'hidden',
-          textOverflow: 'ellipsis',
+          textOverflow: multilineCode ? 'clip' : 'ellipsis',
         }}
       >
-        {pa.resultCode}
+        {isLookingK ? 'K' : pa.resultCode}
       </Typography>
 
       {pa.rbi > 0 && (
@@ -195,7 +210,10 @@ type Journey = {
   /** Segments advanced via stolen base (same indices as segs) */
   stolenSegs: [boolean, boolean, boolean, boolean]
   scored: boolean
+  /** Out while advancing toward this base level (slash mid-path) */
   outOnAdvance: number | null
+  /** Put out while occupying this base (pickoff) — slash through the path at the base */
+  outAtBase: number | null
 }
 
 function levelOf(base: BaseId | null | undefined): number {
@@ -222,15 +240,29 @@ function markStolenSegs(
 function journeyFromMoves(moves: ScorebookRunnerMove[]): Journey {
   let maxSafe = 0
   let outOnAdvance: number | null = null
+  let outAtBase: number | null = null
   let scored = false
   const stolenSegs: [boolean, boolean, boolean, boolean] = [false, false, false, false]
 
   for (const m of moves) {
     if (m.isOut && m.start != null) {
       const toward = m.outBase ?? m.end ?? nextBaseAfter(m.start)
-      outOnAdvance = levelOf(toward)
       const startLvl = levelOf(m.start)
+      const towardLvl = levelOf(toward)
       if (startLvl > maxSafe) maxSafe = startLvl
+
+      // Pickoff / out at the occupied base: keep the path to that base and
+      // slash through it at the base. Force outs while advancing get mid-path slash.
+      const outAtOccupiedBase =
+        m.isPickoff ||
+        (m.outBase != null && m.outBase === m.start) ||
+        towardLvl <= startLvl
+
+      if (outAtOccupiedBase) {
+        outAtBase = startLvl
+      } else {
+        outOnAdvance = towardLvl
+      }
       continue
     }
     if (m.isOut && m.start == null) continue
@@ -248,6 +280,7 @@ function journeyFromMoves(moves: ScorebookRunnerMove[]): Journey {
     stolenSegs,
     scored: scored || maxSafe >= 4,
     outOnAdvance,
+    outAtBase,
   }
 }
 
@@ -255,6 +288,19 @@ function nextBaseAfter(start: BaseId): BaseId {
   if (start === '1B') return '2B'
   if (start === '2B') return '3B'
   return 'score'
+}
+
+/** Path segment that arrives at a base level (1=home→1B, …). */
+function pathIntoBase(
+  level: number,
+): { x1: number; y1: number; x2: number; y2: number } | null {
+  const pts: Record<number, { x1: number; y1: number; x2: number; y2: number }> = {
+    1: { x1: 36, y1: 62, x2: 62, y2: 36 },
+    2: { x1: 62, y1: 36, x2: 36, y2: 10 },
+    3: { x1: 36, y1: 10, x2: 10, y2: 36 },
+    4: { x1: 10, y1: 36, x2: 36, y2: 62 },
+  }
+  return pts[level] ?? null
 }
 
 function DiamondSvg({ journey }: { journey: Journey }) {
@@ -348,18 +394,36 @@ function DiamondSvg({ journey }: { journey: Journey }) {
         )
       })}
       {journey.outOnAdvance != null && <OutOnAdvanceMark level={journey.outOnAdvance} />}
+      {journey.outAtBase != null && <OutAtBaseMark level={journey.outAtBase} />}
     </svg>
   )
 }
 
+/** Slash through the path at the occupied base (pickoff). */
+function OutAtBaseMark({ level }: { level: number }) {
+  const p = pathIntoBase(level)
+  if (!p) return null
+  // Center on the base corner itself (not down the path toward home).
+  const mx = p.x2
+  const my = p.y2
+  // Orient by base: horizontal at 1B/3B, vertical at 2B (and home).
+  const half = 4.5
+  const horizontal = level === 1 || level === 3
+  return (
+    <line
+      x1={horizontal ? mx - half : mx}
+      y1={horizontal ? my : my - half}
+      x2={horizontal ? mx + half : mx}
+      y2={horizontal ? my : my + half}
+      stroke="#142033"
+      strokeWidth={1.75}
+      strokeLinecap="round"
+    />
+  )
+}
+
 function OutOnAdvanceMark({ level }: { level: number }) {
-  const pts: Record<number, { x1: number; y1: number; x2: number; y2: number }> = {
-    1: { x1: 36, y1: 62, x2: 62, y2: 36 },
-    2: { x1: 62, y1: 36, x2: 36, y2: 10 },
-    3: { x1: 36, y1: 10, x2: 10, y2: 36 },
-    4: { x1: 10, y1: 36, x2: 36, y2: 62 },
-  }
-  const p = pts[level]
+  const p = pathIntoBase(level)
   if (!p) return null
   const mx = (p.x1 + p.x2) / 2
   const my = (p.y1 + p.y2) / 2

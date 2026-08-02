@@ -281,8 +281,6 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
                       team={side === 'away' ? box.teams.away : box.teams.home}
                       side={side}
                       seedPlays={feed?.liveData?.plays}
-                      officialRuns={linescore?.teams?.[side]?.runs}
-                      officialHits={linescore?.teams?.[side]?.hits}
                     />
                   )}
                 </Box>

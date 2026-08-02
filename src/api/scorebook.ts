@@ -29,6 +29,9 @@ export type ScorebookRunnerMove = {
   rbi: boolean
   /** True when this advance was a stolen base */
   isStolenBase: boolean
+  /** True when put out via pickoff (out at the occupied base) */
+  isPickoff: boolean
+  eventType?: string
   credits: Array<{ credit: string; positionCode?: string; positionAbbr?: string }>
 }
 
@@ -228,6 +231,12 @@ function isStolenBaseMove(r: PlayRunner): boolean {
   return eventType.startsWith('stolen_base') || reason.includes('stolen_base')
 }
 
+function isPickoffMove(r: PlayRunner): boolean {
+  const eventType = r.details?.eventType ?? ''
+  const reason = r.details?.movementReason ?? ''
+  return eventType.startsWith('pickoff') || reason.includes('pickoff')
+}
+
 function mapRunner(r: PlayRunner): ScorebookRunnerMove | null {
   const runner = r.details?.runner
   if (runner?.id == null) return null
@@ -245,6 +254,7 @@ function mapRunner(r: PlayRunner): ScorebookRunnerMove | null {
   if (r.movement?.isOut && end == null) {
     // Retired — keep end null
   }
+  const eventType = r.details?.eventType ?? undefined
   return {
     runnerId: runner.id,
     runnerName: runner.fullName ?? String(runner.id),
@@ -256,6 +266,8 @@ function mapRunner(r: PlayRunner): ScorebookRunnerMove | null {
     isScoringEvent: Boolean(r.details?.isScoringEvent),
     rbi: Boolean(r.details?.rbi),
     isStolenBase: isStolenBaseMove(r),
+    isPickoff: isPickoffMove(r),
+    eventType,
     credits: (r.credits ?? []).map((c) => ({
       credit: c.credit ?? '',
       positionCode: c.position?.code,
@@ -334,6 +346,32 @@ const EVENT_CODE: Record<string, string> = {
   grounded_into_double_play: 'GDP',
   triple_play: 'TP',
   force_out: 'FO',
+  pickoff_1b: 'pickoff\n1B',
+  pickoff_2b: 'pickoff\n2B',
+  pickoff_3b: 'pickoff\n3B',
+  caught_stealing_2b: 'CS\n2B',
+  caught_stealing_3b: 'CS\n3B',
+  caught_stealing_home: 'CS\nH',
+  pickoff_caught_stealing_2b: 'POCS\n2B',
+  pickoff_caught_stealing_3b: 'POCS\n3B',
+  pickoff_caught_stealing_home: 'POCS\nH',
+}
+
+function isCalledStrikeout(play: Play): boolean {
+  const desc = (play.result?.description ?? '').toLowerCase()
+  if (desc.includes('called out on strikes')) return true
+  if (
+    desc.includes('strikes out swinging') ||
+    desc.includes('swinging') ||
+    desc.includes('foul tip')
+  ) {
+    return false
+  }
+  const pitches = (play.playEvents ?? []).filter((e) => e.isPitch)
+  const last = pitches[pitches.length - 1]
+  const code = last?.details?.code ?? ''
+  const pitchDesc = (last?.details?.description ?? '').toLowerCase()
+  return code === 'C' || pitchDesc.includes('called strike')
 }
 
 function resultCodeFor(play: Play, runners: ScorebookRunnerMove[]): string {
@@ -341,8 +379,8 @@ function resultCodeFor(play: Play, runners: ScorebookRunnerMove[]): string {
   const event = play.result?.event ?? ''
 
   if (eventType === 'strikeout' || event.toLowerCase().includes('strikeout')) {
-    // Looking vs swinging is hard historically; plain K is fine.
-    return 'K'
+    // Called third strike → backwards K (mirrored in the cell).
+    return isCalledStrikeout(play) ? 'Kb' : 'K'
   }
 
   const mapped = EVENT_CODE[eventType]
@@ -468,6 +506,7 @@ function playToPA(
           isScoringEvent: end === 'score',
           rbi: false,
           isStolenBase: false,
+          isPickoff: false,
           credits: [],
         })
       }
@@ -516,6 +555,15 @@ const NON_AB_TYPES = new Set([
   'sac_bunt',
   'catcher_interf',
   'catcher_interference',
+  'pickoff_1b',
+  'pickoff_2b',
+  'pickoff_3b',
+  'caught_stealing_2b',
+  'caught_stealing_3b',
+  'caught_stealing_home',
+  'pickoff_caught_stealing_2b',
+  'pickoff_caught_stealing_3b',
+  'pickoff_caught_stealing_home',
 ])
 
 function countHits(pas: ScorebookPA[]): number {
@@ -602,6 +650,12 @@ function applySubstitutions(
 function attributeRunnerPaths(pas: ScorebookPA[]): void {
   const open = new Map<number, ScorebookPA>()
 
+  const refreshOutNumbers = (pa: ScorebookPA) => {
+    pa.outNumbers = pa.runners
+      .map((r) => r.outNumber)
+      .filter((n): n is number => typeof n === 'number')
+  }
+
   for (const pa of pas) {
     const all = pa.runners
     const batterId = pa.batterId
@@ -612,7 +666,10 @@ function attributeRunnerPaths(pas: ScorebookPA[]): void {
 
     for (const move of otherMoves) {
       const owner = open.get(move.runnerId)
-      if (owner) owner.runners.push(move)
+      if (owner) {
+        owner.runners.push(move)
+        refreshOutNumbers(owner)
+      }
       if (move.isOut || move.end === 'score' || move.isScoringEvent) {
         open.delete(move.runnerId)
       }
@@ -627,9 +684,7 @@ function attributeRunnerPaths(pas: ScorebookPA[]): void {
       open.delete(batterId)
     }
 
-    pa.outNumbers = pa.runners
-      .map((r) => r.outNumber)
-      .filter((n): n is number => typeof n === 'number')
+    refreshOutNumbers(pa)
   }
 }
 
