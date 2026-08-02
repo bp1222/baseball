@@ -12,6 +12,10 @@ type ScorebookCellProps = {
  */
 export function ScorebookCell({ pas }: ScorebookCellProps) {
   const hasEndOfInning = pas.some((pa) => pa.outsAfter >= 3)
+  const hasPinchRunner = pas.some((pa) =>
+    pa.runners.some((r) => r.pinchRunnerEntryAt != null),
+  )
+  const allowBleed = hasEndOfInning || hasPinchRunner
   return (
     <Box
       sx={{
@@ -22,14 +26,14 @@ export function ScorebookCell({ pas }: ScorebookCellProps) {
         borderBottom: 1,
         borderColor: 'divider',
         bgcolor: 'background.paper',
-        // Allow the inning-end slash to bleed into neighboring cells.
-        overflow: hasEndOfInning ? 'visible' : 'hidden',
+        // Inning-end slash and PR marks may sit on / past the base corner.
+        overflow: allowBleed ? 'visible' : 'hidden',
         display: 'flex',
         flexDirection: 'column',
         minWidth: 0,
         minHeight: 0,
         position: 'relative',
-        zIndex: hasEndOfInning ? 2 : 0,
+        zIndex: allowBleed ? 2 : 0,
         isolation: 'isolate',
       }}
     >
@@ -92,6 +96,7 @@ function PaBox({ pa }: { pa: ScorebookPA }) {
   // Corner slash marks the PA that ended the inning, not every square that
   // recorded the third out (e.g. a pickoff attributed back to a runner).
   const endOfInning = pa.outsAfter >= 3
+  const allowBleed = endOfInning || journey.pinchRunnerAt != null
   const outLabel = pa.outNumbers.length > 0 ? String(Math.max(...pa.outNumbers)) : null
   const isK =
     pa.resultCode === 'K' ||
@@ -107,7 +112,7 @@ function PaBox({ pa }: { pa: ScorebookPA }) {
         flex: 1,
         minHeight: 0,
         width: '100%',
-        overflow: endOfInning ? 'visible' : 'hidden',
+        overflow: allowBleed ? 'visible' : 'hidden',
       }}
       title={pa.resultDescription ?? pa.resultEvent ?? pa.resultCode}
     >
@@ -324,6 +329,8 @@ type Journey = {
   outOnAdvance: number | null
   /** Put out while occupying this base (pickoff) — slash through the path at the base */
   outAtBase: number | null
+  /** Base level (1–3) where a pinch-runner entered */
+  pinchRunnerAt: number | null
 }
 
 function levelOf(base: BaseId | null | undefined): number {
@@ -365,6 +372,7 @@ function journeyFromMoves(moves: ScorebookRunnerMove[]): Journey {
   let maxSafe = 0
   let outOnAdvance: number | null = null
   let outAtBase: number | null = null
+  let pinchRunnerAt: number | null = null
   let scored = false
   const stolenSegs: [boolean, boolean, boolean, boolean] = [false, false, false, false]
   const advanceLabels: [string | null, string | null, string | null, string | null] = [
@@ -375,6 +383,10 @@ function journeyFromMoves(moves: ScorebookRunnerMove[]): Journey {
   ]
 
   for (const m of moves) {
+    if (m.pinchRunnerEntryAt && pinchRunnerAt == null) {
+      const lvl = levelOf(m.pinchRunnerEntryAt)
+      if (lvl >= 1 && lvl <= 3) pinchRunnerAt = lvl
+    }
     if (m.isOut && m.start != null) {
       const toward = m.outBase ?? m.end ?? nextBaseAfter(m.start)
       const startLvl = levelOf(m.start)
@@ -414,6 +426,7 @@ function journeyFromMoves(moves: ScorebookRunnerMove[]): Journey {
     scored: scored || maxSafe >= 4,
     outOnAdvance,
     outAtBase,
+    pinchRunnerAt,
   }
 }
 
@@ -480,7 +493,10 @@ function DiamondSvg({ journey }: { journey: Journey }) {
       width="100%"
       height="100%"
       aria-hidden
-      style={{ display: 'block', overflow: 'hidden' }}
+      style={{
+        display: 'block',
+        overflow: journey.pinchRunnerAt != null ? 'visible' : 'hidden',
+      }}
     >
       {journey.scored && (
         <polygon points={poly} fill="rgba(196, 30, 58, 0.14)" stroke="none" />
@@ -546,7 +562,32 @@ function DiamondSvg({ journey }: { journey: Journey }) {
       })}
       {journey.outOnAdvance != null && <OutOnAdvanceMark level={journey.outOnAdvance} />}
       {journey.outAtBase != null && <OutAtBaseMark level={journey.outAtBase} />}
+      {journey.pinchRunnerAt != null && <PinchRunnerMark level={journey.pinchRunnerAt} />}
     </svg>
+  )
+}
+
+/** `PR` just outside the base where a pinch-runner entered. */
+function PinchRunnerMark({ level }: { level: number }) {
+  const p = pathIntoBase(level)
+  if (!p) return null
+  // Outside the base corner (away from diamond center).
+  const dx = p.x2 - 36
+  const dy = p.y2 - 36
+  const len = Math.sqrt(dx * dx + dy * dy) || 1
+  return (
+    <text
+      x={p.x2 + (dx / len) * 9}
+      y={p.y2 + (dy / len) * 9}
+      fill="#142033"
+      fontSize={9}
+      fontWeight={800}
+      fontFamily="system-ui, sans-serif"
+      textAnchor="middle"
+      dominantBaseline="central"
+    >
+      PR
+    </text>
   )
 }
 

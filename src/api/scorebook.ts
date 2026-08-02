@@ -36,6 +36,11 @@ export type ScorebookRunnerMove = {
    * Drawn on path segments like classic scorebooks (alongside `sb` for steals).
    */
   advancedBySlot?: number | null
+  /**
+   * Set when this move is the first we see after a pinch-runner took over —
+   * draw `PR` at this base on the original batter's diamond.
+   */
+  pinchRunnerEntryAt?: BaseId | null
   eventType?: string
   credits: Array<{ credit: string; positionCode?: string; positionAbbr?: string }>
 }
@@ -163,6 +168,16 @@ function playerDisplayName(p: Player): string {
   return num ? `${num} ${name}` : name
 }
 
+function boxscoreSlotStats(p: Player | undefined): ScorebookSlotStats {
+  const b = p?.stats?.batting
+  return {
+    ab: num(b?.atBats) ?? 0,
+    h: num(b?.hits) ?? 0,
+    r: num(b?.runs) ?? 0,
+    rbi: num(b?.rbi) ?? 0,
+  }
+}
+
 function lineupSlots(team: BoxscoreTeam): ScorebookSlot[] {
   const bySlot = new Map<number, Player[]>()
   for (const p of Object.values(team.players ?? {})) {
@@ -189,7 +204,7 @@ function lineupSlots(team: BoxscoreTeam): ScorebookSlot[] {
           id,
           label: playerDisplayName(p),
           isStarter: Boolean(p.battingOrder?.endsWith('00')) || p === starter,
-          stats: { ab: 0, h: 0, r: 0, rbi: 0 },
+          stats: boxscoreSlotStats(p),
         }
       })
       .filter((o): o is ScorebookOccupant => o != null)
@@ -590,24 +605,6 @@ function playToPA(
 }
 
 const HIT_TYPES = new Set(['single', 'double', 'triple', 'home_run'])
-const NON_AB_TYPES = new Set([
-  'walk',
-  'intent_walk',
-  'hit_by_pitch',
-  'sac_fly',
-  'sac_bunt',
-  'catcher_interf',
-  'catcher_interference',
-  'pickoff_1b',
-  'pickoff_2b',
-  'pickoff_3b',
-  'caught_stealing_2b',
-  'caught_stealing_3b',
-  'caught_stealing_home',
-  'pickoff_caught_stealing_2b',
-  'pickoff_caught_stealing_3b',
-  'pickoff_caught_stealing_home',
-])
 
 function countHits(pas: ScorebookPA[]): number {
   return pas.filter((p) => HIT_TYPES.has(p.resultEventType ?? '')).length
@@ -621,27 +618,6 @@ function countRuns(pas: ScorebookPA[]): number {
     }
   }
   return runs
-}
-
-function slotStatsFromPas(pas: ScorebookPA[]): ScorebookSlotStats {
-  let ab = 0
-  let h = 0
-  let r = 0
-  let rbi = 0
-  for (const pa of pas) {
-    const t = pa.resultEventType ?? ''
-    if (!NON_AB_TYPES.has(t)) ab += 1
-    if (HIT_TYPES.has(t)) h += 1
-    rbi += pa.rbi
-    if (
-      pa.runners.some(
-        (mv) => mv.runnerId === pa.batterId && (mv.isScoringEvent || mv.end === 'score'),
-      )
-    ) {
-      r += 1
-    }
-  }
-  return { ab, h, r, rbi }
 }
 
 /**
@@ -673,7 +649,7 @@ function applySubstitutions(
           id: pa.batterId,
           label: boxPlayer ? playerDisplayName(boxPlayer) : pa.batterName,
           isStarter: slot.occupants.length === 0,
-          stats: { ab: 0, h: 0, r: 0, rbi: 0 },
+          stats: boxscoreSlotStats(boxPlayer),
         })
         slot.playerIds.push(pa.batterId)
       }
@@ -689,14 +665,60 @@ function applySubstitutions(
  * Classic scorebook: each runner's path lives on the diamond where they
  * reached base, not on later batters' squares. Redistribute non-batter
  * advances onto the open PA for that runner.
+ *
+ * Open runners are keyed by player id, but pinch-runners keep the original
+ * batter's tile: if a new id advances from a base we still have occupied,
+ * transfer ownership to that id and keep attributing to the same PA.
  */
 function attributeRunnerPaths(pas: ScorebookPA[]): void {
-  const open = new Map<number, ScorebookPA>()
+  type OpenRunner = { pa: ScorebookPA; base: BaseId }
+  const openByRunner = new Map<number, OpenRunner>()
+  /** Who we believe occupies each base (for pinch-runner re-keys). */
+  const baseOccupant = new Map<BaseId, number>()
 
   const refreshOutNumbers = (pa: ScorebookPA) => {
     pa.outNumbers = pa.runners
       .map((r) => r.outNumber)
       .filter((n): n is number => typeof n === 'number')
+  }
+
+  const clearRunner = (runnerId: number) => {
+    const cur = openByRunner.get(runnerId)
+    if (!cur) return
+    if (baseOccupant.get(cur.base) === runnerId) baseOccupant.delete(cur.base)
+    openByRunner.delete(runnerId)
+  }
+
+  const occupy = (runnerId: number, pa: ScorebookPA, base: BaseId) => {
+    const prev = openByRunner.get(runnerId)
+    if (prev && baseOccupant.get(prev.base) === runnerId) {
+      baseOccupant.delete(prev.base)
+    }
+    // Someone else listed on this base (e.g. replaced batter) — drop them.
+    const displaced = baseOccupant.get(base)
+    if (displaced != null && displaced !== runnerId) {
+      openByRunner.delete(displaced)
+    }
+    openByRunner.set(runnerId, { pa, base })
+    baseOccupant.set(base, runnerId)
+  }
+
+  const ownerForMove = (
+    runnerId: number,
+    start: BaseId | null,
+  ): { owner: OpenRunner; pinchEntry: boolean } | undefined => {
+    const direct = openByRunner.get(runnerId)
+    if (direct) return { owner: direct, pinchEntry: false }
+    if (start == null) return undefined
+    const priorId = baseOccupant.get(start)
+    if (priorId == null || priorId === runnerId) return undefined
+    const prior = openByRunner.get(priorId)
+    if (!prior) return undefined
+    // Pinch-runner (or other mid-base identity change): same diamond tile.
+    openByRunner.delete(priorId)
+    openByRunner.set(runnerId, prior)
+    baseOccupant.set(start, runnerId)
+    return { owner: prior, pinchEntry: true }
   }
 
   for (const pa of pas) {
@@ -708,26 +730,33 @@ function attributeRunnerPaths(pas: ScorebookPA[]): void {
     pa.runners = [...batterMoves]
 
     for (const move of otherMoves) {
-      const owner = open.get(move.runnerId)
-      if (owner) {
-        owner.runners.push({
+      const found = ownerForMove(move.runnerId, move.start)
+      if (found) {
+        const { owner, pinchEntry } = found
+        owner.pa.runners.push({
           ...move,
           advancedBySlot: advanceLabelSlot(move, pa),
+          pinchRunnerEntryAt: pinchEntry ? move.start : null,
         })
-        refreshOutNumbers(owner)
-      }
-      if (move.isOut || move.end === 'score' || move.isScoringEvent) {
-        open.delete(move.runnerId)
+        refreshOutNumbers(owner.pa)
+
+        if (move.isOut || move.end === 'score' || move.isScoringEvent) {
+          clearRunner(move.runnerId)
+        } else if (move.end != null) {
+          occupy(move.runnerId, owner.pa, move.end)
+        }
+      } else if (move.isOut || move.end === 'score' || move.isScoringEvent) {
+        clearRunner(move.runnerId)
       }
     }
 
-    const stillOn = batterMoves.some(
+    const stillOnEnd = batterMoves.find(
       (r) => !r.isOut && r.end != null && r.end !== 'score',
-    )
-    if (stillOn) {
-      open.set(batterId, pa)
+    )?.end
+    if (stillOnEnd) {
+      occupy(batterId, pa, stillOnEnd)
     } else {
-      open.delete(batterId)
+      clearRunner(batterId)
     }
 
     refreshOutNumbers(pa)
@@ -872,11 +901,10 @@ export function buildScorebook(
 
   applySubstitutions(slots, allPas, team)
 
+  // AB/H/R/RBI always come from the boxscore — don't recompute from PBP.
   for (const slot of slots) {
     for (const occ of slot.occupants) {
-      occ.stats = slotStatsFromPas(
-        allPas.filter((pa) => pa.slot === slot.slot && pa.batterId === occ.id),
-      )
+      occ.stats = boxscoreSlotStats(team.players?.[`ID${occ.id}`])
     }
   }
 
@@ -888,14 +916,15 @@ export function buildScorebook(
     columns.pop()
   }
 
+  const teamBat = team.teamStats?.batting
   return {
     side,
     half,
     slots,
     cells,
     columns,
-    runs: countRuns(allPas),
-    hits: countHits(allPas),
+    runs: num(teamBat?.runs) ?? countRuns(allPas),
+    hits: num(teamBat?.hits) ?? countHits(allPas),
   }
 }
 

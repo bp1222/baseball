@@ -115,13 +115,13 @@ export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookPr
           width: '100%',
           maxWidth: '100%',
           minWidth: 0,
-          maxHeight: 'min(560px, calc(100dvh - 300px))',
-          overflow: 'auto',
+          overflowX: 'auto',
+          overflowY: 'visible',
           border: 1,
           borderColor: 'divider',
           borderRadius: 1,
           bgcolor: 'background.paper',
-          overscrollBehavior: 'contain',
+          overscrollBehaviorX: 'contain',
         }}
       >
         <Box
@@ -317,7 +317,11 @@ export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookPr
                       {lineIdx === 0 &&
                         columns.map((col, i) => {
                           const pas = book.cells[col.id]?.[slot.slot] ?? []
-                          const bleeds = pas.some((pa) => pa.outsAfter >= 3)
+                          const bleeds = pas.some(
+                            (pa) =>
+                              pa.outsAfter >= 3 ||
+                              pa.runners.some((r) => r.pinchRunnerEntryAt != null),
+                          )
                           return (
                             <Box
                               key={`${slot.slot}-${col.id}`}
