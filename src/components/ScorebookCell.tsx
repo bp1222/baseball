@@ -331,6 +331,8 @@ type Journey = {
   outAtBase: number | null
   /** Base level (1–3) where a pinch-runner entered */
   pinchRunnerAt: number | null
+  /** When outOnAdvance is a caught stealing, label that half-path `cs` */
+  caughtStealingAdvance: boolean
 }
 
 function levelOf(base: BaseId | null | undefined): number {
@@ -373,6 +375,7 @@ function journeyFromMoves(moves: ScorebookRunnerMove[]): Journey {
   let outOnAdvance: number | null = null
   let outAtBase: number | null = null
   let pinchRunnerAt: number | null = null
+  let caughtStealingAdvance = false
   let scored = false
   const stolenSegs: [boolean, boolean, boolean, boolean] = [false, false, false, false]
   const advanceLabels: [string | null, string | null, string | null, string | null] = [
@@ -392,6 +395,14 @@ function journeyFromMoves(moves: ScorebookRunnerMove[]): Journey {
       const startLvl = levelOf(m.start)
       const towardLvl = levelOf(toward)
       if (startLvl > maxSafe) maxSafe = startLvl
+
+      // Caught stealing: half-path toward the next base with a `cs` mark
+      // (including pickoff+CS — not a slash through the occupied base).
+      if (m.isCaughtStealing) {
+        outOnAdvance = towardLvl > startLvl ? towardLvl : levelOf(nextBaseAfter(m.start))
+        caughtStealingAdvance = true
+        continue
+      }
 
       // Pickoff / out at the occupied base: keep the path to that base and
       // slash through it at the base. Force outs while advancing get mid-path slash.
@@ -427,6 +438,7 @@ function journeyFromMoves(moves: ScorebookRunnerMove[]): Journey {
     outOnAdvance,
     outAtBase,
     pinchRunnerAt,
+    caughtStealingAdvance,
   }
 }
 
@@ -560,7 +572,12 @@ function DiamondSvg({ journey }: { journey: Journey }) {
           </g>
         )
       })}
-      {journey.outOnAdvance != null && <OutOnAdvanceMark level={journey.outOnAdvance} />}
+      {journey.outOnAdvance != null && (
+        <OutOnAdvanceMark
+          level={journey.outOnAdvance}
+          label={journey.caughtStealingAdvance ? 'cs' : undefined}
+        />
+      )}
       {journey.outAtBase != null && <OutAtBaseMark level={journey.outAtBase} />}
       {journey.pinchRunnerAt != null && <PinchRunnerMark level={journey.pinchRunnerAt} />}
     </svg>
@@ -614,7 +631,7 @@ function OutAtBaseMark({ level }: { level: number }) {
   )
 }
 
-function OutOnAdvanceMark({ level }: { level: number }) {
+function OutOnAdvanceMark({ level, label }: { level: number; label?: string }) {
   const p = pathIntoBase(level)
   if (!p) return null
   const mx = (p.x1 + p.x2) / 2
@@ -624,6 +641,13 @@ function OutOnAdvanceMark({ level }: { level: number }) {
   const len = Math.sqrt(dx * dx + dy * dy) || 1
   const nx = (-dy / len) * 4
   const ny = (dx / len) * 4
+  // Outward label offset (same side as sb marks).
+  let lx = -dy / len
+  let ly = dx / len
+  if ((mx - 36) * lx + (my - 36) * ly < 0) {
+    lx = -lx
+    ly = -ly
+  }
   return (
     <g>
       <line
@@ -644,6 +668,20 @@ function OutOnAdvanceMark({ level }: { level: number }) {
         strokeWidth={1.75}
         strokeLinecap="round"
       />
+      {label && (
+        <text
+          x={mx + lx * 9}
+          y={my + ly * 9}
+          fill="#142033"
+          fontSize={11}
+          fontWeight={700}
+          fontFamily="system-ui, sans-serif"
+          textAnchor="middle"
+          dominantBaseline="central"
+        >
+          {label}
+        </text>
+      )}
     </g>
   )
 }

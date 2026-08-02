@@ -31,6 +31,8 @@ export type ScorebookRunnerMove = {
   isStolenBase: boolean
   /** True when put out via pickoff (out at the occupied base) */
   isPickoff: boolean
+  /** True when put out caught stealing (including pickoff+CS) */
+  isCaughtStealing: boolean
   /**
    * Lineup slot (1–9) of the batter who advanced this runner on a later PA.
    * Drawn on path segments like classic scorebooks (alongside `sb` for steals).
@@ -259,7 +261,15 @@ function isStolenBaseMove(r: PlayRunner): boolean {
   return eventType.startsWith('stolen_base') || reason.includes('stolen_base')
 }
 
+function isCaughtStealingMove(r: PlayRunner): boolean {
+  const eventType = r.details?.eventType ?? ''
+  const reason = r.details?.movementReason ?? ''
+  return eventType.includes('caught_stealing') || reason.includes('caught_stealing')
+}
+
 function isPickoffMove(r: PlayRunner): boolean {
+  // Pure pickoff at the occupied base — not pickoff+caught-stealing.
+  if (isCaughtStealingMove(r)) return false
   const eventType = r.details?.eventType ?? ''
   const reason = r.details?.movementReason ?? ''
   return eventType.startsWith('pickoff') || reason.includes('pickoff')
@@ -295,6 +305,7 @@ function mapRunner(r: PlayRunner): ScorebookRunnerMove | null {
     rbi: Boolean(r.details?.rbi),
     isStolenBase: isStolenBaseMove(r),
     isPickoff: isPickoffMove(r),
+    isCaughtStealing: isCaughtStealingMove(r),
     eventType,
     credits: (r.credits ?? []).map((c) => ({
       credit: c.credit ?? '',
@@ -549,6 +560,7 @@ function playToPA(
           rbi: false,
           isStolenBase: false,
           isPickoff: false,
+          isCaughtStealing: false,
           credits: [],
         })
       }
@@ -768,12 +780,14 @@ function advanceLabelSlot(
   move: ScorebookRunnerMove,
   causingPa: ScorebookPA,
 ): number | null {
-  if (move.isOut || move.isStolenBase || move.isPickoff) return null
+  if (move.isOut || move.isStolenBase || move.isPickoff || move.isCaughtStealing)
+    return null
   if (move.start == null) return null
   const et = (move.eventType ?? causingPa.resultEventType ?? '').toLowerCase()
   if (
     et.startsWith('stolen_base') ||
     et.startsWith('caught_stealing') ||
+    et.includes('caught_stealing') ||
     et.startsWith('pickoff') ||
     et === 'wild_pitch' ||
     et === 'passed_ball' ||
