@@ -110,13 +110,19 @@ export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookPr
 
   return (
     <Stack spacing={1} sx={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
+      {/*
+        Horizontal-only scroll: if overflow-x is auto and overflow-y is visible,
+        browsers compute overflow-y as auto. Pin height to the grid so there is
+        nothing vertical to scroll, and hide Y overflow explicitly.
+      */}
       <Box
         sx={{
           width: '100%',
           maxWidth: '100%',
           minWidth: 0,
+          height: gridH,
           overflowX: 'auto',
-          overflowY: 'visible',
+          overflowY: 'hidden',
           border: 1,
           borderColor: 'divider',
           borderRadius: 1,
