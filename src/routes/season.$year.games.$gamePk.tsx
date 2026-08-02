@@ -1,12 +1,12 @@
 import { Box, CircularProgress, Dialog, DialogContent, Typography } from '@mui/material'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useScheduledGame } from '../api/queries'
 import { GameDetailModal } from '../components/GameDetailModal'
 import { useSeasonFocus } from '../context/useSeasonFocus'
 import { validateGameDetailSearch, type GameDetailSearch } from '../lib/gameDetailSearch'
 import {
-  clearSeasonFocusSyncSkip,
+  clearSeasonFocusSyncSkipIf,
   shouldSkipSeasonFocusSync,
 } from '../lib/seasonFocusNav'
 import { formatGameDate } from '../lib/series'
@@ -25,19 +25,28 @@ function SeasonGameModalRoute() {
   const gamePk = Number(gamePkParam)
   const { game, isLoading, isError, isNotFound } = useScheduledGame(year, gamePk)
 
-  // Cold load / shared link only — board clicks call skipSeasonFocusSyncFor.
+  // Latch the board-click decision once. Re-reading the module flag on every
+  // effect run fails after StrictMode cleanup or when context identity changes.
+  const skipFocusSyncRef = useRef<boolean | null>(null)
+  if (skipFocusSyncRef.current === null) {
+    skipFocusSyncRef.current = shouldSkipSeasonFocusSync(gamePk)
+  }
+
   useEffect(() => {
-    if (!game || shouldSkipSeasonFocusSync(game.gamePk)) return
+    if (!game || skipFocusSyncRef.current) return
     focus?.setFocusDate(formatGameDate(game))
   }, [game, focus])
 
+  // Deferred clear so StrictMode's immediate remount can still latch the flag.
   useEffect(() => {
     return () => {
-      clearSeasonFocusSyncSkip()
+      const pk = gamePk
+      window.setTimeout(() => clearSeasonFocusSyncSkipIf(pk), 0)
     }
   }, [gamePk])
 
   const close = () => {
+    clearSeasonFocusSyncSkipIf(gamePk)
     void navigate({ to: '/season/$year', params: { year } })
   }
 
