@@ -1,4 +1,5 @@
 import { Box, Typography } from '@mui/material'
+import type { ReactNode } from 'react'
 import type { BaseId, ScorebookPA, ScorebookRunnerMove } from '../api/scorebook'
 
 type ScorebookCellProps = {
@@ -6,10 +7,11 @@ type ScorebookCellProps = {
 }
 
 /**
- * Fills its CSS grid track completely. All drawing stays clipped inside.
- * Isolated stacking so PA chrome never paints over sticky headers/labels.
+ * Fills its CSS grid track. PA content stays inset; the end-of-inning slash may
+ * bleed into the next column/row. Isolated so chrome doesn't cover sticky headers.
  */
 export function ScorebookCell({ pas }: ScorebookCellProps) {
+  const hasEndOfInning = pas.some((pa) => pa.outsAfter >= 3)
   return (
     <Box
       sx={{
@@ -20,17 +22,67 @@ export function ScorebookCell({ pas }: ScorebookCellProps) {
         borderBottom: 1,
         borderColor: 'divider',
         bgcolor: 'background.paper',
-        overflow: 'hidden',
+        // Allow the inning-end slash to bleed into neighboring cells.
+        overflow: hasEndOfInning ? 'visible' : 'hidden',
         display: 'flex',
         flexDirection: 'column',
         minWidth: 0,
         minHeight: 0,
         position: 'relative',
-        zIndex: 0,
+        zIndex: hasEndOfInning ? 2 : 0,
         isolation: 'isolate',
       }}
     >
-      {pas.length === 0 ? null : pas.map((pa) => <PaBox key={pa.atBatIndex} pa={pa} />)}
+      {pas.length === 0 ? (
+        <EmptyPaBox />
+      ) : (
+        pas.map((pa) => <PaBox key={pa.atBatIndex} pa={pa} />)
+      )}
+    </Box>
+  )
+}
+
+const CELL_HEADER_H = 12
+
+function CellHeader({ left, right }: { left?: ReactNode; right?: ReactNode }) {
+  return (
+    <Box
+      sx={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: CELL_HEADER_H,
+        boxSizing: 'border-box',
+        borderBottom: 1,
+        borderColor: 'divider',
+        bgcolor: 'grey.50',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        px: '3px',
+        minWidth: 0,
+        zIndex: 3,
+        pointerEvents: 'none',
+      }}
+    >
+      <Box sx={{ minWidth: 0, display: 'flex', alignItems: 'center' }}>{left}</Box>
+      <Box sx={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>{right}</Box>
+    </Box>
+  )
+}
+
+function EmptyPaBox() {
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        flex: 1,
+        minHeight: 0,
+        width: '100%',
+      }}
+    >
+      <CellHeader />
     </Box>
   )
 }
@@ -55,7 +107,7 @@ function PaBox({ pa }: { pa: ScorebookPA }) {
         flex: 1,
         minHeight: 0,
         width: '100%',
-        overflow: 'hidden',
+        overflow: endOfInning ? 'visible' : 'hidden',
       }}
       title={pa.resultDescription ?? pa.resultEvent ?? pa.resultCode}
     >
@@ -75,86 +127,126 @@ function PaBox({ pa }: { pa: ScorebookPA }) {
           }}
         />
       )}
+
+      <CellHeader
+        left={
+          pa.rbi > 0 ? (
+            <Box
+              sx={{
+                width: 9,
+                height: 9,
+                boxSizing: 'border-box',
+                border: '1.25px solid',
+                borderColor: 'error.main',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                lineHeight: 1,
+              }}
+              title={`${pa.rbi} RBI`}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  fontSize: '0.45rem',
+                  fontWeight: 800,
+                  color: 'error.main',
+                  lineHeight: 1,
+                  pointerEvents: 'none',
+                }}
+              >
+                {pa.rbi}
+              </Typography>
+            </Box>
+          ) : null
+        }
+        right={
+          outLabel ? (
+            <Box
+              sx={{
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                border: 1,
+                borderColor: 'text.primary',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxSizing: 'border-box',
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  fontSize: '0.48rem',
+                  fontWeight: 800,
+                  color: 'text.primary',
+                  lineHeight: 1,
+                  pointerEvents: 'none',
+                }}
+              >
+                {outLabel}
+              </Typography>
+            </Box>
+          ) : null
+        }
+      />
+
       <Box
         sx={{
           position: 'absolute',
-          inset: '12%',
+          top: CELL_HEADER_H,
+          left: 0,
+          right: 0,
+          bottom: 0,
           zIndex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          p: '8%',
+          boxSizing: 'border-box',
         }}
       >
-        <DiamondSvg journey={journey} />
+        <Box sx={{ width: '100%', height: '100%', minWidth: 0, minHeight: 0 }}>
+          <DiamondSvg journey={journey} />
+        </Box>
       </Box>
 
-      <Typography
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: isLookingK
-            ? 'translate(-50%, -50%) scaleX(-1)'
-            : 'translate(-50%, -50%)',
-          zIndex: 3,
-          fontWeight: 800,
-          fontSize: multilineCode
-            ? '0.5rem'
-            : pa.resultCode.length > 5
-              ? '0.55rem'
-              : isK
-                ? '0.85rem'
-                : '0.68rem',
-          lineHeight: multilineCode ? 1.15 : 1,
-          color: isK ? 'error.main' : 'text.primary',
-          bgcolor: 'background.paper',
-          px: 0.25,
-          borderRadius: 0.5,
-          pointerEvents: 'none',
-          whiteSpace: multilineCode ? 'pre-line' : 'nowrap',
-          textAlign: 'center',
-          maxWidth: '85%',
-          overflow: 'hidden',
-          textOverflow: multilineCode ? 'clip' : 'ellipsis',
-        }}
-      >
-        {isLookingK ? 'K' : pa.resultCode}
-      </Typography>
-
-      {pa.rbi > 0 && (
+      {pa.resultCode ? (
         <Typography
-          variant="caption"
           sx={{
             position: 'absolute',
-            top: 2,
-            left: 3,
+            // Center in the body below the header strip.
+            top: `calc(${CELL_HEADER_H}px + (100% - ${CELL_HEADER_H}px) / 2)`,
+            left: '50%',
+            transform: isLookingK
+              ? 'translate(-50%, -50%) scaleX(-1)'
+              : 'translate(-50%, -50%)',
             zIndex: 3,
-            fontSize: '0.5rem',
-            fontWeight: 700,
-            color: 'error.main',
-            lineHeight: 1,
+            fontWeight: 800,
+            fontSize: multilineCode
+              ? '0.5rem'
+              : pa.resultCode.length > 5
+                ? '0.55rem'
+                : isK
+                  ? '0.85rem'
+                  : '0.68rem',
+            lineHeight: multilineCode ? 1.15 : 1,
+            color: isK ? 'error.main' : 'text.primary',
+            bgcolor: 'background.paper',
+            px: 0.25,
+            borderRadius: 0.5,
             pointerEvents: 'none',
+            whiteSpace: multilineCode ? 'pre-line' : 'nowrap',
+            textAlign: 'center',
+            maxWidth: '85%',
+            overflow: 'hidden',
+            textOverflow: multilineCode ? 'clip' : 'ellipsis',
           }}
         >
-          {pa.rbi === 1 ? 'RBI' : `${pa.rbi} RBI`}
+          {isLookingK ? 'K' : pa.resultCode}
         </Typography>
-      )}
-
-      {outLabel && (
-        <Typography
-          variant="caption"
-          sx={{
-            position: 'absolute',
-            top: 2,
-            right: 3,
-            zIndex: 3,
-            fontSize: '0.5rem',
-            fontWeight: 700,
-            color: 'text.secondary',
-            lineHeight: 1,
-            pointerEvents: 'none',
-          }}
-        >
-          {outLabel}
-        </Typography>
-      )}
+      ) : null}
 
       {pa.showCount && pa.balls != null && pa.strikes != null && (
         <Typography
@@ -178,23 +270,27 @@ function PaBox({ pa }: { pa: ScorebookPA }) {
       {endOfInning && (
         <Box
           component="svg"
-          viewBox="0 0 64 64"
+          viewBox="0 0 28 28"
           sx={{
             position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            zIndex: 4,
+            // Short corner mark that still bleeds a bit into the next
+            // column and the row below.
+            right: -7,
+            bottom: -7,
+            width: 28,
+            height: 28,
+            zIndex: 6,
+            overflow: 'visible',
             pointerEvents: 'none',
           }}
           aria-hidden
         >
-          {/* Corner slash fully inside the box */}
+          {/* `/` through the bottom-right corner (18,18). */}
           <line
-            x1={44}
-            y1={64}
-            x2={64}
-            y2={44}
+            x1={8}
+            y1={28}
+            x2={28}
+            y2={8}
             stroke="currentColor"
             strokeWidth={1.75}
             strokeLinecap="round"

@@ -400,7 +400,7 @@ function resultCodeFor(play: Play, runners: ScorebookRunnerMove[]): string {
   ) {
     if (mapped === 'GDP' || mapped === 'DP' || mapped === 'TP' || mapped === 'FC') {
       const notation = outNotationFromCredits(runners)
-      return notation ? `${mapped} ${notation}` : mapped
+      return notation ? `${mapped}\n${notation}` : mapped
     }
     return mapped
   }
@@ -415,9 +415,9 @@ function resultCodeFor(play: Play, runners: ScorebookRunnerMove[]): string {
   ) {
     const notation = outNotationFromCredits(runners)
     if (notation) {
-      if (eventType === 'grounded_into_double_play') return `GDP ${notation}`
-      if (eventType === 'double_play') return `DP ${notation}`
-      if (eventType === 'triple_play') return `TP ${notation}`
+      if (eventType === 'grounded_into_double_play') return `GDP\n${notation}`
+      if (eventType === 'double_play') return `DP\n${notation}`
+      if (eventType === 'triple_play') return `TP\n${notation}`
       // Flyouts often only have putout — prefix F when trajectory says fly/popup
       const desc = (play.result?.description ?? '').toLowerCase()
       if (desc.includes('flies') || desc.includes('fly')) return `F${notation}`
@@ -449,7 +449,7 @@ function resultCodeFor(play: Play, runners: ScorebookRunnerMove[]): string {
   // Fallback: shorten event name
   if (event) {
     const short = event
-      .replace(/Grounded Into /i, 'GDP ')
+      .replace(/Grounded Into /i, 'GDP\n')
       .replace(/Strikeout/i, 'K')
       .replace(/Home Run/i, 'HR')
     return short.length > 8 ? short.slice(0, 8) : short
@@ -531,6 +531,22 @@ function playToPA(
           isPickoff: false,
           credits: [],
         })
+      }
+    }
+  }
+
+  // Third out on a preceding runner (force, etc.): the batter never legally
+  // occupies a base. Stats API still often reports end=1B — drop that so we
+  // don't draw a path (or half-path) to first.
+  const outsAfterPlay = play.count?.outs ?? outsBefore
+  if (outsAfterPlay >= 3 && batterId != null) {
+    const outOnOther = runners.some((r) => r.isOut && r.runnerId !== batterId)
+    if (outOnOther) {
+      for (let i = 0; i < runners.length; i++) {
+        const r = runners[i]
+        if (r.runnerId === batterId && !r.isOut && r.start == null && r.end != null) {
+          runners[i] = { ...r, end: null }
+        }
       }
     }
   }

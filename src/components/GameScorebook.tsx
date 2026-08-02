@@ -1,4 +1,11 @@
-import { Box, CircularProgress, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  CircularProgress,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material'
 import type { BoxscoreTeam, Plays } from '@bp1222/stats-api'
 import {
   type ScorebookOccupant,
@@ -13,8 +20,10 @@ const CELL_W = 64
 const NAME_LINES = 3
 const LINE_H = 22
 const LABEL_W = 118
+const LABEL_W_MOBILE = 76
 const HEADER_H = 28
 const STAT_W = 28
+const STAT_W_MOBILE = 22
 const STAT_COLS = ['AB', 'H', 'R', 'RBI'] as const
 const EMPTY_STATS: ScorebookSlotStats = { ab: 0, h: 0, r: 0, rbi: 0 }
 
@@ -35,6 +44,13 @@ function slotLineOccupants(slot: ScorebookSlot): Array<ScorebookOccupant | null>
 }
 
 export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookProps) {
+  const theme = useTheme()
+  const compact = useMediaQuery(theme.breakpoints.down('sm'))
+  const labelW = compact ? LABEL_W_MOBILE : LABEL_W
+  const statW = compact ? STAT_W_MOBILE : STAT_W
+  // On narrow screens, only pin the batter column so inning cells stay usable.
+  const stickyStats = !compact
+
   const { book, isLoading, isError, hasPlays } = useGameScorebook(
     gamePk,
     team,
@@ -71,9 +87,9 @@ export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookPr
   }
 
   const columns = book.columns
-  const statsW = STAT_COLS.length * STAT_W
+  const statsW = STAT_COLS.length * statW
   const bodyRows = book.slots.reduce((sum, s) => sum + linesForSlot(s), 0)
-  const gridW = LABEL_W + columns.length * CELL_W + statsW
+  const gridW = labelW + columns.length * CELL_W + statsW
   const gridH = HEADER_H + bodyRows * LINE_H
   const rowTracks = [
     `${HEADER_H}px`,
@@ -111,7 +127,7 @@ export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookPr
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: `${LABEL_W}px repeat(${columns.length}, ${CELL_W}px) repeat(${STAT_COLS.length}, ${STAT_W}px)`,
+            gridTemplateColumns: `${labelW}px repeat(${columns.length}, ${CELL_W}px) repeat(${STAT_COLS.length}, ${statW}px)`,
             gridTemplateRows: rowTracks,
             width: gridW,
             maxWidth: 'none',
@@ -205,10 +221,12 @@ export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookPr
               sx={{
                 gridColumn: firstStatCol + i,
                 gridRow: 1,
+                // Always pin to the top while scrolling vertically; only pin to
+                // the right on wider screens so mobile keeps inning cells visible.
                 position: 'sticky',
                 top: 0,
-                right: (STAT_COLS.length - 1 - i) * STAT_W,
-                zIndex: 30,
+                right: stickyStats ? (STAT_COLS.length - 1 - i) * statW : undefined,
+                zIndex: stickyStats ? 30 : 20,
                 boxSizing: 'border-box',
                 borderLeft: i === 0 ? 2 : 1,
                 borderRight: 1,
@@ -257,8 +275,8 @@ export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookPr
                           bgcolor: 'background.paper',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: 0.5,
-                          px: 0.75,
+                          gap: compact ? 0.25 : 0.5,
+                          px: compact ? 0.5 : 0.75,
                           minWidth: 0,
                         }}
                         title={occ?.label}
@@ -270,20 +288,20 @@ export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookPr
                               fontWeight: 800,
                               fontSize: '0.65rem',
                               color: 'text.secondary',
-                              width: 12,
+                              width: compact ? 10 : 12,
                               flexShrink: 0,
                             }}
                           >
                             {slot.slot}
                           </Typography>
                         ) : (
-                          <Box sx={{ width: 12, flexShrink: 0 }} />
+                          <Box sx={{ width: compact ? 10 : 12, flexShrink: 0 }} />
                         )}
                         <Typography
                           variant="caption"
                           sx={{
                             fontWeight: occ?.isStarter ? 600 : 500,
-                            fontSize: '0.6rem',
+                            fontSize: compact ? '0.55rem' : '0.6rem',
                             color: occ ? 'text.primary' : 'transparent',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -299,6 +317,7 @@ export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookPr
                       {lineIdx === 0 &&
                         columns.map((col, i) => {
                           const pas = book.cells[col.id]?.[slot.slot] ?? []
+                          const bleeds = pas.some((pa) => pa.outsAfter >= 3)
                           return (
                             <Box
                               key={`${slot.slot}-${col.id}`}
@@ -308,6 +327,8 @@ export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookPr
                                 minWidth: 0,
                                 minHeight: 0,
                                 height: '100%',
+                                overflow: 'visible',
+                                zIndex: bleeds ? 2 : 0,
                               }}
                             >
                               <ScorebookCell pas={pas} />
@@ -325,9 +346,11 @@ export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookPr
                             sx={{
                               gridColumn: firstStatCol + i,
                               gridRow: row,
-                              position: 'sticky',
-                              right: (STAT_COLS.length - 1 - i) * STAT_W,
-                              zIndex: 10,
+                              position: stickyStats ? 'sticky' : 'relative',
+                              right: stickyStats
+                                ? (STAT_COLS.length - 1 - i) * statW
+                                : undefined,
+                              zIndex: stickyStats ? 10 : 0,
                               boxSizing: 'border-box',
                               borderLeft: i === 0 ? 2 : 1,
                               borderRight: 1,
@@ -344,7 +367,7 @@ export function GameScorebook({ gamePk, team, side, seedPlays }: GameScorebookPr
                               variant="caption"
                               sx={{
                                 fontWeight: 700,
-                                fontSize: '0.65rem',
+                                fontSize: compact ? '0.58rem' : '0.65rem',
                                 fontVariantNumeric: 'tabular-nums',
                                 color: show ? 'text.primary' : 'transparent',
                               }}

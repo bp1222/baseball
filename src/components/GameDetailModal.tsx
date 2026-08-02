@@ -122,7 +122,7 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
         aria-labelledby="game-detail-title"
         sx={{
           '& .MuiDialog-paper': {
-            maxWidth: 720,
+            maxWidth: 800,
             width: '100%',
             overflowX: 'hidden',
           },
@@ -220,7 +220,7 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
                 <Box
                   sx={{
                     width: '100%',
-                    maxWidth: 520,
+                    maxWidth: 600,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'stretch',
@@ -266,7 +266,7 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
                 <Box
                   sx={{
                     width: '100%',
-                    maxWidth: view === 'scorebook' ? '100%' : 520,
+                    maxWidth: view === 'scorebook' ? '100%' : 600,
                     minWidth: 0,
                   }}
                 >
@@ -294,7 +294,7 @@ export function GameDetailModal({ game, open, onClose }: GameDetailModalProps) {
                     width: '100%',
                   }}
                 >
-                  <Box sx={{ width: '100%', maxWidth: 520 }}>
+                  <Box sx={{ width: '100%', maxWidth: 600 }}>
                     <GameNotes items={gameNotes} />
                   </Box>
                 </Box>
