@@ -11,7 +11,6 @@ import {
 } from '@bp1222/stats-api'
 import {
   COMPETITIVE_GAME_TYPES,
-  gamesApi,
   MLB_SPORT_ID,
   referenceApi,
   scheduleApi,
@@ -23,7 +22,6 @@ import {
   addDays,
   gameDatesFromSeries,
   groupGamesIntoSeries,
-  isGameLive,
   localToday,
   seriesForFocusDate,
   type Series,
@@ -37,10 +35,12 @@ export const queryKeys = {
   seasons: ['seasons'] as const,
   teams: (year: string) => ['teams', year, 'alNl'] as const,
   team: (year: string, teamId: number) => ['team', year, teamId] as const,
-  seasonSchedule: (year: string) => ['seasonSchedule', year, 'alNl'] as const,
+  seasonSchedule: (year: string) =>
+    ['seasonSchedule', year, 'alNl', 'linescore'] as const,
   standings: (year: string, leagueId: number) => ['standings', year, leagueId] as const,
   season: (year: string) => ['season', year] as const,
-  dailyLinescores: (date: string) => ['dailyLinescores', date, 'alNl'] as const,
+  dailyLinescores: (date: string) =>
+    ['dailyLinescores', date, 'alNl', 'linescore'] as const,
 }
 
 function flattenScheduleGames(dates: { games: Game[] }[] | undefined): Game[] {
@@ -87,24 +87,14 @@ export function useDailyLinescores(date: string, enabled = true) {
         startDate: date,
         endDate: date,
         gameTypes: COMPETITIVE_GAME_TYPES,
-        hydrate: 'league,team',
+        hydrate: 'league,team,linescore',
       })
       const games = flattenScheduleGames(res.dates)
       const map = new Map<number, DailyLinescoreEntry>()
 
-      await Promise.all(
-        games.map(async (game) => {
-          let linescore: Linescore | undefined
-          if (isGameLive(game)) {
-            try {
-              linescore = await gamesApi.getLinescore({ gamePk: game.gamePk })
-            } catch {
-              linescore = undefined
-            }
-          }
-          map.set(game.gamePk, { game, linescore })
-        }),
-      )
+      for (const game of games) {
+        map.set(game.gamePk, { game, linescore: game.linescore })
+      }
 
       return map
     },
@@ -193,7 +183,7 @@ export function useSeasonSchedule(year: string) {
         startDate: start,
         endDate: end,
         gameTypes: COMPETITIVE_GAME_TYPES,
-        hydrate: 'league,team',
+        hydrate: 'league,team,linescore',
       })
       return groupGamesIntoSeries(flattenScheduleGames(schedule.dates))
     },

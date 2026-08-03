@@ -1,4 +1,4 @@
-import type { Game, Team } from '@bp1222/stats-api'
+import type { Game, Linescore, Team } from '@bp1222/stats-api'
 import { AL_LEAGUE_ID, NL_LEAGUE_ID } from './mlb'
 
 export type SeriesStatus =
@@ -509,19 +509,32 @@ export function formatGameStartTime(game: Game): string | null {
   }
 }
 
-export function gameStatusFooter(game: Game): string {
+export function gameStatusFooter(game: Game, linescore?: Linescore): string {
   const delay = gameDelayLabel(game)
   if (delay) return delay
   if (isLive(game)) {
     return game.status.detailedState ?? 'Live'
   }
   if (isFinal(game)) {
-    const detail = game.status.detailedState ?? 'Final'
-    if (detail.startsWith('Final'))
-      return detail === 'Final' ? 'F' : detail.replace('Final', 'F')
-    return detail.length > 6 ? 'F' : detail
+    return formatFinalStatus(game, linescore)
   }
   return formatGameStartTime(game) ?? game.status.detailedState ?? 'Sched'
+}
+
+/** Final status: "F", or "F / 6" / "F / 10" when not a regulation 9. */
+export function formatFinalStatus(game: Game, linescore?: Linescore): string {
+  const detail = game.status.detailedState ?? 'Final'
+  let base: string
+  if (detail.startsWith('Final')) {
+    base = detail === 'Final' ? 'F' : detail.replace('Final', 'F')
+  } else {
+    base = detail.length > 6 ? 'F' : detail
+  }
+  const innings = linescore?.currentInning
+  if (innings != null && innings !== 9) {
+    return `${base} / ${innings}`
+  }
+  return base
 }
 
 /** Full delay copy for tooltips / modal (e.g. "Delayed Rain"). */

@@ -36,8 +36,9 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
     teamId?: string
   }
   const dateKey = formatGameDate(game)
-  const { linescore, liveGame } = useGameLinescore(game.gamePk, dateKey)
+  const { linescore: liveLinescore, liveGame } = useGameLinescore(game.gamePk, dateKey)
   const statusGame = liveGame ?? game
+  const linescore = liveLinescore ?? statusGame.linescore ?? game.linescore
 
   const final = isGameFinal(statusGame)
   const delayed = isGameDelayed(statusGame)
@@ -164,7 +165,7 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
         lineHeight: 1,
       }}
     >
-      {gameStatusFooter(statusGame)}
+      {gameStatusFooter(statusGame, linescore)}
     </Typography>
   )
 

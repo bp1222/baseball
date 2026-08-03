@@ -119,7 +119,7 @@ export function GameDetailModal({
         : delayLabel
       : live && linescore && linescoreHasStarted(linescore)
         ? formatLinescoreInning(linescore)
-        : gameStatusFooter(game)
+        : gameStatusFooter(game, linescore)
 
   const gameStarted = final || live || linescoreHasStarted(linescore)
 
