@@ -1,5 +1,17 @@
-import { Box, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import { Outlet, createFileRoute } from '@tanstack/react-router'
+import {
+  Box,
+  Button,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from '@mui/material'
+import {
+  Outlet,
+  createFileRoute,
+  useNavigate,
+  useRouterState,
+} from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import type { ModelRecord } from '@bp1222/stats-api'
 import {
@@ -28,7 +40,11 @@ type NarrowTab = 'schedule' | 'stats'
 function TeamPage() {
   const { year, teamId: teamIdParam } = Route.useParams()
   const teamId = Number(teamIdParam)
+  const navigate = useNavigate()
   const [narrowTab, setNarrowTab] = useState<NarrowTab>('schedule')
+  const onRoster = useRouterState({
+    select: (s) => s.matches.some((m) => String(m.routeId).includes('/roster')),
+  })
 
   const seasonQuery = useSeason(year)
   const teamQuery = useTeam(year, teamId)
@@ -42,13 +58,13 @@ function TeamPage() {
   const trackedTeamName = team?.name
 
   useEffect(() => {
-    if (trackedTeamName == null) return
+    if (trackedTeamName == null || onRoster) return
     trackEvent({
       name: 'view_team',
       season: year,
       team_name: trackedTeamName,
     })
-  }, [year, trackedTeamName])
+  }, [year, trackedTeamName, onRoster])
 
   const divisionId = team?.division?.id
   const divisionRecords: ModelRecord[] = []
@@ -75,8 +91,11 @@ function TeamPage() {
     endDate: seasonQuery.isSuccess ? seasonEnd : undefined,
   })
 
-  const isLoading = teamQuery.isLoading || seriesQuery.isLoading
-  const isError = teamQuery.isError || seriesQuery.isError
+  // Roster child owns its own loading for the list; still wait on team for the header.
+  const isLoading = onRoster
+    ? teamQuery.isLoading
+    : teamQuery.isLoading || seriesQuery.isLoading
+  const isError = onRoster ? teamQuery.isError : teamQuery.isError || seriesQuery.isError
   const error = teamQuery.error ?? seriesQuery.error ?? null
 
   const useDivisionStandings = team?.division?.id != null && divisionRecords.length > 0
@@ -137,56 +156,96 @@ function TeamPage() {
   return (
     <QueryState isLoading={isLoading} isError={isError} error={error}>
       <Stack spacing={3}>
-        <Stack direction="row" sx={{ alignItems: 'center', gap: 2 }}>
-          {team && <TeamLogo teamId={team.id} alt={team.name} size={64} />}
-          <Box>
-            <Typography variant="h3">{team?.name ?? `Team ${teamId}`}</Typography>
-            <Typography color="text.secondary">
-              {year}
-              {team?.division?.name
-                ? ` · ${team.division.name}`
-                : team?.league?.name
-                  ? ` · ${team.league.name}`
-                  : ''}
-            </Typography>
-          </Box>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          sx={{ alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2 }}
+        >
+          <Stack
+            direction="row"
+            sx={{ alignItems: 'center', gap: 2, minWidth: 0, flex: 1 }}
+          >
+            {team && <TeamLogo teamId={team.id} alt={team.name} size={64} />}
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="h3">{team?.name ?? `Team ${teamId}`}</Typography>
+              <Typography color="text.secondary">
+                {year}
+                {team?.division?.name
+                  ? ` · ${team.division.name}`
+                  : team?.league?.name
+                    ? ` · ${team.league.name}`
+                    : ''}
+              </Typography>
+            </Box>
+          </Stack>
+
+          {onRoster ? (
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => {
+                void navigate({
+                  to: '/season/$year/teams/$teamId',
+                  params: { year, teamId: String(teamId) },
+                })
+              }}
+            >
+              Schedule
+            </Button>
+          ) : (
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => {
+                void navigate({
+                  to: '/season/$year/teams/$teamId/roster',
+                  params: { year, teamId: String(teamId) },
+                })
+              }}
+            >
+              Roster
+            </Button>
+          )}
         </Stack>
 
-        {/* Narrow: schedule | stats toggle */}
-        <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
-          <ToggleButtonGroup
-            value={narrowTab}
-            exclusive
-            fullWidth
-            sx={{ mb: 2 }}
-            onChange={(_, value: NarrowTab | null) => {
-              if (value != null) setNarrowTab(value)
-            }}
-          >
-            <ToggleButton value="schedule">Schedule</ToggleButton>
-            <ToggleButton value="stats">Team stats</ToggleButton>
-          </ToggleButtonGroup>
-          {narrowTab === 'schedule' ? (
-            <SeriesBoard seriesList={seriesList} teamId={teamId} />
-          ) : (
-            statsColumn
-          )}
-        </Box>
+        {!onRoster && (
+          <>
+            {/* Narrow: schedule | stats toggle */}
+            <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
+              <ToggleButtonGroup
+                value={narrowTab}
+                exclusive
+                fullWidth
+                sx={{ mb: 2 }}
+                onChange={(_, value: NarrowTab | null) => {
+                  if (value != null) setNarrowTab(value)
+                }}
+              >
+                <ToggleButton value="schedule">Schedule</ToggleButton>
+                <ToggleButton value="stats">Team stats</ToggleButton>
+              </ToggleButtonGroup>
+              {narrowTab === 'schedule' ? (
+                <SeriesBoard seriesList={seriesList} teamId={teamId} />
+              ) : (
+                statsColumn
+              )}
+            </Box>
 
-        {/* Wide: 2 cols series + 1 col stats */}
-        <Box
-          sx={{
-            display: { xs: 'none', lg: 'grid' },
-            gridTemplateColumns: '2fr 1fr',
-            gap: 2,
-            alignItems: 'start',
-          }}
-        >
-          <Box sx={{ minWidth: 0 }}>
-            <SeriesBoard seriesList={seriesList} teamId={teamId} />
-          </Box>
-          <Box sx={{ minWidth: 0 }}>{statsColumn}</Box>
-        </Box>
+            {/* Wide: 2 cols series + 1 col stats */}
+            <Box
+              sx={{
+                display: { xs: 'none', lg: 'grid' },
+                gridTemplateColumns: '2fr 1fr',
+                gap: 2,
+                alignItems: 'start',
+              }}
+            >
+              <Box sx={{ minWidth: 0 }}>
+                <SeriesBoard seriesList={seriesList} teamId={teamId} />
+              </Box>
+              <Box sx={{ minWidth: 0 }}>{statsColumn}</Box>
+            </Box>
+          </>
+        )}
       </Stack>
       <Outlet />
     </QueryState>

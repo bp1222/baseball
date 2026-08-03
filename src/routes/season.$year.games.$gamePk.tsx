@@ -1,5 +1,5 @@
 import { Box, CircularProgress, Dialog, DialogContent, Typography } from '@mui/material'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
 import { useScheduledGame } from '../api/queries'
 import { GameDetailModal } from '../components/GameDetailModal'
@@ -58,6 +58,15 @@ function SeasonGameModalRoute() {
     })
   }
 
+  const openPlayer = (personId: number) => {
+    void navigate({
+      to: '/season/$year/games/$gamePk/players/$personId',
+      params: { year, gamePk: gamePkParam, personId: String(personId) },
+      search: { view, side },
+      resetScroll: false,
+    })
+  }
+
   if (isLoading) {
     return (
       <Dialog open onClose={close} maxWidth="xs" fullWidth>
@@ -83,14 +92,18 @@ function SeasonGameModalRoute() {
   }
 
   return (
-    <GameDetailModal
-      game={game}
-      open
-      onClose={close}
-      view={view}
-      side={side}
-      onViewChange={(next) => patchSearch({ view: next })}
-      onSideChange={(next) => patchSearch({ side: next })}
-    />
+    <>
+      <GameDetailModal
+        game={game}
+        open
+        onClose={close}
+        view={view}
+        side={side}
+        onViewChange={(next) => patchSearch({ view: next })}
+        onSideChange={(next) => patchSearch({ side: next })}
+        onPlayerClick={openPlayer}
+      />
+      <Outlet />
+    </>
   )
 }

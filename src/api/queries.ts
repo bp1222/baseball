@@ -2,16 +2,19 @@ import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   GameType,
+  RosterTypeCode,
   StandingsTypeCode,
   type DivisionStandings,
   type Game,
   type Linescore,
+  type RosterEntry,
   type Season,
   type Team,
 } from '@bp1222/stats-api'
 import {
   COMPETITIVE_GAME_TYPES,
   MLB_SPORT_ID,
+  peopleApi,
   referenceApi,
   scheduleApi,
   standingsApi,
@@ -35,6 +38,8 @@ export const queryKeys = {
   seasons: ['seasons'] as const,
   teams: (year: string) => ['teams', year, 'alNl'] as const,
   team: (year: string, teamId: number) => ['team', year, teamId] as const,
+  teamRoster: (year: string, teamId: number, date: string) =>
+    ['teamRoster', year, teamId, '40Man', date] as const,
   seasonSchedule: (year: string) =>
     ['seasonSchedule', year, 'alNl', 'linescore'] as const,
   standings: (year: string, leagueId: number) => ['standings', year, leagueId] as const,
@@ -166,6 +171,45 @@ export function useTeam(year: string, teamId: number) {
       return res.teams?.[0]
     },
     enabled: Boolean(year) && teamId > 0,
+    staleTime: 1000 * 60 * 30,
+  })
+}
+
+/** MLB club roster statuses: active, injured lists, rehab, and similar holds. */
+function isMajorLeagueRosterEntry(entry: RosterEntry): boolean {
+  const code = entry.status?.code
+  if (code == null || code === '') return false
+  // Optioned / minor-league / departed — not the 26-man + IL club.
+  if (
+    code === 'MIN' ||
+    code === '40M' ||
+    code === 'RL' ||
+    code === 'TR' ||
+    code === 'CL' ||
+    code === 'FA'
+  ) {
+    return false
+  }
+  return true
+}
+
+/**
+ * 40-man club snapshot for `date` (active + IL/rehab), excluding optioned/minors.
+ * Pass season end (or today during the season) as `date`.
+ */
+export function useTeamRoster(year: string, teamId: number, date: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.teamRoster(year, teamId, date ?? ''),
+    queryFn: async (): Promise<RosterEntry[]> => {
+      const res = await peopleApi.getTeamRoster({
+        teamId,
+        season: year,
+        rosterType: RosterTypeCode.FortyMan,
+        date: date!,
+      })
+      return (res.roster ?? []).filter(isMajorLeagueRosterEntry)
+    },
+    enabled: Boolean(year) && teamId > 0 && Boolean(date),
     staleTime: 1000 * 60 * 30,
   })
 }

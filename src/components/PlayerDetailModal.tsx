@@ -60,19 +60,19 @@ const EMPTY_SEASONS: string[] = []
 /** Contiguous columns — no spacer gutter. */
 const hitCol = {
   date: '13%',
-  tm: '9%',
-  opp: '20%',
+  opp: '14%',
+  oppMulti: '20%',
   wl: '7%',
-  stat: '7.3%',
+  stat: '8.7%',
 } as const
 
 const pitchCol = {
   date: '12%',
-  tm: '8%',
-  opp: '18%',
+  opp: '14%',
+  oppMulti: '18%',
   wl: '7%',
   ip: '8%',
-  stat: '7%',
+  stat: '7.7%',
   dec: '8%',
 } as const
 
@@ -520,7 +520,7 @@ function GameLogTable({
   for (const split of splits) {
     if (split.team?.id != null) teamIdsInLog.add(split.team.id)
   }
-  const showTeamCol = teamIdsInLog.size > 1
+  const showTeam = teamIdsInLog.size > 1
 
   if (group === 'hitting') {
     return (
@@ -528,8 +528,7 @@ function GameLogTable({
         <Table size="small" sx={{ tableLayout: 'fixed', width: '100%' }}>
           <colgroup>
             <col style={{ width: hitCol.date }} />
-            {showTeamCol && <col style={{ width: hitCol.tm }} />}
-            <col style={{ width: showTeamCol ? hitCol.opp : '22%' }} />
+            <col style={{ width: showTeam ? hitCol.oppMulti : hitCol.opp }} />
             <col style={{ width: hitCol.wl }} />
             <col style={{ width: hitCol.stat }} />
             <col style={{ width: hitCol.stat }} />
@@ -542,7 +541,6 @@ function GameLogTable({
           <TableHead>
             <TableRow>
               <TableCell sx={firstHead}>Date</TableCell>
-              {showTeamCol && <TableCell sx={headCell}>Tm</TableCell>}
               <TableCell sx={headCell}>Opp</TableCell>
               <TableCell sx={headCell} align="center">
                 W/L
@@ -577,26 +575,20 @@ function GameLogTable({
               return (
                 <TableRow key={`${split.date}-${split.game?.gamePk ?? idx}`}>
                   <TableCell sx={firstCell}>{date}</TableCell>
-                  {showTeamCol && (
-                    <TableCell sx={cell}>
-                      <PlayerTeamCell
-                        teamId={split.team?.id}
-                        teamName={split.team?.name}
-                        abbr={
-                          split.team?.abbreviation ??
-                          (split.team?.id != null
-                            ? teamAbbrById.get(split.team.id)
-                            : undefined)
-                        }
-                      />
-                    </TableCell>
-                  )}
                   <TableCell sx={cell}>
                     <OpponentCell
+                      showTeam={showTeam}
+                      teamId={split.team?.id}
+                      teamName={
+                        split.team?.name ??
+                        (split.team?.id != null
+                          ? teamAbbrById.get(split.team.id)
+                          : undefined)
+                      }
                       isHome={split.isHome}
                       opponentId={split.opponent?.id}
-                      opponentName={split.opponent?.name}
-                      opponentAbbr={
+                      opponentName={
+                        split.opponent?.name ??
                         split.opponent?.abbreviation ??
                         (split.opponent?.id != null
                           ? teamAbbrById.get(split.opponent.id)
@@ -642,8 +634,7 @@ function GameLogTable({
       <Table size="small" sx={{ tableLayout: 'fixed', width: '100%' }}>
         <colgroup>
           <col style={{ width: pitchCol.date }} />
-          {showTeamCol && <col style={{ width: pitchCol.tm }} />}
-          <col style={{ width: showTeamCol ? pitchCol.opp : '20%' }} />
+          <col style={{ width: showTeam ? pitchCol.oppMulti : pitchCol.opp }} />
           <col style={{ width: pitchCol.wl }} />
           <col style={{ width: pitchCol.ip }} />
           <col style={{ width: pitchCol.stat }} />
@@ -656,7 +647,6 @@ function GameLogTable({
         <TableHead>
           <TableRow>
             <TableCell sx={firstHead}>Date</TableCell>
-            {showTeamCol && <TableCell sx={headCell}>Tm</TableCell>}
             <TableCell sx={headCell}>Opp</TableCell>
             <TableCell sx={headCell} align="center">
               W/L
@@ -703,26 +693,20 @@ function GameLogTable({
             return (
               <TableRow key={`${split.date}-${split.game?.gamePk ?? idx}`}>
                 <TableCell sx={firstCell}>{date}</TableCell>
-                {showTeamCol && (
-                  <TableCell sx={cell}>
-                    <PlayerTeamCell
-                      teamId={split.team?.id}
-                      teamName={split.team?.name}
-                      abbr={
-                        split.team?.abbreviation ??
-                        (split.team?.id != null
-                          ? teamAbbrById.get(split.team.id)
-                          : undefined)
-                      }
-                    />
-                  </TableCell>
-                )}
                 <TableCell sx={cell}>
                   <OpponentCell
+                    showTeam={showTeam}
+                    teamId={split.team?.id}
+                    teamName={
+                      split.team?.name ??
+                      (split.team?.id != null
+                        ? teamAbbrById.get(split.team.id)
+                        : undefined)
+                    }
                     isHome={split.isHome}
                     opponentId={split.opponent?.id}
-                    opponentName={split.opponent?.name}
-                    opponentAbbr={
+                    opponentName={
+                      split.opponent?.name ??
                       split.opponent?.abbreviation ??
                       (split.opponent?.id != null
                         ? teamAbbrById.get(split.opponent.id)
@@ -763,72 +747,57 @@ function GameLogTable({
   )
 }
 
-function PlayerTeamCell({
+function OpponentCell({
+  showTeam,
   teamId,
   teamName,
-  abbr,
-}: {
-  teamId?: number
-  teamName?: string
-  abbr?: string
-}) {
-  const label = abbr ?? '—'
-  return (
-    <Stack
-      direction="row"
-      spacing={0.35}
-      sx={{ alignItems: 'center', minWidth: 0 }}
-      title={teamName}
-    >
-      {teamId != null && <TeamLogo teamId={teamId} alt={teamName ?? label} size={14} />}
-      <Typography
-        component="span"
-        variant="caption"
-        sx={{ fontWeight: 700, letterSpacing: '0.02em', lineHeight: 1 }}
-      >
-        {label}
-      </Typography>
-    </Stack>
-  )
-}
-
-function OpponentCell({
   isHome,
   opponentId,
   opponentName,
-  opponentAbbr,
 }: {
+  showTeam: boolean
+  teamId?: number
+  teamName?: string
   isHome?: boolean
   opponentId?: number
   opponentName?: string
-  opponentAbbr?: string
 }) {
-  const abbr = opponentAbbr ?? '—'
+  const venue = isHome ? 'vs' : '@'
+  const oppLabel = opponentName ?? '—'
+  const teamLabel = teamName ?? '—'
+  const title = showTeam ? `${teamLabel} ${venue} ${oppLabel}` : `${venue} ${oppLabel}`
+
   return (
     <Stack
       direction="row"
       spacing={0.35}
-      sx={{ alignItems: 'center', minWidth: 0 }}
-      title={opponentName}
+      sx={{ alignItems: 'center', minWidth: 0, overflow: 'hidden' }}
+      title={title}
+      aria-label={title}
     >
+      {showTeam &&
+        (teamId != null ? (
+          <TeamLogo teamId={teamId} alt={teamLabel} size={16} />
+        ) : (
+          <Typography component="span" variant="caption" color="text.secondary">
+            —
+          </Typography>
+        ))}
       <Typography
         component="span"
         variant="caption"
         color="text.secondary"
-        sx={{ fontWeight: 700, flexShrink: 0, lineHeight: 1 }}
+        sx={{ fontWeight: 700, flexShrink: 0, lineHeight: 1, fontSize: '0.65rem' }}
       >
-        {isHome ? 'vs' : '@'}
+        {venue}
       </Typography>
-      {opponentId != null && (
-        <TeamLogo teamId={opponentId} alt={opponentName ?? abbr} size={14} />
+      {opponentId != null ? (
+        <TeamLogo teamId={opponentId} alt={oppLabel} size={16} />
+      ) : (
+        <Typography component="span" variant="caption" color="text.secondary">
+          —
+        </Typography>
       )}
-      <Typography
-        component="span"
-        variant="caption"
-        sx={{ fontWeight: 700, letterSpacing: '0.02em', lineHeight: 1 }}
-      >
-        {abbr}
-      </Typography>
     </Stack>
   )
 }

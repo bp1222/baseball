@@ -14,7 +14,11 @@ import { Route as SeasonYearRouteImport } from './routes/season.$year'
 import { Route as SeasonYearIndexRouteImport } from './routes/season.$year.index'
 import { Route as SeasonYearGamesGamePkRouteImport } from './routes/season.$year.games.$gamePk'
 import { Route as SeasonYearTeamsTeamIdRouteImport } from './routes/season.$year.teams.$teamId'
+import { Route as SeasonYearTeamsTeamIdRosterRouteImport } from './routes/season.$year.teams.$teamId.roster'
+import { Route as SeasonYearGamesGamePkPlayersPersonIdRouteImport } from './routes/season.$year.games.$gamePk.players.$personId'
 import { Route as SeasonYearTeamsTeamIdGamesGamePkRouteImport } from './routes/season.$year.teams.$teamId.games.$gamePk'
+import { Route as SeasonYearTeamsTeamIdRosterPlayersPersonIdRouteImport } from './routes/season.$year.teams.$teamId.roster.players.$personId'
+import { Route as SeasonYearTeamsTeamIdGamesGamePkPlayersPersonIdRouteImport } from './routes/season.$year.teams.$teamId.games.$gamePk.players.$personId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -41,36 +45,72 @@ const SeasonYearTeamsTeamIdRoute = SeasonYearTeamsTeamIdRouteImport.update({
   path: '/teams/$teamId',
   getParentRoute: () => SeasonYearRoute,
 } as any)
+const SeasonYearTeamsTeamIdRosterRoute =
+  SeasonYearTeamsTeamIdRosterRouteImport.update({
+    id: '/roster',
+    path: '/roster',
+    getParentRoute: () => SeasonYearTeamsTeamIdRoute,
+  } as any)
+const SeasonYearGamesGamePkPlayersPersonIdRoute =
+  SeasonYearGamesGamePkPlayersPersonIdRouteImport.update({
+    id: '/players/$personId',
+    path: '/players/$personId',
+    getParentRoute: () => SeasonYearGamesGamePkRoute,
+  } as any)
 const SeasonYearTeamsTeamIdGamesGamePkRoute =
   SeasonYearTeamsTeamIdGamesGamePkRouteImport.update({
     id: '/games/$gamePk',
     path: '/games/$gamePk',
     getParentRoute: () => SeasonYearTeamsTeamIdRoute,
   } as any)
+const SeasonYearTeamsTeamIdRosterPlayersPersonIdRoute =
+  SeasonYearTeamsTeamIdRosterPlayersPersonIdRouteImport.update({
+    id: '/players/$personId',
+    path: '/players/$personId',
+    getParentRoute: () => SeasonYearTeamsTeamIdRosterRoute,
+  } as any)
+const SeasonYearTeamsTeamIdGamesGamePkPlayersPersonIdRoute =
+  SeasonYearTeamsTeamIdGamesGamePkPlayersPersonIdRouteImport.update({
+    id: '/players/$personId',
+    path: '/players/$personId',
+    getParentRoute: () => SeasonYearTeamsTeamIdGamesGamePkRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/season/$year': typeof SeasonYearRouteWithChildren
   '/season/$year/': typeof SeasonYearIndexRoute
-  '/season/$year/games/$gamePk': typeof SeasonYearGamesGamePkRoute
+  '/season/$year/games/$gamePk': typeof SeasonYearGamesGamePkRouteWithChildren
   '/season/$year/teams/$teamId': typeof SeasonYearTeamsTeamIdRouteWithChildren
-  '/season/$year/teams/$teamId/games/$gamePk': typeof SeasonYearTeamsTeamIdGamesGamePkRoute
+  '/season/$year/teams/$teamId/roster': typeof SeasonYearTeamsTeamIdRosterRouteWithChildren
+  '/season/$year/games/$gamePk/players/$personId': typeof SeasonYearGamesGamePkPlayersPersonIdRoute
+  '/season/$year/teams/$teamId/games/$gamePk': typeof SeasonYearTeamsTeamIdGamesGamePkRouteWithChildren
+  '/season/$year/teams/$teamId/roster/players/$personId': typeof SeasonYearTeamsTeamIdRosterPlayersPersonIdRoute
+  '/season/$year/teams/$teamId/games/$gamePk/players/$personId': typeof SeasonYearTeamsTeamIdGamesGamePkPlayersPersonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/season/$year': typeof SeasonYearIndexRoute
-  '/season/$year/games/$gamePk': typeof SeasonYearGamesGamePkRoute
+  '/season/$year/games/$gamePk': typeof SeasonYearGamesGamePkRouteWithChildren
   '/season/$year/teams/$teamId': typeof SeasonYearTeamsTeamIdRouteWithChildren
-  '/season/$year/teams/$teamId/games/$gamePk': typeof SeasonYearTeamsTeamIdGamesGamePkRoute
+  '/season/$year/teams/$teamId/roster': typeof SeasonYearTeamsTeamIdRosterRouteWithChildren
+  '/season/$year/games/$gamePk/players/$personId': typeof SeasonYearGamesGamePkPlayersPersonIdRoute
+  '/season/$year/teams/$teamId/games/$gamePk': typeof SeasonYearTeamsTeamIdGamesGamePkRouteWithChildren
+  '/season/$year/teams/$teamId/roster/players/$personId': typeof SeasonYearTeamsTeamIdRosterPlayersPersonIdRoute
+  '/season/$year/teams/$teamId/games/$gamePk/players/$personId': typeof SeasonYearTeamsTeamIdGamesGamePkPlayersPersonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/season/$year': typeof SeasonYearRouteWithChildren
   '/season/$year/': typeof SeasonYearIndexRoute
-  '/season/$year/games/$gamePk': typeof SeasonYearGamesGamePkRoute
+  '/season/$year/games/$gamePk': typeof SeasonYearGamesGamePkRouteWithChildren
   '/season/$year/teams/$teamId': typeof SeasonYearTeamsTeamIdRouteWithChildren
-  '/season/$year/teams/$teamId/games/$gamePk': typeof SeasonYearTeamsTeamIdGamesGamePkRoute
+  '/season/$year/teams/$teamId/roster': typeof SeasonYearTeamsTeamIdRosterRouteWithChildren
+  '/season/$year/games/$gamePk/players/$personId': typeof SeasonYearGamesGamePkPlayersPersonIdRoute
+  '/season/$year/teams/$teamId/games/$gamePk': typeof SeasonYearTeamsTeamIdGamesGamePkRouteWithChildren
+  '/season/$year/teams/$teamId/roster/players/$personId': typeof SeasonYearTeamsTeamIdRosterPlayersPersonIdRoute
+  '/season/$year/teams/$teamId/games/$gamePk/players/$personId': typeof SeasonYearTeamsTeamIdGamesGamePkPlayersPersonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -80,14 +120,22 @@ export interface FileRouteTypes {
     | '/season/$year/'
     | '/season/$year/games/$gamePk'
     | '/season/$year/teams/$teamId'
+    | '/season/$year/teams/$teamId/roster'
+    | '/season/$year/games/$gamePk/players/$personId'
     | '/season/$year/teams/$teamId/games/$gamePk'
+    | '/season/$year/teams/$teamId/roster/players/$personId'
+    | '/season/$year/teams/$teamId/games/$gamePk/players/$personId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/season/$year'
     | '/season/$year/games/$gamePk'
     | '/season/$year/teams/$teamId'
+    | '/season/$year/teams/$teamId/roster'
+    | '/season/$year/games/$gamePk/players/$personId'
     | '/season/$year/teams/$teamId/games/$gamePk'
+    | '/season/$year/teams/$teamId/roster/players/$personId'
+    | '/season/$year/teams/$teamId/games/$gamePk/players/$personId'
   id:
     | '__root__'
     | '/'
@@ -95,7 +143,11 @@ export interface FileRouteTypes {
     | '/season/$year/'
     | '/season/$year/games/$gamePk'
     | '/season/$year/teams/$teamId'
+    | '/season/$year/teams/$teamId/roster'
+    | '/season/$year/games/$gamePk/players/$personId'
     | '/season/$year/teams/$teamId/games/$gamePk'
+    | '/season/$year/teams/$teamId/roster/players/$personId'
+    | '/season/$year/teams/$teamId/games/$gamePk/players/$personId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -140,6 +192,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SeasonYearTeamsTeamIdRouteImport
       parentRoute: typeof SeasonYearRoute
     }
+    '/season/$year/teams/$teamId/roster': {
+      id: '/season/$year/teams/$teamId/roster'
+      path: '/roster'
+      fullPath: '/season/$year/teams/$teamId/roster'
+      preLoaderRoute: typeof SeasonYearTeamsTeamIdRosterRouteImport
+      parentRoute: typeof SeasonYearTeamsTeamIdRoute
+    }
+    '/season/$year/games/$gamePk/players/$personId': {
+      id: '/season/$year/games/$gamePk/players/$personId'
+      path: '/players/$personId'
+      fullPath: '/season/$year/games/$gamePk/players/$personId'
+      preLoaderRoute: typeof SeasonYearGamesGamePkPlayersPersonIdRouteImport
+      parentRoute: typeof SeasonYearGamesGamePkRoute
+    }
     '/season/$year/teams/$teamId/games/$gamePk': {
       id: '/season/$year/teams/$teamId/games/$gamePk'
       path: '/games/$gamePk'
@@ -147,15 +213,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SeasonYearTeamsTeamIdGamesGamePkRouteImport
       parentRoute: typeof SeasonYearTeamsTeamIdRoute
     }
+    '/season/$year/teams/$teamId/roster/players/$personId': {
+      id: '/season/$year/teams/$teamId/roster/players/$personId'
+      path: '/players/$personId'
+      fullPath: '/season/$year/teams/$teamId/roster/players/$personId'
+      preLoaderRoute: typeof SeasonYearTeamsTeamIdRosterPlayersPersonIdRouteImport
+      parentRoute: typeof SeasonYearTeamsTeamIdRosterRoute
+    }
+    '/season/$year/teams/$teamId/games/$gamePk/players/$personId': {
+      id: '/season/$year/teams/$teamId/games/$gamePk/players/$personId'
+      path: '/players/$personId'
+      fullPath: '/season/$year/teams/$teamId/games/$gamePk/players/$personId'
+      preLoaderRoute: typeof SeasonYearTeamsTeamIdGamesGamePkPlayersPersonIdRouteImport
+      parentRoute: typeof SeasonYearTeamsTeamIdGamesGamePkRoute
+    }
   }
 }
 
+interface SeasonYearGamesGamePkRouteChildren {
+  SeasonYearGamesGamePkPlayersPersonIdRoute: typeof SeasonYearGamesGamePkPlayersPersonIdRoute
+}
+
+const SeasonYearGamesGamePkRouteChildren: SeasonYearGamesGamePkRouteChildren = {
+  SeasonYearGamesGamePkPlayersPersonIdRoute:
+    SeasonYearGamesGamePkPlayersPersonIdRoute,
+}
+
+const SeasonYearGamesGamePkRouteWithChildren =
+  SeasonYearGamesGamePkRoute._addFileChildren(
+    SeasonYearGamesGamePkRouteChildren,
+  )
+
+interface SeasonYearTeamsTeamIdRosterRouteChildren {
+  SeasonYearTeamsTeamIdRosterPlayersPersonIdRoute: typeof SeasonYearTeamsTeamIdRosterPlayersPersonIdRoute
+}
+
+const SeasonYearTeamsTeamIdRosterRouteChildren: SeasonYearTeamsTeamIdRosterRouteChildren =
+  {
+    SeasonYearTeamsTeamIdRosterPlayersPersonIdRoute:
+      SeasonYearTeamsTeamIdRosterPlayersPersonIdRoute,
+  }
+
+const SeasonYearTeamsTeamIdRosterRouteWithChildren =
+  SeasonYearTeamsTeamIdRosterRoute._addFileChildren(
+    SeasonYearTeamsTeamIdRosterRouteChildren,
+  )
+
+interface SeasonYearTeamsTeamIdGamesGamePkRouteChildren {
+  SeasonYearTeamsTeamIdGamesGamePkPlayersPersonIdRoute: typeof SeasonYearTeamsTeamIdGamesGamePkPlayersPersonIdRoute
+}
+
+const SeasonYearTeamsTeamIdGamesGamePkRouteChildren: SeasonYearTeamsTeamIdGamesGamePkRouteChildren =
+  {
+    SeasonYearTeamsTeamIdGamesGamePkPlayersPersonIdRoute:
+      SeasonYearTeamsTeamIdGamesGamePkPlayersPersonIdRoute,
+  }
+
+const SeasonYearTeamsTeamIdGamesGamePkRouteWithChildren =
+  SeasonYearTeamsTeamIdGamesGamePkRoute._addFileChildren(
+    SeasonYearTeamsTeamIdGamesGamePkRouteChildren,
+  )
+
 interface SeasonYearTeamsTeamIdRouteChildren {
-  SeasonYearTeamsTeamIdGamesGamePkRoute: typeof SeasonYearTeamsTeamIdGamesGamePkRoute
+  SeasonYearTeamsTeamIdRosterRoute: typeof SeasonYearTeamsTeamIdRosterRouteWithChildren
+  SeasonYearTeamsTeamIdGamesGamePkRoute: typeof SeasonYearTeamsTeamIdGamesGamePkRouteWithChildren
 }
 
 const SeasonYearTeamsTeamIdRouteChildren: SeasonYearTeamsTeamIdRouteChildren = {
-  SeasonYearTeamsTeamIdGamesGamePkRoute: SeasonYearTeamsTeamIdGamesGamePkRoute,
+  SeasonYearTeamsTeamIdRosterRoute:
+    SeasonYearTeamsTeamIdRosterRouteWithChildren,
+  SeasonYearTeamsTeamIdGamesGamePkRoute:
+    SeasonYearTeamsTeamIdGamesGamePkRouteWithChildren,
 }
 
 const SeasonYearTeamsTeamIdRouteWithChildren =
@@ -165,13 +293,13 @@ const SeasonYearTeamsTeamIdRouteWithChildren =
 
 interface SeasonYearRouteChildren {
   SeasonYearIndexRoute: typeof SeasonYearIndexRoute
-  SeasonYearGamesGamePkRoute: typeof SeasonYearGamesGamePkRoute
+  SeasonYearGamesGamePkRoute: typeof SeasonYearGamesGamePkRouteWithChildren
   SeasonYearTeamsTeamIdRoute: typeof SeasonYearTeamsTeamIdRouteWithChildren
 }
 
 const SeasonYearRouteChildren: SeasonYearRouteChildren = {
   SeasonYearIndexRoute: SeasonYearIndexRoute,
-  SeasonYearGamesGamePkRoute: SeasonYearGamesGamePkRoute,
+  SeasonYearGamesGamePkRoute: SeasonYearGamesGamePkRouteWithChildren,
   SeasonYearTeamsTeamIdRoute: SeasonYearTeamsTeamIdRouteWithChildren,
 }
 

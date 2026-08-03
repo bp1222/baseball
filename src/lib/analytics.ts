@@ -101,6 +101,11 @@ export type AnalyticsEvent =
       season: string
       team_name: string
     }
+  | {
+      name: 'view_team_roster'
+      season: string
+      team_name: string
+    }
 
 /** Custom GA4 event (no-ops without consent). */
 export function trackEvent(event: AnalyticsEvent): void {

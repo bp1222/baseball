@@ -52,7 +52,6 @@ import {
 import { teamAbbr, teamShortName } from '../lib/mlb'
 import { BasePaths, OutsDots } from './BasesOuts'
 import { GameScorebook } from './GameScorebook'
-import { PlayerDetailModal } from './PlayerDetailModal'
 import { TeamLogo } from './TeamLogo'
 
 type GameDetailModalProps = {
@@ -64,6 +63,7 @@ type GameDetailModalProps = {
   side?: GameDetailSide
   onViewChange?: (view: GameDetailView) => void
   onSideChange?: (side: GameDetailSide) => void
+  onPlayerClick: (personId: number) => void
 }
 
 type DetailViewTab = GameDetailView
@@ -76,11 +76,11 @@ export function GameDetailModal({
   side: sideProp,
   onViewChange,
   onSideChange,
+  onPlayerClick,
 }: GameDetailModalProps) {
   const detailQuery = useGameDetail(game, open)
   const [sideState, setSideState] = useState<GameDetailSide>('away')
   const [viewState, setViewState] = useState<DetailViewTab>('boxscore')
-  const [playerId, setPlayerId] = useState<number | null>(null)
 
   const side = sideProp ?? sideState
   const view = viewProp ?? viewState
@@ -89,7 +89,6 @@ export function GameDetailModal({
 
   useEffect(() => {
     if (!open) {
-      setPlayerId(null)
       if (viewProp == null) setViewState('boxscore')
       if (sideProp == null) setSideState('away')
     }
@@ -135,208 +134,199 @@ export function GameDetailModal({
 
   const gameNotes = (box?.info ?? []).filter((i) => isGameNoteItem(i))
 
-  const openPlayer = (id: number) => setPlayerId(id)
+  const openPlayer = (id: number) => onPlayerClick(id)
 
   return (
-    <>
-      <Dialog
-        open={open}
-        onClose={onClose}
-        maxWidth={false}
-        fullWidth
-        scroll="paper"
-        aria-labelledby="game-detail-title"
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth={false}
+      fullWidth
+      scroll="paper"
+      aria-labelledby="game-detail-title"
+      sx={{
+        '& .MuiDialog-paper': {
+          maxWidth: 800,
+          width: '100%',
+          overflowX: 'hidden',
+        },
+      }}
+    >
+      <DialogTitle
+        id="game-detail-title"
         sx={{
-          '& .MuiDialog-paper': {
-            maxWidth: 800,
-            width: '100%',
-            overflowX: 'hidden',
-          },
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 1,
+          pr: 1,
         }}
       >
-        <DialogTitle
-          id="game-detail-title"
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 1,
-            pr: 1,
-          }}
-        >
-          <Box sx={{ flex: 1, minWidth: 0, textAlign: 'center' }}>
-            <Typography variant="h6" component="div" sx={{ lineHeight: 1.2 }}>
-              {teamAbbr(away.team, 'AWY')} @ {teamAbbr(home.team, 'HME')}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {formatMonthDay(game.officialDate || game.gameDate.slice(0, 10))}
-              {startTime ? ` · ${startTime}` : ''}
-            </Typography>
+        <Box sx={{ flex: 1, minWidth: 0, textAlign: 'center' }}>
+          <Typography variant="h6" component="div" sx={{ lineHeight: 1.2 }}>
+            {teamAbbr(away.team, 'AWY')} @ {teamAbbr(home.team, 'HME')}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {formatMonthDay(game.officialDate || game.gameDate.slice(0, 10))}
+            {startTime ? ` · ${startTime}` : ''}
+          </Typography>
+        </Box>
+        <IconButton aria-label="Close" onClick={onClose} size="small">
+          ×
+        </IconButton>
+      </DialogTitle>
+
+      <DialogContent dividers sx={{ pt: 2, overflowX: 'hidden', minWidth: 0 }}>
+        {detailQuery.isLoading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+            <CircularProgress size={32} />
           </Box>
-          <IconButton aria-label="Close" onClick={onClose} size="small">
-            ×
-          </IconButton>
-        </DialogTitle>
+        )}
 
-        <DialogContent dividers sx={{ pt: 2, overflowX: 'hidden', minWidth: 0 }}>
-          {detailQuery.isLoading && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-              <CircularProgress size={32} />
-            </Box>
-          )}
+        {detailQuery.isError && (
+          <Typography color="error" sx={{ py: 2 }}>
+            Couldn’t load game details. Try again in a moment.
+          </Typography>
+        )}
 
-          {detailQuery.isError && (
-            <Typography color="error" sx={{ py: 2 }}>
-              Couldn’t load game details. Try again in a moment.
-            </Typography>
-          )}
+        {detailQuery.isSuccess && box && (
+          <Stack spacing={2.5}>
+            <ScoreHero
+              game={game}
+              awayRuns={awayRuns}
+              homeRuns={homeRuns}
+              statusLabel={statusLabel}
+              linescore={
+                live && linescore && linescoreHasStarted(linescore)
+                  ? linescore
+                  : undefined
+              }
+            />
 
-          {detailQuery.isSuccess && box && (
-            <Stack spacing={2.5}>
-              <ScoreHero
-                game={game}
-                awayRuns={awayRuns}
-                homeRuns={homeRuns}
-                statusLabel={statusLabel}
-                linescore={
-                  live && linescore && linescoreHasStarted(linescore)
-                    ? linescore
-                    : undefined
-                }
+            <MetaStrip
+              venueName={venue?.name}
+              weather={weather}
+              attendance={gameData?.gameInfo?.attendance}
+              gameDuration={gameData?.gameInfo?.gameDurationMinutes}
+              infoItems={metaFromInfo}
+            />
+
+            {(linescore || game.scheduledInnings) && (
+              <LinescoreTable
+                linescore={linescore}
+                scheduledInnings={game.scheduledInnings}
+                gameFinal={final}
+                awayLabel={teamAbbr(away.team, 'Away')}
+                homeLabel={teamAbbr(home.team, 'Home')}
               />
+            )}
 
-              <MetaStrip
-                venueName={venue?.name}
-                weather={weather}
-                attendance={gameData?.gameInfo?.attendance}
-                gameDuration={gameData?.gameInfo?.gameDurationMinutes}
-                infoItems={metaFromInfo}
+            {(decisions || (!gameStarted && probable)) && (
+              <PitchingDecisions
+                decisions={decisions}
+                probable={probable}
+                gameStarted={gameStarted}
+                onPlayerClick={openPlayer}
               />
+            )}
 
-              {(linescore || game.scheduledInnings) && (
-                <LinescoreTable
-                  linescore={linescore}
-                  scheduledInnings={game.scheduledInnings}
-                  gameFinal={final}
-                  awayLabel={teamAbbr(away.team, 'Away')}
-                  homeLabel={teamAbbr(home.team, 'Home')}
-                />
-              )}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%',
+                minWidth: 0,
+                maxWidth: '100%',
+                gap: 1.5,
+              }}
+            >
+              <Box
+                sx={{
+                  width: '100%',
+                  maxWidth: 600,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'stretch',
+                  gap: 1,
+                }}
+              >
+                <ToggleButtonGroup
+                  exclusive
+                  fullWidth
+                  size="small"
+                  value={view}
+                  onChange={(_, v: DetailViewTab | null) => {
+                    if (v) setView(v)
+                  }}
+                  aria-label="Boxscore or scorebook"
+                >
+                  <ToggleButton value="boxscore">Boxscore</ToggleButton>
+                  <ToggleButton value="scorebook">Scorebook</ToggleButton>
+                </ToggleButtonGroup>
 
-              {(decisions || (!gameStarted && probable)) && (
-                <PitchingDecisions
-                  decisions={decisions}
-                  probable={probable}
-                  gameStarted={gameStarted}
-                  onPlayerClick={openPlayer}
-                />
-              )}
+                <Stack
+                  direction="row"
+                  spacing={0.75}
+                  sx={{ justifyContent: 'center', alignItems: 'center' }}
+                  role="group"
+                  aria-label="Team"
+                >
+                  <TeamSideChip
+                    selected={side === 'away'}
+                    label={awayShort}
+                    minWidth={teamChipMinWidth}
+                    onClick={() => setSide('away')}
+                  />
+                  <TeamSideChip
+                    selected={side === 'home'}
+                    label={homeShort}
+                    minWidth={teamChipMinWidth}
+                    onClick={() => setSide('home')}
+                  />
+                </Stack>
+              </Box>
 
               <Box
                 sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
                   width: '100%',
+                  maxWidth: view === 'scorebook' ? '100%' : 600,
                   minWidth: 0,
-                  maxWidth: '100%',
-                  gap: 1.5,
                 }}
               >
-                <Box
-                  sx={{
-                    width: '100%',
-                    maxWidth: 600,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'stretch',
-                    gap: 1,
-                  }}
-                >
-                  <ToggleButtonGroup
-                    exclusive
-                    fullWidth
-                    size="small"
-                    value={view}
-                    onChange={(_, v: DetailViewTab | null) => {
-                      if (v) setView(v)
-                    }}
-                    aria-label="Boxscore or scorebook"
-                  >
-                    <ToggleButton value="boxscore">Boxscore</ToggleButton>
-                    <ToggleButton value="scorebook">Scorebook</ToggleButton>
-                  </ToggleButtonGroup>
+                {view === 'boxscore' ? (
+                  <TeamBoxscorePanel
+                    team={side === 'away' ? box.teams.away : box.teams.home}
+                    onPlayerClick={openPlayer}
+                  />
+                ) : (
+                  <GameScorebook
+                    gamePk={game.gamePk}
+                    team={side === 'away' ? box.teams.away : box.teams.home}
+                    side={side}
+                    seedPlays={feed?.liveData?.plays}
+                  />
+                )}
+              </Box>
+            </Box>
 
-                  <Stack
-                    direction="row"
-                    spacing={0.75}
-                    sx={{ justifyContent: 'center', alignItems: 'center' }}
-                    role="group"
-                    aria-label="Team"
-                  >
-                    <TeamSideChip
-                      selected={side === 'away'}
-                      label={awayShort}
-                      minWidth={teamChipMinWidth}
-                      onClick={() => setSide('away')}
-                    />
-                    <TeamSideChip
-                      selected={side === 'home'}
-                      label={homeShort}
-                      minWidth={teamChipMinWidth}
-                      onClick={() => setSide('home')}
-                    />
-                  </Stack>
-                </Box>
-
-                <Box
-                  sx={{
-                    width: '100%',
-                    maxWidth: view === 'scorebook' ? '100%' : 600,
-                    minWidth: 0,
-                  }}
-                >
-                  {view === 'boxscore' ? (
-                    <TeamBoxscorePanel
-                      team={side === 'away' ? box.teams.away : box.teams.home}
-                      onPlayerClick={openPlayer}
-                    />
-                  ) : (
-                    <GameScorebook
-                      gamePk={game.gamePk}
-                      team={side === 'away' ? box.teams.away : box.teams.home}
-                      side={side}
-                      seedPlays={feed?.liveData?.plays}
-                    />
-                  )}
+            {gameNotes.length > 0 && (
+              <Box
+                sx={{
+                  display: 'grid',
+                  justifyItems: 'center',
+                  width: '100%',
+                }}
+              >
+                <Box sx={{ width: '100%', maxWidth: 600 }}>
+                  <GameNotes items={gameNotes} />
                 </Box>
               </Box>
-
-              {gameNotes.length > 0 && (
-                <Box
-                  sx={{
-                    display: 'grid',
-                    justifyItems: 'center',
-                    width: '100%',
-                  }}
-                >
-                  <Box sx={{ width: '100%', maxWidth: 600 }}>
-                    <GameNotes items={gameNotes} />
-                  </Box>
-                </Box>
-              )}
-            </Stack>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      <PlayerDetailModal
-        personId={playerId}
-        open={playerId != null}
-        onClose={() => setPlayerId(null)}
-        defaultSeason={game.season}
-      />
-    </>
+            )}
+          </Stack>
+        )}
+      </DialogContent>
+    </Dialog>
   )
 }
 
