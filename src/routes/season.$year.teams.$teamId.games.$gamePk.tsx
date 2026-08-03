@@ -21,6 +21,7 @@ function TeamGameModalRoute() {
     void navigate({
       to: '/season/$year/teams/$teamId',
       params: { year, teamId },
+      resetScroll: false,
     })
   }
 

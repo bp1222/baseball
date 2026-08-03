@@ -100,6 +100,7 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
           gamePk: String(game.gamePk),
         },
         search,
+        resetScroll: false,
       })
       return
     }
@@ -107,6 +108,7 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
       to: '/season/$year/games/$gamePk',
       params: { year, gamePk: String(game.gamePk) },
       search,
+      resetScroll: false,
     })
   }
 

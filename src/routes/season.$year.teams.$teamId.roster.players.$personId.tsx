@@ -8,7 +8,7 @@ export const Route = createFileRoute(
 })
 
 function TeamRosterPlayerModalRoute() {
-  const { year, personId: personIdParam } = Route.useParams()
+  const { year, teamId, personId: personIdParam } = Route.useParams()
   const navigate = useNavigate()
   const personId = Number(personIdParam)
 
@@ -17,7 +17,12 @@ function TeamRosterPlayerModalRoute() {
       personId={personId}
       defaultSeason={year}
       onClose={() => {
-        void navigate({ to: '..', resetScroll: false })
+        // `..` only strips `$personId`, leaving a bare `/players` segment.
+        void navigate({
+          to: '/season/$year/teams/$teamId/roster',
+          params: { year, teamId },
+          resetScroll: false,
+        })
       }}
     />
   )

@@ -47,7 +47,7 @@ function SeasonGameModalRoute() {
 
   const close = () => {
     clearSeasonFocusSyncSkipIf(gamePk)
-    void navigate({ to: '/season/$year', params: { year } })
+    void navigate({ to: '/season/$year', params: { year }, resetScroll: false })
   }
 
   const patchSearch = (next: Partial<GameDetailSearch>) => {
