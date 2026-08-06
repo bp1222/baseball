@@ -28,6 +28,11 @@ export function formatLinescoreInning(linescore: Linescore): string {
   return 'Live'
 }
 
+/**
+ * Whether the linescore has a current inning populated.
+ * MLB often sets currentInning=1 / Top during Pre-Game — call sites must also
+ * require Live/Final (or equivalent) game status before treating play as begun.
+ */
 export function linescoreHasStarted(linescore: Linescore | undefined): boolean {
   return linescore?.currentInning != null
 }

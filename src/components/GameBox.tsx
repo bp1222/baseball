@@ -42,11 +42,13 @@ export function GameBox({ game, perspectiveTeamId, focusDate }: GameBoxProps) {
 
   const final = isGameFinal(statusGame)
   const delayed = isGameDelayed(statusGame)
-  const live = !final && (isGameLive(statusGame) || linescoreHasStarted(linescore))
+  // Trust MLB status only — schedule linescores often pre-fill currentInning=1/Top
+  // during Pre-Game, which must not be treated as in-progress.
+  const live = !final && isGameLive(statusGame)
   const delayFull = delayed ? gameDelayLabel(statusGame) : null
   const delayShort = delayed ? gameDelayLabelShort(statusGame) : null
   const delayInning =
-    delayed && linescore && linescoreHasStarted(linescore)
+    delayed && live && linescore && linescoreHasStarted(linescore)
       ? formatLinescoreInning(linescore)
       : null
   const delayStatus =

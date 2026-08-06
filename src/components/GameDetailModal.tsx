@@ -113,14 +113,15 @@ export function GameDetailModal({
   const delayLabel = gameDelayLabel(game)
   const statusLabel =
     delayLabel != null
-      ? linescore && linescoreHasStarted(linescore)
+      ? live && linescore && linescoreHasStarted(linescore)
         ? `${formatLinescoreInning(linescore)} ${delayLabel}`
         : delayLabel
       : live && linescore && linescoreHasStarted(linescore)
         ? formatLinescoreInning(linescore)
         : gameStatusFooter(game, linescore)
 
-  const gameStarted = final || live || linescoreHasStarted(linescore)
+  // Status only — Pre-Game linescores often already have currentInning=1.
+  const gameStarted = final || live
 
   const weather = gameData?.weather
   const venue = gameData?.venue ?? game.venue
